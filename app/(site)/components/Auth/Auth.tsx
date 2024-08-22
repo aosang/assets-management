@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react'
 import { Input, Button, message } from 'antd'
 import authScss from './auth.module.scss'
-import useMessage from '../../../../utils/message'
+import useMessage from '@/utils/message'
 
 interface AuthSignUpProps {
   email: string
@@ -19,7 +19,7 @@ const Auth: React.FC<AuthSignUpProps> = ({ email, company, password, username })
   const [formVisiable, setFormVisiable] = useState(true)
 
   const validateSignUpForm = () => {
-    // useMessage(3, 'Please enter your email address!')
+    useMessage(5, 'Please enter your email address!')
   }
   
 
