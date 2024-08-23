@@ -1,8 +1,11 @@
 "use client"
 import React, { useState, useEffect } from 'react'
-import { Input, Button, message } from 'antd'
+import { useRouter } from 'next/navigation'
+import { Input, Button } from 'antd'
+import { emailRegFunc, passwordRegFunc } from '@/utils/validate'
 import authScss from './auth.module.scss'
 import useMessage from '@/utils/message'
+
 
 interface AuthSignUpProps {
   email: string
@@ -11,17 +14,63 @@ interface AuthSignUpProps {
   company: string
 }
 
-const Auth: React.FC<AuthSignUpProps> = ({ email, company, password, username }) => {
-  // 邮箱正则
-  let emailReg = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-  let res = emailReg.test(email)
-  
-  const [formVisiable, setFormVisiable] = useState(true)
+const Auth: React.FC<AuthSignUpProps> = () => { 
+  const [formVisiable, setFormVisiable] = useState(false)
+  const router = useRouter()
+  const [formState, setFormState] = useState<AuthSignUpProps>({
+    email: '', company: '', password: '', username: ''
+  })
 
-  const validateSignUpForm = () => {
-    useMessage(5, 'Please enter your email address!')
+  // 注册提交表单
+  const validateSignUpForm = (type: number) => {
+    const { email, password, company, username } = formState
+    if(type === 1) {
+      if(!emailRegFunc(email)) {
+        useMessage(3, 'Please enter your email address!','error')
+      }else if(!passwordRegFunc(password)) {
+        useMessage(3, 'Please enter your password!','error')
+      }else if(!company) {
+        useMessage(3, 'Please enter your company name!','error')
+      }else if(!username) {
+        useMessage(3, 'Please enter your username!','error')
+      }else {
+        console.log(123)   
+      }
+    }else {
+      if(!emailRegFunc(email)) {
+        useMessage(3, 'Please enter your email address!','error')
+      }else if(!passwordRegFunc(password)) {
+        useMessage(3, 'Please enter your password!','error')
+      }else {
+        router.push('/Sidebar')
+      }
+    }
   }
-  
+
+  // 邮箱
+  const changeEmailValue = (e: any) => {
+    setFormState({...formState, email: e.target.value})
+  }
+
+  // 密码
+  const changePasswordValue = (e: any) => {
+    setFormState({...formState, password: e.target.value})
+  }
+
+  // 公司
+  const changeCompanylValue = (e: any) => { 
+    setFormState({...formState, company: e.target.value})
+  }
+
+  // 昵称
+  const changeUsernamelValue = (e: any) => { 
+    setFormState({...formState, username: e.target.value})
+  }
+
+  const changeFormVisible = (visible: boolean) => {
+    setFormState({...formState, email: '', password: '', company: '', username: ''})
+    setFormVisiable(visible)
+  }
 
   return (
     <div className={authScss.background}>
@@ -34,31 +83,48 @@ const Auth: React.FC<AuthSignUpProps> = ({ email, company, password, username })
             <ul className={authScss.commitForm}>
               <li className={authScss.commitFormItem}>
                 <label htmlFor="Email">Email</label>
-                <Input placeholder="Enter email" />
+                <Input 
+                  placeholder="Enter email"
+                  value={formState.email} 
+                  onChange={changeEmailValue} 
+                />
               </li>
               <li className={authScss.commitFormItem}>
                 <label htmlFor="Email">Company</label>
-                <Input placeholder="Enter company name" />
+                <Input 
+                  placeholder="Enter company name"
+                  value={formState.company} 
+                  onChange={changeCompanylValue}
+                />
               </li>
               <li className={authScss.commitFormItem}>
                 <label htmlFor="Email">Password</label>
-                <Input.Password placeholder="Enter password" />
+                <Input.Password 
+                  placeholder="Enter password"
+                  value={formState.password}
+                  onChange={changePasswordValue} 
+                />
               </li>
               <li className={authScss.commitFormItem}>
                 <label htmlFor="Email">Username</label>
-                <Input placeholder="Enter username" />
+                <Input 
+                  placeholder="Enter username"
+                  value={formState.username}
+                  onChange={changeUsernamelValue} 
+                />
               </li>
             </ul>
             <Button 
               type="primary" 
               className={authScss.commitButton} 
               size="large"
-              onClick={validateSignUpForm}
+              onClick={() => validateSignUpForm(1)}
             >
               Create an account
             </Button>
             <p className={authScss.commitFormInfo}>
-              Already have an account? <a onClick={() => setFormVisiable(false)}>Sign in</a>
+              Already have an account? 
+              <a onClick={() => changeFormVisible(false)}>Sign in</a>
             </p>
           </>
         ) : (
@@ -67,18 +133,31 @@ const Auth: React.FC<AuthSignUpProps> = ({ email, company, password, username })
             <ul className={authScss.commitForm}>
               <li className={authScss.commitFormItem}>
                 <label htmlFor="Email">Email</label>
-                <Input placeholder="Enter email" />
+                <Input 
+                  placeholder="Enter email" 
+                  value={formState.email}
+                  onChange={changeEmailValue} 
+                />
               </li>
               <li className={authScss.commitFormItem}>
                 <label htmlFor="Email">Password</label>
-                <Input.Password placeholder="Enter password" />
+                <Input.Password 
+                  placeholder="Enter password" 
+                  value={formState.password}
+                  onChange={changePasswordValue} 
+                />
               </li>
             </ul>
-            <Button type="primary" className={authScss.commitButton} size="large">
+            <Button 
+              type="primary" 
+              className={authScss.commitButton} 
+              size="large"
+              onClick={() => validateSignUpForm(2)}
+            >
               Sign in
             </Button>
             <p className={authScss.commitFormInfo}>
-              Don't have an account yet? <a onClick={() => setFormVisiable(true)}>Sign up</a>
+              Don't have an account yet? <a onClick={() => changeFormVisible(true)}>Sign up</a>
             </p>
           </>
         )}
