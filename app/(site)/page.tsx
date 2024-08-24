@@ -5,7 +5,7 @@ import Auth from "./components/Auth/Auth"
 
 const Home: React.FC = () => {
   return (
-    <Auth />
+    <Auth email={""} password={""} username={""} company={""} />
   )
 }
 

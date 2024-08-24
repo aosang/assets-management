@@ -1,43 +1,37 @@
+
 "use client"
-import { Layout } from "antd"
-const { Header, Footer, Sider, Content } = Layout
+import React from 'react';
+import { Layout, Menu } from 'antd';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
-const layoutStyle = {
-  overflow: 'hidden',
-  width: '100%',
-  // maxWidth: 'calc(50% - 8px)',
-}
+const { Header, Content, Footer, Sider } = Layout;
 
-const siderStyle: React.CSSProperties = {
-  textAlign: 'center',
-  lineHeight: '120px',
-  color: '#fff',
-  backgroundColor: '#1677ff',
-  height: '100vh',
+const AppLayout = ({children}) => {
+  const router = useRouter();
 
-}
-
-const footerStyle: React.CSSProperties = {
-  width: '100%',
-  textAlign: 'center',
-  color: '#fff',
-  backgroundColor: '#cfd6eb'
-}
-
-
-const Sidebar: React.FC = () => {
   return (
-    <div>
-      <Layout style={layoutStyle}>
-        <Sider width="15%" style={siderStyle}>Sider</Sider>
-        <Layout>
-          <Header style={footerStyle}>Header</Header>
-          <Content>Content</Content>
-          <Footer>Footer</Footer>  
-        </Layout>    
+    <Layout style={{ minHeight: '100vh' }}>
+      <Sider>
+        <div className="logo" style={{ height: '32px', margin: '16px', background: 'rgba(255, 255, 255, 0.3)' }} />
+        <Menu theme="dark" mode="inline" >
+          <Menu.Item key="/Workorder">
+            <Link href="/Workorder">Workorder</Link>
+          </Menu.Item>
+          <Menu.Item key="/Worklog">
+            <Link href="/Worklog">Worklog</Link>
+          </Menu.Item>
+        </Menu>
+      </Sider>
+      <Layout>
+        <Header style={{ background: '#fff', padding: 0 }} />
+        <Content style={{ margin: '0 16px' }}>
+          {children}
+        </Content>
+        <Footer style={{ textAlign: 'center' }}>Ant Design Layout with Next.js ©2024</Footer>
       </Layout>
-    </div>
-  )
-}
- 
-export default Sidebar
+    </Layout>
+  );
+};
+
+export default AppLayout;
