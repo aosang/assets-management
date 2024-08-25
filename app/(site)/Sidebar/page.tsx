@@ -1,34 +1,50 @@
-
 "use client"
 import React from 'react';
-import { Layout, Menu } from 'antd';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
+import { Layout } from 'antd';
+import SideBarItem from './components/sideBarItem';
+import DropDownMenu from './components/dropDownMenu';
+import siderBarCss from './sideBar.module.scss'
 
 const { Header, Content, Footer, Sider } = Layout;
 
-const AppLayout = ({children}) => {
-  const router = useRouter();
+const siderStyle: React.CSSProperties = {
+  textAlign: 'center',
+  color: '#fff',
+  backgroundColor: '#001529',
+}
 
+const headerStyle: React.CSSProperties = {
+  color: '#001529',
+  height: 64,
+  lineHeight: '64px',
+  backgroundColor: '#fff',
+}
+
+const footerStyle: React.CSSProperties = {
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  background: '#fff',
+  height: 48,
+  color: '#001529',
+}
+
+
+const AppLayout = ({children}) => {
   return (
     <Layout style={{ minHeight: '100vh' }}>
-      <Sider>
-        <div className="logo" style={{ height: '32px', margin: '16px', background: 'rgba(255, 255, 255, 0.3)' }} />
-        <Menu theme="dark" mode="inline" >
-          <Menu.Item key="/Workorder">
-            <Link href="/Workorder">Workorder</Link>
-          </Menu.Item>
-          <Menu.Item key="/Worklog">
-            <Link href="/Worklog">Worklog</Link>
-          </Menu.Item>
-        </Menu>
+      <Sider width="13%" style={siderStyle}>
+        <div className={siderBarCss.sidebarTop}>Assets Management</div>
+        <SideBarItem />
       </Sider>
       <Layout>
-        <Header style={{ background: '#fff', padding: 0 }} />
-        <Content style={{ margin: '0 16px' }}>
+        <Header style={headerStyle}>
+          <DropDownMenu />
+        </Header>
+        <Content >
           {children}
         </Content>
-        <Footer style={{ textAlign: 'center' }}>Ant Design Layout with Next.js ©2024</Footer>
+        <Footer style={footerStyle}>Assets-Management with StevenWang ©2024</Footer>
       </Layout>
     </Layout>
   );
