@@ -8,7 +8,7 @@ type MenuItem = Required<MenuProps>['items'][number]
 
 const items: MenuItem[] = [{
   key: '',
-  label: 'Workorder',
+  label: 'Home',
   icon: <HolderOutlined />,
 }, {
   key: 'Worklog',
