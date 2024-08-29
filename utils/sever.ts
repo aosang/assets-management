@@ -1,31 +1,38 @@
-import { createServerClient } from '@supabase/ssr'
-import { cookies } from 'next/headers'
+import { createBrowserClient } from "@supabase/ssr"
+import { NextResponse, type NextRequest } from "next/server"
 
-export function createClient() {
-  const cookieStore = cookies()
+export async function updateSession(request: NextRequest) {
+  let supabaseResponse = NextResponse.next({
+    request
+  })
 
-  // Create a server's supabase client with newly configured cookie,
-  // which could be used to maintain user's session
-  return createServerClient(
+  const supabase = createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
         getAll() {
-          return cookieStore.getAll()
+          return request.cookies.getAll()
         },
+
         setAll(cookiesToSet) {
-          try {
-            cookiesToSet.forEach(({ name, value, options }) =>
-              cookieStore.set(name, value, options)
-            )
-          } catch {
-            // The `setAll` method was called from a Server Component.
-            // This can be ignored if you have middleware refreshing
-            // user sessions.
-          }
+          cookiesToSet.forEach(({name, value, options}) => request.cookies.set({name, value,...options}))
+          supabaseResponse = NextResponse.next({
+            request
+          })
+          cookiesToSet.forEach(({name, value, options}) => 
+            supabaseResponse.cookies.set({name, value, ...options})
+          )
         }
       }
     }
   )
+
+  const {data: {session}} = await supabase.auth.getSession()
+  if(!session && !request.nextUrl.pathname.startsWith("/Auth")) {
+    const url = request.nextUrl.clone()
+    url.pathname = "/Auth"
+    return NextResponse.redirect(url)
+  }
+  return supabaseResponse
 }

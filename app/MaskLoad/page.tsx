@@ -39,6 +39,7 @@ const MaskLoad = () => {
             alt="loadingGif" 
             width={240} height={240}
             style={imageStyle}
+            unoptimized
           />
         </div>
       }

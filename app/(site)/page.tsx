@@ -1,11 +1,19 @@
 "use client"
-import React from "react"
-import Auth from "./Auth/Auth"
 
-const Home: React.FC = () => {
+import Sidebar from "./Sidebar/page"
+import { Card, Space } from 'antd'
+
+const Workorder = () => {
   return (
-    <Auth />
+    <Sidebar>
+      <div style={{width: '100%', padding: '12px', boxSizing: 'border-box'}}>
+        <Space direction="vertical" size={16} style={{width: '100%'}}>
+          <Card title="Workorder"></Card>
+        </Space>
+      </div>
+    </Sidebar>
+    
   )
 }
-
-export default Home
+ 
+export default Workorder 

@@ -7,7 +7,7 @@ import {useState, useEffect} from 'react'
 type MenuItem = Required<MenuProps>['items'][number]
 
 const items: MenuItem[] = [{
-  key: 'Workorder',
+  key: '',
   label: 'Workorder',
   icon: <HolderOutlined />,
 }, {

@@ -3,15 +3,14 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Input, Button } from 'antd'
 import { emailRegFunc, passwordRegFunc } from '@/utils/validate'
+import { supabase } from '@/utils/clients'
 import authScss from './auth.module.scss'
 import useMessage from '@/utils/message'
 
 
 type formCollect = {
   email: string,
-  company: string,
   password: string,
-  username: string
 }
 
 const Auth: React.FC = () => { 
@@ -19,25 +18,32 @@ const Auth: React.FC = () => {
   const [formVisiable, setFormVisiable] = useState(false)
   const [formState, setFormState] = useState<formCollect>({
     email: '', 
-    company: '', 
-    password: '',
-    username: ''
+    password: ''
   })
 
   // 注册提交表单
-  const validateSignUpForm = (type: number) => {
-    const { email, password, company, username } = formState
+  const validateSignUpForm = async (type: number) => {
+    const { email, password } = formState
     if(type === 1) {
       if(!emailRegFunc(email)) {
         useMessage(3, 'Please enter your email address!','error')
       }else if(!passwordRegFunc(password)) {
         useMessage(3, 'Please enter your password!','error')
-      }else if(!company) {
-        useMessage(3, 'Please enter your company name!','error')
-      }else if(!username) {
-        useMessage(3, 'Please enter your username!','error')
       }else {
-        
+        const { data, error } = await supabase.auth.signUp({
+          email,
+          password,
+        })
+        try {
+          if(data.session) {
+            useMessage(3, 'Sign up successfully!','success')
+            router.push('/')
+          }else if(error) {
+            useMessage(3, error.message,'error')
+          }
+        }catch (error) {
+          throw error
+        }
       }
     }else {
       if(!emailRegFunc(email)) {
@@ -45,7 +51,20 @@ const Auth: React.FC = () => {
       }else if(!passwordRegFunc(password)) {
         useMessage(3, 'Please enter your password!','error')
       }else {
-        
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        })
+        try {
+          if(data.session) {
+            useMessage(3, 'Sign up successfully!','success')
+            router.push('/')
+          }else if(error) {
+            useMessage(3, error.message,'error')
+          }
+        }catch (error) {
+          throw error
+        }
       }
     }
   }
@@ -60,9 +79,8 @@ const Auth: React.FC = () => {
     setFormState({...formState, password: e.target.value})
   }
 
-
   const changeFormVisible = (visible: boolean) => {
-    setFormState({...formState, email: '', password: '', company: '', username: ''})
+    setFormState({...formState, email: '', password: ''})
     setFormVisiable(visible)
   }
 
@@ -80,16 +98,16 @@ const Auth: React.FC = () => {
                   <label htmlFor="Email">Email</label>
                   <Input 
                     placeholder="Enter email"
-                    name='email'
-                    type='email'
+                    value={formState.email}
+                    onChange={changeEmailValue}
                   />
                 </li>
                 <li className={authScss.commitFormItem}>
                   <label htmlFor="Email">Password</label>
                   <Input.Password 
                     placeholder="Enter password"
-                    name='password'
-                    type='password'
+                    value={formState.password}
+                    onChange={changePasswordValue}
                   />
                 </li>
               </ul>
@@ -98,6 +116,10 @@ const Auth: React.FC = () => {
                 className={authScss.commitButton} 
                 size="large"
                 onClick={() => validateSignUpForm(1)}
+                style={{
+                  background: 'linear-gradient(135deg, #6253E1, #04BEFE)',
+                  border: 'none',
+                }}
               >
                 Create an account
               </Button>
