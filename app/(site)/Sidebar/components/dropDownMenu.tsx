@@ -4,6 +4,8 @@ import { supabase } from '@/utils/clients'
 import { useRouter } from 'next/navigation'
 import type { MenuProps } from 'antd'
 import Image from 'next/image'
+import useMessage from '@/utils/message'
+import { useState } from 'react'
 
 const items: MenuProps['items'] = [{
   key: '1',
@@ -19,8 +21,14 @@ const profile: React.CSSProperties = {
   alignItems: 'center'
 }
 
-const DropDownMenu: React.FC = () => {
+interface userInfoProps  {
+  userInfo: any
+}
+
+const DropDownMenu: React.FC<userInfoProps> = ({userInfo}) => {
   const router = useRouter()
+  const [username, setUserName] = useState(userInfo?.user_metadata.username)
+
   const handleMenuClick: MenuProps['onClick'] = async ({ key }) => { 
     if(key === '1') {
 
@@ -28,6 +36,7 @@ const DropDownMenu: React.FC = () => {
       const { error } = await supabase.auth.signOut()
       if(error) throw new Error(error.message)
       router.push('/Auth')
+      useMessage(2, 'Sign out!','success')
     }
   }
 
@@ -46,7 +55,7 @@ const DropDownMenu: React.FC = () => {
       }}>
         <a>
           <Space>
-            administrator
+            {username}
             <DownOutlined />
           </Space>
         </a>

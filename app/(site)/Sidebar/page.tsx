@@ -1,5 +1,4 @@
 "use client"
-
 import { Layout } from 'antd';
 import { supabase } from '@/utils/clients'
 import { useState, useEffect } from 'react'
@@ -34,21 +33,39 @@ const footerStyle: React.CSSProperties = {
 
 
 const AppLayout = ({ children }) => {
-  const [session, setSession] = useState<any>('')
+  const [userInfo, setUserInfo] = useState<any>('')
 
-  const getSession = async () => {
-    const { data: { session } } = await supabase.auth.getSession()
-    if(session) return setSession(session)
-    throw new Error('No session found')
+  const getUser = async () => {
+    const { data: { user } } = await supabase.auth.getUser()
+    try{
+      if(user) {
+        setUserInfo(user)
+        updateProfile(user)
+      }else {
+        throw new Error('No user found')
+      }
+      
+    }catch(error) {
+      throw error
+    }
   }
 
+
+  const updateProfile = async (user: any) => {
+    const {error} = await supabase.from('profiles').update({
+      username: user?.user_metadata.username
+    })
+    if(error) throw new Error(error.message)
+  }
+
+
   useEffect(() => {
-    getSession()
+    getUser()
   }, [])
 
   return (
     <div>
-      {session && (
+      {userInfo && (
         <Layout style={{ minHeight: '100vh' }}>
           <Sider width="13%" style={siderStyle}>
             <div className={siderBarCss.sidebarTop}>Assets Management</div>
@@ -56,7 +73,7 @@ const AppLayout = ({ children }) => {
           </Sider>
           <Layout>
             <Header style={headerStyle}>
-              <DropDownMenu />
+              <DropDownMenu userInfo={userInfo} />
             </Header>
             <Content >
               {children}

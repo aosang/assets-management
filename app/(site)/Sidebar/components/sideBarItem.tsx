@@ -1,15 +1,17 @@
 import { Menu } from 'antd'
-import { HolderOutlined, DiffOutlined } from '@ant-design/icons'
+import { DiffOutlined } from '@ant-design/icons'
 import type { MenuProps } from 'antd'
 import { useRouter } from 'next/navigation'
 import {useState, useEffect} from 'react'
+
+import { AiTwotoneHome } from "react-icons/ai";
 
 type MenuItem = Required<MenuProps>['items'][number]
 
 const items: MenuItem[] = [{
   key: '',
   label: 'Home',
-  icon: <HolderOutlined />,
+  icon: <AiTwotoneHome />,
 }, {
   key: 'Worklog',
   label: 'Worklog',
