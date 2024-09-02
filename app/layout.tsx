@@ -1,5 +1,4 @@
 import './globals.css'
-import MaskLoad from './MaskLoad/page'
 
 export const metadata = {
   title: "Assets-Management",
@@ -8,15 +7,15 @@ export const metadata = {
 
 export default function RootLayout({
   children,
-}:{
-  children: React.ReactNode
+}: {
+  children: React.ReactNode,
 }) {
+
   return (
     <html lang="en">
       <body>
-          <MaskLoad />
           <div>{children}</div>
-      </body>
+      </body> 
     </html>
   )
 }

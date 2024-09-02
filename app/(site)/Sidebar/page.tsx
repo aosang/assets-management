@@ -2,9 +2,11 @@
 import { Layout } from 'antd';
 import { supabase } from '@/utils/clients'
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation';
 import SideBarItem from './components/sideBarItem';
 import DropDownMenu from './components/dropDownMenu';
 import siderBarCss from './sideBar.module.scss'
+import useMessage from '@/utils/message'
 
 
 const { Header, Content, Footer, Sider } = Layout;
@@ -32,24 +34,22 @@ const footerStyle: React.CSSProperties = {
 }
 
 
-const AppLayout = ({ children }) => {
+const AppLayout = ({children}) => {  
   const [userInfo, setUserInfo] = useState<any>('')
+  const router = useRouter()
 
+  
   const getUser = async () => {
     const { data: { user } } = await supabase.auth.getUser()
     try{
       if(user) {
         setUserInfo(user)
         updateProfile(user)
-      }else {
-        throw new Error('No user found')
       }
-      
     }catch(error) {
       throw error
     }
   }
-
 
   const updateProfile = async (user: any) => {
     const {error} = await supabase.from('profiles').update({
@@ -57,7 +57,6 @@ const AppLayout = ({ children }) => {
     })
     if(error) throw new Error(error.message)
   }
-
 
   useEffect(() => {
     getUser()
@@ -75,7 +74,7 @@ const AppLayout = ({ children }) => {
             <Header style={headerStyle}>
               <DropDownMenu userInfo={userInfo} />
             </Header>
-            <Content >
+            <Content>
               {children}
             </Content>
             <Footer style={footerStyle}>Assets-Management with StevenWang ©2024</Footer>

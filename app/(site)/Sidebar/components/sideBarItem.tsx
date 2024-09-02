@@ -3,7 +3,6 @@ import { DiffOutlined } from '@ant-design/icons'
 import type { MenuProps } from 'antd'
 import { useRouter } from 'next/navigation'
 import {useState, useEffect} from 'react'
-
 import { AiTwotoneHome } from "react-icons/ai";
 
 type MenuItem = Required<MenuProps>['items'][number]
@@ -29,7 +28,8 @@ const SideBarItem: React.FC = () => {
   useEffect(() => {
     const currentUrl = window.location.pathname.split('/')[1]
     setCurrentUrl(currentUrl)
-  }, [currentUrl])
+    // router.push(`/${currentUrl}`)
+  }, [])
 
   return (
     <div>
