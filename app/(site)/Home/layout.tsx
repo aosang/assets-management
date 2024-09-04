@@ -1,5 +1,6 @@
-import SideBar from './Sidebar/page'
-import MaskLoad from './MaskLoad/page'
+import SideBar from '../Sidebar/page'
+import MaskLoad from '../MaskLoad/page'
+
 export default function RootLayout({
   children
 }: {
@@ -9,9 +10,9 @@ export default function RootLayout({
   return (
     <div>
       <SideBar>
-          <MaskLoad />
-          {children}
-        </SideBar>
+        <MaskLoad />
+        {children}
+      </SideBar>
     </div>
   )
 }

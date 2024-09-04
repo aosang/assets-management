@@ -29,12 +29,15 @@ export async function updateSession(request: NextRequest) {
     }
   )
 
-  const {data: { user }} = await supabase.auth.getUser()
-  if(!user && !request.nextUrl.pathname.startsWith("/Auth")) {
+  const {data: { session }} = await supabase.auth.getSession()
+  if(!session && !request.nextUrl.pathname.startsWith("/")) {
     const url = request.nextUrl.clone()
-    url.pathname = "/Auth"
+    url.pathname = "/"
+    return NextResponse.redirect(url)
+  }else if(session && request.nextUrl.pathname.startsWith("/Verify")) {
+    const url = request.nextUrl.clone()
+    url.pathname = "/Home"
     return NextResponse.redirect(url)
   }
-
   return supabaseResponse
 }

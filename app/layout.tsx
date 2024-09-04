@@ -1,21 +1,19 @@
 import './globals.css'
 
+
 export const metadata = {
-  title: "Assets-Management",
-  description: "The Simple Asset Management System",
+  title: 'My Next App',
+  description: 'My Next App',
 }
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode,
+export default function RootLayout({ 
+  children 
+} : {
+  children: React.ReactNode;
 }) {
-
   return (
     <html lang="en">
-      <body>
-          <div>{children}</div>
-      </body> 
+      <body>{children}</body>
     </html>
   )
 }
