@@ -6,7 +6,6 @@ import { useRouter } from 'next/navigation';
 import SideBarItem from './components/sideBarItem';
 import DropDownMenu from './components/dropDownMenu';
 import siderBarCss from './sideBar.module.scss'
-import useMessage from '@/utils/message'
 
 
 const { Header, Content, Footer, Sider } = Layout;
@@ -40,11 +39,13 @@ const AppLayout = ({children}) => {
 
   
   const getUser = async () => {
-    const { data: { user } } = await supabase.auth.getUser()
+    const { data: { user }, error } = await supabase.auth.getUser()
     try{
       if(user) {
         setUserInfo(user)
         updateProfile(user)
+      }else if(error) {
+        router.replace('/')
       }
     }catch(error) {
       throw error

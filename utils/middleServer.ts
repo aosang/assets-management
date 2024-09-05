@@ -17,7 +17,7 @@ export async function updateSession(request: NextRequest) {
         },
 
         setAll(cookiesToSet) {
-          cookiesToSet.forEach(({name, value, options}) => request.cookies.set({name, value,...options}))
+          cookiesToSet.forEach(({name, value, options}) => request.cookies.set({name, value, ...options}))
           supabaseResponse = NextResponse.next({
             request
           })
@@ -29,15 +29,16 @@ export async function updateSession(request: NextRequest) {
     }
   )
 
-  const {data: { session }} = await supabase.auth.getSession()
-  if(!session && !request.nextUrl.pathname.startsWith("/")) {
+  const {data: { user }} = await supabase.auth.getUser()
+  if(!user && !request.nextUrl.pathname.startsWith("/") && !request.nextUrl.pathname.startsWith("/Verify")) {
     const url = request.nextUrl.clone()
     url.pathname = "/"
     return NextResponse.redirect(url)
-  }else if(session && request.nextUrl.pathname.startsWith("/Verify")) {
+  }else if(user && request.nextUrl.pathname.startsWith("/Verify")) {
     const url = request.nextUrl.clone()
-    url.pathname = "/Home"
+    url.pathname = "/Verify"
     return NextResponse.redirect(url)
   }
+
   return supabaseResponse
 }

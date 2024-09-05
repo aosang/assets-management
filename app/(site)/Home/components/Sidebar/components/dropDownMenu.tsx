@@ -7,6 +7,7 @@ import Image from 'next/image'
 import useMessage from '@/utils/message'
 import { useState } from 'react'
 
+
 const items: MenuProps['items'] = [{
   key: '1',
   label: 'Profile',
@@ -35,7 +36,7 @@ const DropDownMenu: React.FC<userInfoProps> = ({userInfo}) => {
     }else if(key === '2') {
       const { error } = await supabase.auth.signOut()
       if(error) throw new Error(error.message)
-      router.push('/Auth')
+      router.push('/')
       router.refresh()
       useMessage(2, 'Sign out!','success')
     }

@@ -8,7 +8,7 @@ import { AiTwotoneHome } from "react-icons/ai";
 type MenuItem = Required<MenuProps>['items'][number]
 
 const items: MenuItem[] = [{
-  key: '',
+  key: 'Home',
   label: 'Home',
   icon: <AiTwotoneHome />,
 }, {
@@ -21,14 +21,19 @@ const SideBarItem: React.FC = () => {
   const router = useRouter()
   const [currentUrl, setCurrentUrl] = useState<string>('')
   const swithcMenuItem: MenuProps['onClick'] = (e: any) => {
-    router.push(`/${e.key}`)
-    setCurrentUrl(e.key)
+    if(e.key === 'Home') {
+      router.push(`/${e.key}`)
+      setCurrentUrl(e.key)
+    }else {
+      router.push(`/Home/${e.key}`)
+      setCurrentUrl(e.key)
+    } 
   }
 
   useEffect(() => {
-    const currentUrl = window.location.pathname.split('/')[1]
+    let currentUrl = window.location.pathname
+    currentUrl === '/Home'? currentUrl = currentUrl.split('/')[1] : currentUrl = currentUrl.split('/')[2]
     setCurrentUrl(currentUrl)
-    // router.push(`/${currentUrl}`)
   }, [])
 
   return (

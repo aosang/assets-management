@@ -46,7 +46,7 @@ const Auth: React.FC = () => {
               username,
               company,
             },
-            emailRedirectTo: `http://localhost:3000/Home`,
+            emailRedirectTo: 'http://localhost:3000/Home'
           }
         })
         try {
@@ -73,7 +73,7 @@ const Auth: React.FC = () => {
         try {
           if (data.session) {
             useMessage(2, 'Login in successfully!', 'success')
-            router.push('/')
+            router.push('/Home')
           } else if (error) {
             useMessage(2, error.message, 'error')
           }
