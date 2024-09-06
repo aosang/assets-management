@@ -5,7 +5,7 @@ import { supabase } from '@/utils/clients'
 import { useEffect } from 'react'
 
 export default function RootLayout({
-  children
+    children
   } : {
     children: React.ReactNode
   }) {

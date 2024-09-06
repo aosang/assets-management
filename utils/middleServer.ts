@@ -34,10 +34,6 @@ export async function updateSession(request: NextRequest) {
     const url = request.nextUrl.clone()
     url.pathname = "/"
     return NextResponse.redirect(url)
-  }else if(user && request.nextUrl.pathname.startsWith("/Verify")) {
-    const url = request.nextUrl.clone()
-    url.pathname = "/Verify"
-    return NextResponse.redirect(url)
   }
 
   return supabaseResponse

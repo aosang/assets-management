@@ -7,7 +7,6 @@ import { supabase } from '@/utils/clients'
 import authScss from './auth.module.scss'
 import useMessage from '@/utils/message'
 
-
 type formCollect = {
   email: string,
   password: string,
@@ -17,6 +16,7 @@ type formCollect = {
 
 const Auth: React.FC = () => {
   const router = useRouter()
+
   const [formVisiable, setFormVisiable] = useState(false)
   const [formState, setFormState] = useState<formCollect>({
     email: '',
@@ -52,7 +52,8 @@ const Auth: React.FC = () => {
         try {
           if (data.user) {
             useMessage(2, 'Sign up successfully!', 'success')
-            router.push('/Verify')
+            router.push(`/Verify?email=${email}`)
+
           } else if (error) {
             useMessage(2, error.message, 'error')
           }
