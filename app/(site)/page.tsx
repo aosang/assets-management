@@ -6,6 +6,7 @@ import { emailRegFunc, passwordRegFunc } from '@/utils/validate'
 import { supabase } from '@/utils/clients'
 import authScss from './auth.module.scss'
 import useMessage from '@/utils/message'
+import Verify from './components/Verify'
 
 type formCollect = {
   email: string,
@@ -16,6 +17,7 @@ type formCollect = {
 
 const Auth: React.FC = () => {
   const router = useRouter()
+  const [isVerify, setIsVerify] = useState<boolean>(false)
 
   const [formVisiable, setFormVisiable] = useState(false)
   const [formState, setFormState] = useState<formCollect>({
@@ -52,7 +54,7 @@ const Auth: React.FC = () => {
         try {
           if (data.user) {
             useMessage(2, 'Sign up successfully!', 'success')
-            router.push(`/Verify?email=${email}`)
+            setIsVerify(true)
 
           } else if (error) {
             useMessage(2, error.message, 'error')
@@ -110,104 +112,110 @@ const Auth: React.FC = () => {
   }
 
   return (
-    <div className={authScss.background}>
-      <div className={authScss.signUpForm}>
-        <h3>Assets Management</h3>
-        <span className={authScss.line}></span>
-        {formVisiable ? (
-          <>
-            {/* sign up */}
-            <form>
-              <ul className={authScss.commitForm}>
-                <li className={authScss.commitFormItem}>
-                  <label htmlFor="Email">Email</label>
-                  <Input
-                    placeholder="Enter email"
-                    value={formState.email}
-                    onChange={changeEmailValue}
-                  />
-                </li>
-                <li className={authScss.commitFormItem}>
-                  <label htmlFor="Email">Password</label>
-                  <Input.Password
-                    placeholder="Enter password"
-                    value={formState.password}
-                    onChange={changePasswordValue}
-                  />
-                </li>
-                <li className={authScss.commitFormItem}>
-                  <label htmlFor="Company">Company</label>
-                  <Input
-                    placeholder="Company name"
-                    value={formState.company}
-                    onChange={changeCompanyValue}
-                  />
-                </li>
-                <li className={authScss.commitFormItem}>
-                  <label htmlFor="Username">Username</label>
-                  <Input
-                    placeholder="Enter username"
-                    value={formState.username}
-                    onChange={changeUsernameValue}
-                  />
-                </li>
-              </ul>
-              <Button
-                type="primary"
-                className={authScss.commitButton}
-                size="large"
-                onClick={() => validateSignUpForm(1)}
-                style={{
-                  background: 'linear-gradient(135deg, #6253E1, #04BEFE)',
-                  border: 'none',
-                }}
-              >
-                Create an account
-              </Button>
-            </form>
-            <p className={authScss.commitFormInfo}>
-              Already have an account?
-              <a onClick={() => changeFormVisible(false)}>Sign in</a>
-            </p>
-          </>
-        ) : (
-          <>
-            {/* sign in */}
-            <form>
-              <ul className={authScss.commitForm}>
-                <li className={authScss.commitFormItem}>
-                  <label htmlFor="Email">Email</label>
-                  <Input
-                    placeholder="Enter email"
-                    value={formState.email}
-                    onChange={changeEmailValue}
-                  />
-                </li>
-                <li className={authScss.commitFormItem}>
-                  <label htmlFor="Email">Password</label>
-                  <Input.Password
-                    placeholder="Enter password"
-                    value={formState.password}
-                    onChange={changePasswordValue}
-                  />
-                </li>
-              </ul>
-              <Button
-                type="primary"
-                className={authScss.commitButton}
-                size="large"
-                onClick={() => validateSignUpForm(2)}
-              >
-                Sign in
-              </Button>
-            </form>
-            <p className={authScss.commitFormInfo}>
-              Don't have an account yet? <a onClick={() => changeFormVisible(true)}>Sign up</a>
-            </p>
-          </>
-        )}
-      </div>
-    </div>
+    <>
+      {isVerify? <Verify emailAddress={formState.email} /> : (
+        <div className={authScss.background}>
+          <div className={authScss.signUpForm}>
+            <h3>Assets Management</h3>
+            <span className={authScss.line}></span>
+            {formVisiable ? (
+              <>
+                {/* sign up */}
+                <form>
+                  <ul className={authScss.commitForm}>
+                    <li className={authScss.commitFormItem}>
+                      <label htmlFor="Email">Email</label>
+                      <Input
+                        placeholder="Enter email"
+                        value={formState.email}
+                        onChange={changeEmailValue}
+                      />
+                    </li>
+                    <li className={authScss.commitFormItem}>
+                      <label htmlFor="Email">Password</label>
+                      <Input.Password
+                        placeholder="Enter password"
+                        value={formState.password}
+                        onChange={changePasswordValue}
+                      />
+                    </li>
+                    <li className={authScss.commitFormItem}>
+                      <label htmlFor="Company">Company</label>
+                      <Input
+                        placeholder="Company name"
+                        value={formState.company}
+                        onChange={changeCompanyValue}
+                      />
+                    </li>
+                    <li className={authScss.commitFormItem}>
+                      <label htmlFor="Username">Username</label>
+                      <Input
+                        placeholder="Enter username"
+                        value={formState.username}
+                        onChange={changeUsernameValue}
+                      />
+                    </li>
+                  </ul>
+                  <Button
+                    type="primary"
+                    className={authScss.commitButton}
+                    size="large"
+                    onClick={() => validateSignUpForm(1)}
+                    style={{
+                      background: 'linear-gradient(135deg, #6253E1, #04BEFE)',
+                      border: 'none',
+                    }}
+                  >
+                    Create an account
+                  </Button>
+                </form>
+                <p className={authScss.commitFormInfo}>
+                  Already have an account?
+                  <a onClick={() => changeFormVisible(false)}>Sign in</a>
+                </p>
+              </>
+            ) : (
+              <>
+                {/* sign in */}
+                <form>
+                  <ul className={authScss.commitForm}>
+                    <li className={authScss.commitFormItem}>
+                      <label htmlFor="Email">Email</label>
+                      <Input
+                        placeholder="Enter email"
+                        value={formState.email}
+                        onChange={changeEmailValue}
+                      />
+                    </li>
+                    <li className={authScss.commitFormItem}>
+                      <label htmlFor="Email">Password</label>
+                      <Input.Password
+                        placeholder="Enter password"
+                        value={formState.password}
+                        onChange={changePasswordValue}
+                      />
+                    </li>
+                  </ul>
+                  <Button
+                    type="primary"
+                    className={authScss.commitButton}
+                    size="large"
+                    onClick={() => validateSignUpForm(2)}
+                  >
+                    Sign in
+                  </Button>
+                </form>
+                <p className={authScss.commitFormInfo}>
+                  Don't have an account yet? <a onClick={() => changeFormVisible(true)}>Sign up</a>
+                </p>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+
+    </>
+
   )
 }
 

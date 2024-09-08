@@ -1,8 +1,11 @@
 'use client'
 import { AiFillCheckCircle } from 'react-icons/ai'
-import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
-import { getEmailServerUrl } from './emailCheck'
+import { getEmailServerUrl } from '@/utils/emailCheck'
+
+interface emailProps  {
+  emailAddress: string
+}
 
 const emailBox: React.CSSProperties  = {
   width: '680px',
@@ -24,12 +27,8 @@ const emailText: React.CSSProperties  = {
   textDecoration: 'underline'
 }
 
-const Verify = () => {
-  const params = useSearchParams()
-  const email = params.get('email')
-  
-  const emailLink = getEmailServerUrl(email!)
-  
+const Verify: React.FC<emailProps> = ({ emailAddress }) => {
+  const emailUrl = getEmailServerUrl(emailAddress)
 
   return (
     <div style={emailBox}>
@@ -43,7 +42,7 @@ const Verify = () => {
       <p style={emailContent}>
         Click this link, fill out the information or join Assets-Management, then confirm your email.
       </p>
-      <Link style={emailText} href={emailLink}>
+      <Link style={emailText} href={emailUrl}>
         Email address website
       </Link>
       <p></p>
