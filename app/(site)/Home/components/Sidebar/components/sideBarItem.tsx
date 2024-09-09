@@ -3,7 +3,7 @@ import { DiffOutlined } from '@ant-design/icons'
 import type { MenuProps } from 'antd'
 import { useRouter } from 'next/navigation'
 import {useState, useEffect} from 'react'
-import { AiTwotoneHome } from "react-icons/ai";
+import { AiTwotoneHome, AiFillProfile  } from "react-icons/ai";
 
 type MenuItem = Required<MenuProps>['items'][number]
 
@@ -12,9 +12,9 @@ const items: MenuItem[] = [{
   label: 'Home',
   icon: <AiTwotoneHome />,
 }, {
-  key: 'Worklog',
-  label: 'Worklog',
-  icon: <DiffOutlined />,
+  key: 'WorkOrder',
+  label: 'WorkOrder',
+  icon: <AiFillProfile />,
 }]
 
 const SideBarItem: React.FC = () => {
