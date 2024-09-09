@@ -16,9 +16,21 @@ const workTabsTitle: TabsProps['items'] = [{
   label: 'Finished',
 }]
 
+type tableItems = {
+  title: string
+  type: string
+  brand: string
+}
+
+type tableData = tableItems[]
+
 
 const Worklog: React.FC = () => {
-  const [workData, setWorkData] = useState<any>([1,2,3,4,5,6,7,8,9,10])
+  const [workData, setWorkData] = useState<tableData>([{
+    title: 'Router',
+    type: 'It',
+    brand: 'Huawei'
+  }])
 
   return (
     <div style={{ width: '100%', padding: '12px', boxSizing: 'border-box' }}>
