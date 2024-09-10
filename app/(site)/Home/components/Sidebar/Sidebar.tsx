@@ -60,6 +60,8 @@ const AppLayout = ({children}) => {
   
   const getUser = async () => {
     const { data: { user }, error } = await supabase.auth.getUser()
+    console.log(user);
+    
     try{
       if(user) {
         setUserInfo(user)
