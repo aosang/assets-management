@@ -62,6 +62,15 @@ const Auth: React.FC = () => {
         } catch (error) {
           throw error
         }
+        // const {data, error} = await supabase.from('profiles').select('*')
+        // console.log(data)
+        
+        // data?.forEach(async item => {
+        //   if(item.username === username) {
+        //     return useMessage(2, 'Username already exists!', 'error')
+        //   }
+          
+        // })
       }
     } else {
       if (!emailRegFunc(email)) {
@@ -188,7 +197,7 @@ const Auth: React.FC = () => {
                       />
                     </li>
                     <li className={authScss.commitFormItem}>
-                      <label htmlFor="Email">Password</label>
+                      <label htmlFor="Password">Password</label>
                       <Input.Password
                         placeholder="Enter password"
                         value={formState.password}

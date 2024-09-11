@@ -58,7 +58,7 @@ const Worklog: React.FC = () => {
   }
 
   useEffect(() => {
-    getWorkOrderData()
+    // getWorkOrderData()
   }, [])
 
   return (
@@ -69,7 +69,7 @@ const Worklog: React.FC = () => {
             <Col><Button type='primary'>Create</Button></Col>
             <Col><Button type='primary' danger>Delete</Button></Col>
           </Row>
-          <Tabs
+          {/* <Tabs
             onChange={changeTabId}
             style={{marginTop: '15px'}}
             items={workTabsTitle.map((item, index) => {
@@ -80,7 +80,7 @@ const Worklog: React.FC = () => {
                 children: <WorkTable workInfo={workData} id={id} />
               }
             })}            
-          />          
+          />           */}
         </Card>
       </Space>
     </div>
