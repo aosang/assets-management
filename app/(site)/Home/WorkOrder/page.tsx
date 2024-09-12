@@ -41,20 +41,14 @@ const Worklog: React.FC = () => {
   }
 
   const getWorkOrderData = async () => {
-
     const {data: {user}, error } = await supabase.auth.getUser()
-    
     if(user?.id) {
       const { data, error } = await supabase
       .from('work_order')
       .select('*')
       .match({id: user?.id})
-
       setWorkData(data as tableItems[])
     }
-
-    
-    
   }
 
   useEffect(() => {

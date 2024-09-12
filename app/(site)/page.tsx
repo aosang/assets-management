@@ -40,37 +40,24 @@ const Auth: React.FC = () => {
       } else if (!username) {
         useMessage(2, 'Please enter your username!', 'error')
       } else {
-        const { data, error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            data: {
-              username,
-              company,
-            },
-            emailRedirectTo: 'http://localhost:3000/Home'
-          }
-        })
-        try {
-          if (data.user) {
-            useMessage(2, 'Sign up successfully!', 'success')
-            setIsVerify(true)
-
-          } else if (error) {
-            useMessage(2, error.message, 'error')
-          }
-        } catch (error) {
-          throw error
+        const { data, error } = await supabase.from('profiles').select('username, email')
+        if (data![0]?.username && username === data![0]?.username) {
+          useMessage(2, 'Username already exists!', 'error')
+        } else if (data![0]?.email && email === data![0]?.email) {
+          useMessage(2, 'Email already exists!', 'error')
+        } else {
+          useMessage(2, 'Sign up successfully!', 'success')
+          setIsVerify(true)
+          const { error } = await supabase.auth.signUp({
+            email,
+            password,
+            options: {
+              data: {username, company},
+              emailRedirectTo: 'http://localhost:3000/Home'
+            }
+          })
+          if(error) return useMessage(2, error.message, 'error')
         }
-        // const {data, error} = await supabase.from('profiles').select('*')
-        // console.log(data)
-        
-        // data?.forEach(async item => {
-        //   if(item.username === username) {
-        //     return useMessage(2, 'Username already exists!', 'error')
-        //   }
-          
-        // })
       }
     } else {
       if (!emailRegFunc(email)) {
@@ -122,7 +109,7 @@ const Auth: React.FC = () => {
 
   return (
     <>
-      {isVerify? <Verify emailAddress={formState.email} /> : (
+      {isVerify ? <Verify emailAddress={formState.email} /> : (
         <div className={authScss.background}>
           <div className={authScss.signUpForm}>
             <h3>Assets Management</h3>

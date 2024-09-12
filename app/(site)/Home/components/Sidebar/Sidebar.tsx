@@ -1,10 +1,10 @@
 "use client"
 import { Layout } from 'antd';
 import { supabase } from '@/utils/clients'
-import React, { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation';
-import SideBarItem from './components/sideBarItem';
-import DropDownMenu from './components/dropDownMenu';
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import SideBarItem from './components/sideBarItem'
+import DropDownMenu from './components/dropDownMenu'
 import siderBarCss from './sideBar.module.scss'
 
 
@@ -60,7 +60,6 @@ const AppLayout = ({children}) => {
   
   const getUser = async () => {
     const { data: { user }, error } = await supabase.auth.getUser()
-    
     try{
       if(user) {
         setUserInfo(user)
@@ -75,7 +74,9 @@ const AppLayout = ({children}) => {
 
   const updateProfile = async (user: any) => {
     const {error} = await supabase.from('profiles').update({
-      username: user?.user_metadata.username
+      username: user?.user_metadata.username,
+      company: user?.user_metadata.company,
+      email: user?.email
     })
     if(error) throw new Error(error.message)
   }
