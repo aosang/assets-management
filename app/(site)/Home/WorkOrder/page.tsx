@@ -1,7 +1,7 @@
 'use client'
 
-import { Card, Space, Button, Row, Col, Tabs } from 'antd'
-import type { TabsProps } from 'antd'
+import { Card, Space, Button, Row, Col, Tabs, Modal, Divider, Select, Input } from 'antd'
+import type { TabsProps} from 'antd'
 import WorkTable from '../components/WorkTable'
 import { useState, useEffect } from 'react'
 import { supabase } from '@/utils/clients'
@@ -20,7 +20,7 @@ const workTabsTitle: TabsProps['items'] = [{
 type tableItems = {
   key: string
   user_id: string
-  created_title: string
+  created_product: string
   created_id: string
   created_name: string
   created_at: string
@@ -31,17 +31,33 @@ type tableItems = {
 }
 
 type tableData = tableItems[]
+type typeDataProps = typeDataProps[] 
 
 const Worklog: React.FC = () => {
   const [workData, setWorkData] = useState<tableData>([])
+  const [isModalAddOpen, setIsModalAddOpen] = useState(false)
+  const [typeData, setTypeData] = useState<typeDataProps>([])
+
   const changeTabId = (e: string) => {
     if(e === '1') {
       
     }
   }
 
+  const modalAddHanlder = async () => {
+    setIsModalAddOpen(true)
+
+    // get Product type
+    const {data, error} = await supabase.from('product_type').select('*')
+    if(data) return setTypeData(data)
+  }
+
+  const hideModal = () => {
+    setIsModalAddOpen(false)
+  }
+
   const getWorkOrderData = async () => {
-    const {data: {user}, error } = await supabase.auth.getUser()
+    const { data: { user }, error } = await supabase.auth.getUser()
     if(user?.id) {
       const { data, error } = await supabase
       .from('work_order')
@@ -52,7 +68,7 @@ const Worklog: React.FC = () => {
   }
 
   useEffect(() => {
-    // getWorkOrderData()
+    getWorkOrderData()
   }, [])
 
   return (
@@ -60,10 +76,37 @@ const Worklog: React.FC = () => {
       <Space direction="vertical" size={16} style={{ width: '100%' }}>
         <Card title="WorkOrder">
           <Row gutter={10}>
-            <Col><Button type='primary'>Create</Button></Col>
+            <Col><Button type='primary' onClick={modalAddHanlder}>Create</Button></Col>
             <Col><Button type='primary' danger>Delete</Button></Col>
           </Row>
-          {/* <Tabs
+          <Modal 
+            title="Create Work Order"
+            width={800} 
+            open={isModalAddOpen}
+            onOk={hideModal}
+            onCancel={hideModal}
+            okText="Confirm"
+            cancelText="Cancel"
+          >
+            <Divider />
+            <Row gutter={20}>
+              <Col span={6}>
+                <label htmlFor="Product">Product</label>
+                <Input width={500} placeholder='Product name'></Input>
+              </Col>
+              <Col span={6}>
+                <label htmlFor="Product">Type</label>
+                <Select style={{width: 200}} options={typeData}></Select>
+              </Col>
+              <Col span={6}>
+                {/* <Button type='primary'>10</Button> */}
+              </Col>
+              <Col span={6}>
+                {/* <Button type='primary'>10</Button> */}
+              </Col>
+            </Row>
+          </Modal>
+          <Tabs
             onChange={changeTabId}
             style={{marginTop: '15px'}}
             items={workTabsTitle.map((item, index) => {
@@ -71,10 +114,13 @@ const Worklog: React.FC = () => {
               return {
                 label: `${item.label}`,
                 key: id,
-                children: <WorkTable workInfo={workData} id={id} />
+                children: <WorkTable 
+                  workInfo={workData} 
+                  id={id} 
+                />
               }
             })}            
-          />           */}
+          />          
         </Card>
       </Space>
     </div>

@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Input, Button } from 'antd'
 import { emailRegFunc, passwordRegFunc } from '@/utils/validate'
@@ -18,14 +18,23 @@ type formCollect = {
 const Auth: React.FC = () => {
   const router = useRouter()
   const [isVerify, setIsVerify] = useState<boolean>(false)
-
   const [formVisiable, setFormVisiable] = useState(false)
+
   const [formState, setFormState] = useState<formCollect>({
     email: '',
     password: '',
     company: '',
     username: '',
   })
+
+  const getSession = async () => {
+    const { data: { session }, error } = await supabase.auth.getSession()
+    if (session) {
+      router.replace('/Home')
+    }else {
+      router.replace('/')
+    }
+  }
 
   // 注册提交表单
   const validateSignUpForm = async (type: number) => {
@@ -106,6 +115,10 @@ const Auth: React.FC = () => {
     setFormState({ ...formState, email: '', password: '', company: '', username: '' })
     setFormVisiable(visible)
   }
+
+  useEffect(() => {
+    getSession()
+  })
 
   return (
     <>

@@ -6,7 +6,7 @@ import dayjs from "dayjs"
 type tableItems = {
   key: string
   user_id: string
-  created_title: string
+  created_product: string
   created_id: string
   created_name: string
   created_at: string
@@ -25,8 +25,8 @@ const colums: TableColumnsType<tableItems> = [{
   }
 }, {
   title: 'Product',
-  dataIndex: 'created_title',
-  key: 'created_title',
+  dataIndex: 'created_product',
+  key: 'created_product',
 }, {
   title: 'Brand',
   dataIndex: 'created_brand',
