@@ -31,7 +31,14 @@ type tableItems = {
 }
 
 type tableData = tableItems[]
-type typeDataProps = typeDataProps[] 
+
+type typeDataName = {
+  id: string
+  label: string,
+  key: string,
+  product_id: string
+}
+type typeDataProps = typeDataName[] 
 
 const Worklog: React.FC = () => {
   const [workData, setWorkData] = useState<tableData>([])
@@ -49,7 +56,14 @@ const Worklog: React.FC = () => {
 
     // get Product type
     const {data, error} = await supabase.from('product_type').select('*')
-    if(data) return setTypeData(data)
+    try {
+      if(data) {
+        setTypeData(data as typeDataProps)        
+      }
+    }catch(error) { 
+      throw error
+    }
+
   }
 
   const hideModal = () => {
@@ -65,6 +79,13 @@ const Worklog: React.FC = () => {
       .match({id: user?.id})
       setWorkData(data as tableItems[])
     }
+  }
+
+  const selectProductType = (label:string) => {
+    // console.log(label)
+    typeData.forEach(item => {
+      console.log(item.product_id)
+    }) 
   }
 
   useEffect(() => {
@@ -92,17 +113,37 @@ const Worklog: React.FC = () => {
             <Row gutter={20}>
               <Col span={6}>
                 <label htmlFor="Product">Product</label>
-                <Input width={500} placeholder='Product name'></Input>
+                <Input 
+                  style={{width: '100%'}} 
+                  placeholder='Product name'
+                />
               </Col>
               <Col span={6}>
+                {/* product type */}
                 <label htmlFor="Product">Type</label>
-                <Select style={{width: 200}} options={typeData}></Select>
+                <Select
+                  style={{width: '100%'}} 
+                  options={typeData}
+                  placeholder='Product Type'
+                  onChange={selectProductType}
+                >  
+                </Select>
               </Col>
               <Col span={6}>
-                {/* <Button type='primary'>10</Button> */}
+                <label htmlFor="Product">Brand</label>
+                <Select
+                  style={{width: '100%'}}  
+                  placeholder='Product Brand'
+                >  
+                </Select>
               </Col>
               <Col span={6}>
-                {/* <Button type='primary'>10</Button> */}
+              <label htmlFor="Product">Brand</label>
+                <Select
+                  style={{width: '100%'}} 
+                  placeholder='Product Brand'
+                >  
+                </Select>
               </Col>
             </Row>
           </Modal>
