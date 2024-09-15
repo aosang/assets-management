@@ -34,16 +34,24 @@ type tableData = tableItems[]
 
 type typeDataName = {
   id: string
-  label: string,
+  value: string,
   key: string,
   product_id: string
 }
-type typeDataProps = typeDataName[] 
+type typeDataProps = typeDataName[]
+
+type typeDataBrand = {
+  id: string
+  value: string,
+  key: string,
+}
+type typeDataBrandProps = typeDataBrand[]
 
 const Worklog: React.FC = () => {
   const [workData, setWorkData] = useState<tableData>([])
   const [isModalAddOpen, setIsModalAddOpen] = useState(false)
   const [typeData, setTypeData] = useState<typeDataProps>([])
+  const [typeDataBrand, setTypeDataBrand] = useState<typeDataBrandProps>([])
 
   const changeTabId = (e: string) => {
     if(e === '1') {
@@ -55,15 +63,18 @@ const Worklog: React.FC = () => {
     setIsModalAddOpen(true)
 
     // get Product type
-    const {data, error} = await supabase.from('product_type').select('*')
-    try {
-      if(data) {
-        setTypeData(data as typeDataProps)        
-      }
-    }catch(error) { 
-      throw error
-    }
+    // const {data, error} = await supabase.from('product_type').select('*')
+    // try {
+    //   if(data) {
+    //     setTypeData(data as typeDataProps)        
+    //   }
+    // }catch(error) { 
+    //   throw error
+    // }
 
+    // get status
+    const { data } = await supabase.from('status').select('*')
+    console.log(data)
   }
 
   const hideModal = () => {
@@ -81,11 +92,10 @@ const Worklog: React.FC = () => {
     }
   }
 
-  const selectProductType = (label:string) => {
-    // console.log(label)
-    typeData.forEach(item => {
-      console.log(item.product_id)
-    }) 
+  const selectProductType = async (keys:string) => {
+    let key = keys
+    const {data, error} = await supabase.from('product_type').select(`key, product_brand (value)`).eq('key', key)
+    if(data) return setTypeDataBrand(data[0].product_brand as typeDataBrandProps)
   }
 
   useEffect(() => {
@@ -134,14 +144,15 @@ const Worklog: React.FC = () => {
                 <Select
                   style={{width: '100%'}}  
                   placeholder='Product Brand'
+                  options={typeDataBrand}
                 >  
                 </Select>
               </Col>
               <Col span={6}>
-              <label htmlFor="Product">Brand</label>
+              <label htmlFor="Product">Status</label>
                 <Select
                   style={{width: '100%'}} 
-                  placeholder='Product Brand'
+                  placeholder='Status'
                 >  
                 </Select>
               </Col>

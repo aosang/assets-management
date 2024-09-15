@@ -45,7 +45,7 @@ const colums: TableColumnsType<tableItems> = [{
     )
   }
 }, {
-  title: 'Name',
+  title: 'Problem',
   dataIndex: 'created_name',
   key: 'created_name'
 }, {
