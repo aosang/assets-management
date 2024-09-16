@@ -4,16 +4,11 @@ import { useRouter } from 'next/navigation'
 import { Input, Button } from 'antd'
 import { emailRegFunc, passwordRegFunc } from '@/utils/validate'
 import { supabase } from '@/utils/clients'
+import { formCollect } from '@/utils/dbType'
 import authScss from './auth.module.scss'
 import useMessage from '@/utils/message'
 import Verify from './components/Verify'
 
-type formCollect = {
-  email: string,
-  password: string,
-  username: string,
-  company: string
-}
 
 const Auth: React.FC = () => {
   const router = useRouter()

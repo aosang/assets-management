@@ -1,10 +1,21 @@
 'use client'
-
+import {
+  tableItems,
+  typeDataName,
+  typeDataBrand,
+  statusItem
+} from '@/utils/dbType'
+import {
+  getWorkOrderType,
+  getWorkOrderStatus,
+  getWorkBrand
+} from '@/utils/providerSelectData'
+import { supabase } from '@/utils/clients'
 import { Card, Space, Button, Row, Col, Tabs, Modal, Divider, Select, Input } from 'antd'
-import type { TabsProps} from 'antd'
+import type { TabsProps } from 'antd'
 import WorkTable from '../components/WorkTable'
 import { useState, useEffect } from 'react'
-import { supabase } from '@/utils/clients'
+
 
 const workTabsTitle: TabsProps['items'] = [{
   key: '1',
@@ -17,45 +28,22 @@ const workTabsTitle: TabsProps['items'] = [{
   label: 'Finished',
 }]
 
-type tableItems = {
-  key: string
-  user_id: string
-  created_product: string
-  created_id: string
-  created_name: string
-  created_at: string
-  created_type: string
-  created_brand: string
-  created_status: string
-  created_remark: string
-}
-
 type tableData = tableItems[]
-
-type typeDataName = {
-  id: string
-  value: string,
-  key: string,
-  product_id: string
-}
 type typeDataProps = typeDataName[]
-
-type typeDataBrand = {
-  id: string
-  value: string,
-  key: string,
-}
 type typeDataBrandProps = typeDataBrand[]
+type statusItemProps = statusItem[]
 
 const Worklog: React.FC = () => {
   const [workData, setWorkData] = useState<tableData>([])
   const [isModalAddOpen, setIsModalAddOpen] = useState(false)
   const [typeData, setTypeData] = useState<typeDataProps>([])
   const [typeDataBrand, setTypeDataBrand] = useState<typeDataBrandProps>([])
+  const [typeStatus, setTypeStatus] = useState<statusItemProps>([])
+  const [selectDisable, setSelectDisable] = useState<boolean>(true)
 
   const changeTabId = (e: string) => {
-    if(e === '1') {
-      
+    if (e === '1') {
+
     }
   }
 
@@ -63,18 +51,20 @@ const Worklog: React.FC = () => {
     setIsModalAddOpen(true)
 
     // get Product type
-    // const {data, error} = await supabase.from('product_type').select('*')
-    // try {
-    //   if(data) {
-    //     setTypeData(data as typeDataProps)        
-    //   }
-    // }catch(error) { 
-    //   throw error
-    // }
+    getWorkOrderType()
+      .then(res => {
+        setTypeData(res as typeDataProps)
+      })
+      .catch(error => {
+        throw error
+      })
+
 
     // get status
-    const { data } = await supabase.from('status').select('*')
-    console.log(data)
+    getWorkOrderStatus()
+      .then(res => {
+        setTypeStatus(res as statusItemProps)
+      })
   }
 
   const hideModal = () => {
@@ -83,19 +73,22 @@ const Worklog: React.FC = () => {
 
   const getWorkOrderData = async () => {
     const { data: { user }, error } = await supabase.auth.getUser()
-    if(user?.id) {
+    if (user?.id) {
       const { data, error } = await supabase
-      .from('work_order')
-      .select('*')
-      .match({id: user?.id})
+        .from('work_order')
+        .select('*')
+        .match({ id: user?.id })
       setWorkData(data as tableItems[])
     }
   }
 
-  const selectProductType = async (keys:string) => {
+  const selectProductType = async (keys: string) => {
+    setSelectDisable(false)
     let key = keys
-    const {data, error} = await supabase.from('product_type').select(`key, product_brand (value)`).eq('key', key)
-    if(data) return setTypeDataBrand(data[0].product_brand as typeDataBrandProps)
+    getWorkBrand(key)
+      .then(res => {
+        setTypeDataBrand(res![0].product_brand as typeDataBrandProps)
+      })
   }
 
   useEffect(() => {
@@ -110,9 +103,9 @@ const Worklog: React.FC = () => {
             <Col><Button type='primary' onClick={modalAddHanlder}>Create</Button></Col>
             <Col><Button type='primary' danger>Delete</Button></Col>
           </Row>
-          <Modal 
+          <Modal
             title="Create Work Order"
-            width={800} 
+            width={800}
             open={isModalAddOpen}
             onOk={hideModal}
             onCancel={hideModal}
@@ -120,59 +113,78 @@ const Worklog: React.FC = () => {
             cancelText="Cancel"
           >
             <Divider />
-            <Row gutter={20}>
-              <Col span={6}>
-                <label htmlFor="Product">Product</label>
-                <Input 
-                  style={{width: '100%'}} 
-                  placeholder='Product name'
-                />
-              </Col>
-              <Col span={6}>
-                {/* product type */}
-                <label htmlFor="Product">Type</label>
-                <Select
-                  style={{width: '100%'}} 
-                  options={typeData}
-                  placeholder='Product Type'
-                  onChange={selectProductType}
-                >  
-                </Select>
-              </Col>
-              <Col span={6}>
-                <label htmlFor="Product">Brand</label>
-                <Select
-                  style={{width: '100%'}}  
-                  placeholder='Product Brand'
-                  options={typeDataBrand}
-                >  
-                </Select>
-              </Col>
-              <Col span={6}>
-              <label htmlFor="Product">Status</label>
-                <Select
-                  style={{width: '100%'}} 
-                  placeholder='Status'
-                >  
-                </Select>
-              </Col>
-            </Row>
+            <Space direction="vertical" size="middle" style={{width: '100%'}}>
+              <Row gutter={20}>
+                <Col span={12}>
+                  <label htmlFor="Product">Product</label>
+                  <Input
+                    style={{ width: '100%' }}
+                    placeholder='Product name'
+                  />
+                </Col>
+                <Col span={12}>
+                  <label htmlFor="Product">Create name</label>
+                  <Input
+                    style={{ width: '100%' }}
+                    placeholder='Description'
+                  />
+                </Col>
+              </Row>
+
+            
+              <Row gutter={20}>
+                <Col span={8}>
+                  {/* product type */}
+                  <label htmlFor="Product">Type</label>
+                  <Select
+                    style={{ width: '100%' }}
+                    options={typeData}
+                    placeholder='Product Type'
+                    onChange={selectProductType}
+                  >
+                  </Select>
+                </Col>
+                <Col span={8}>
+                  <label htmlFor="Product">Brand</label>
+                  <Select
+                    style={{ width: '100%' }}
+                    placeholder='Product Brand'
+                    options={typeDataBrand}
+                    disabled={selectDisable}
+                  >
+                  </Select>
+                </Col>
+                <Col span={8}>
+                  <label htmlFor="Product">Status</label>
+                  <Select
+                    style={{ width: '100%' }}
+                    placeholder='Status'
+                    options={typeStatus}
+                  >
+                  </Select>
+                </Col>
+              </Row>
+            </Space>
+
+            
+
+            <Divider />
           </Modal>
           <Tabs
             onChange={changeTabId}
-            style={{marginTop: '15px'}}
+            style={{ marginTop: '15px' }}
             items={workTabsTitle.map((item, index) => {
               const id = String(index + 1)
               return {
                 label: `${item.label}`,
                 key: id,
-                children: <WorkTable 
-                  workInfo={workData} 
-                  id={id} 
+                children: <WorkTable
+                  workInfo={workData}
+                  id={id}
                 />
               }
-            })}            
-          />          
+            })}
+          />
         </Card>
       </Space>
     </div>
