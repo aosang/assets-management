@@ -3,7 +3,8 @@ import {
   tableItems,
   typeDataName,
   typeDataBrand,
-  statusItem
+  statusItem,
+  workOrderFormProps
 } from '@/utils/dbType'
 import {
   getWorkOrderType,
@@ -33,13 +34,22 @@ type typeDataProps = typeDataName[]
 type typeDataBrandProps = typeDataBrand[]
 type statusItemProps = statusItem[]
 
-const Worklog: React.FC = () => {
-  const [workData, setWorkData] = useState<tableData>([])
+const Worklog: React.FC = ({}) => {
+  const [selectDisable, setSelectDisable] = useState<boolean>(true)
   const [isModalAddOpen, setIsModalAddOpen] = useState(false)
+  const [workData, setWorkData] = useState<tableData>([])
   const [typeData, setTypeData] = useState<typeDataProps>([])
   const [typeDataBrand, setTypeDataBrand] = useState<typeDataBrandProps>([])
   const [typeStatus, setTypeStatus] = useState<statusItemProps>([])
-  const [selectDisable, setSelectDisable] = useState<boolean>(true)
+  const [workOrderForm, setWorkOrderForm] = useState<workOrderFormProps>({
+    created_product: '',
+    created_name: '',
+    created_text: '',
+    created_type: '',
+    created_brand: '',
+    created_status: '',
+    created_remark: '',
+  })
 
   const changeTabId = (e: string) => {
     if (e === '1') {
@@ -85,6 +95,8 @@ const Worklog: React.FC = () => {
   const selectProductType = async (keys: string) => {
     setSelectDisable(false)
     let key = keys
+    setWorkOrderForm({...workOrderForm, created_type: key})
+
     getWorkBrand(key)
       .then(res => {
         setTypeDataBrand(res![0].product_brand as typeDataBrandProps)
@@ -105,7 +117,7 @@ const Worklog: React.FC = () => {
           </Row>
           <Modal
             title="Create Work Order"
-            width={800}
+            width={960}
             open={isModalAddOpen}
             onOk={hideModal}
             onCancel={hideModal}
@@ -116,36 +128,56 @@ const Worklog: React.FC = () => {
             <Space direction="vertical" size="middle" style={{width: '100%'}}>
               <Row gutter={20}>
                 <Col span={12}>
-                  <label htmlFor="Product">Product</label>
+                  <label 
+                    htmlFor="Product"
+                    className='mb-1'
+                    >
+                      Product
+                  </label>
                   <Input
                     style={{ width: '100%' }}
                     placeholder='Product name'
+                    value={workOrderForm.created_product}
                   />
                 </Col>
                 <Col span={12}>
-                  <label htmlFor="Product">Create name</label>
+                  <label 
+                    htmlFor="Create_name"
+                    className='mb-1'
+                  >
+                    Create name
+                  </label>
                   <Input
                     style={{ width: '100%' }}
                     placeholder='Description'
                   />
                 </Col>
-              </Row>
-
-            
+              </Row>            
               <Row gutter={20}>
                 <Col span={8}>
                   {/* product type */}
-                  <label htmlFor="Product">Type</label>
+                  <label 
+                    htmlFor="Type"
+                    className='mb-1'
+                  >
+                    Type
+                  </label>
                   <Select
                     style={{ width: '100%' }}
                     options={typeData}
                     placeholder='Product Type'
                     onChange={selectProductType}
+                    value={workOrderForm.created_type}
                   >
                   </Select>
                 </Col>
                 <Col span={8}>
-                  <label htmlFor="Product">Brand</label>
+                  <label 
+                    htmlFor="Brand"
+                    className='mb-1'
+                  >
+                    Brand
+                  </label>
                   <Select
                     style={{ width: '100%' }}
                     placeholder='Product Brand'
@@ -155,7 +187,12 @@ const Worklog: React.FC = () => {
                   </Select>
                 </Col>
                 <Col span={8}>
-                  <label htmlFor="Product">Status</label>
+                  <label 
+                    htmlFor="Status"
+                    className='mb-1'
+                  >
+                    Status
+                  </label>
                   <Select
                     style={{ width: '100%' }}
                     placeholder='Status'
@@ -164,10 +201,37 @@ const Worklog: React.FC = () => {
                   </Select>
                 </Col>
               </Row>
+              <Row>
+                <Col span={24}>
+                  <label 
+                    htmlFor="Problem"
+                    className='mb-1'
+                  >
+                    Problem
+                  </label>
+                  <Input.TextArea 
+                    rows={6}
+                    placeholder='Describe the device problem'
+                    autoSize={{ minRows: 6, maxRows: 6 }}
+                  />
+                </Col>
+              </Row>
+              <Row>
+                <Col span={24}>
+                  <label 
+                    htmlFor="Remark"
+                    className='mb-1'
+                  >
+                    Remark
+                  </label>
+                  <Input.TextArea 
+                    rows={4}
+                    placeholder='Remark'
+                    autoSize={{ minRows: 4, maxRows: 4 }}
+                  />
+                </Col>
+              </Row>
             </Space>
-
-            
-
             <Divider />
           </Modal>
           <Tabs

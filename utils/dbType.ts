@@ -11,7 +11,18 @@ export interface tableItems {
   created_product: string
   created_id: string
   created_name: string
+  created_text: string
   created_at: string
+  created_type: string
+  created_brand: string
+  created_status: string
+  created_remark: string
+}
+
+export interface workOrderFormProps {
+  created_product: string
+  created_name: string
+  created_text: string
   created_type: string
   created_brand: string
   created_status: string

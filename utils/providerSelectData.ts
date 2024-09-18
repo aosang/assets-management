@@ -27,7 +27,7 @@ export const getUser = async () => {
 export const getWorkOrderType = async () => {
   const {data, error} = await supabase.from('product_type').select('*')
   try {
-    if (data) return data
+    if (data) return data.sort((a, b) => a.product_id.localeCompare(b.product_id))
     useMessage(2, error!.message, 'error')
   } catch (error) {
     throw error
