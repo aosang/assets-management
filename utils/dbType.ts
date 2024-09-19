@@ -22,10 +22,10 @@ export interface tableItems {
 export interface workOrderFormProps {
   created_product: string
   created_name: string
-  created_text: string
-  created_type: string
-  created_brand: string
-  created_status: string
+  created_text: string 
+  created_type: null | string
+  created_brand: null | string
+  created_status: null | string
   created_remark: string
 }
 

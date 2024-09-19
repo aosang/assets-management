@@ -9,7 +9,8 @@ import {
 import {
   getWorkOrderType,
   getWorkOrderStatus,
-  getWorkBrand
+  getWorkBrand,
+  getProfiles
 } from '@/utils/providerSelectData'
 import { supabase } from '@/utils/clients'
 import { Card, Space, Button, Row, Col, Tabs, Modal, Divider, Select, Input } from 'antd'
@@ -35,7 +36,8 @@ type typeDataBrandProps = typeDataBrand[]
 type statusItemProps = statusItem[]
 
 const Worklog: React.FC = ({}) => {
-  const [selectDisable, setSelectDisable] = useState<boolean>(true)
+  const [layoutWidth, setLayoutWidth] = useState<number>(12)
+  const [productBrandShow, setProductBrandShow] = useState<boolean>(false)
   const [isModalAddOpen, setIsModalAddOpen] = useState(false)
   const [workData, setWorkData] = useState<tableData>([])
   const [typeData, setTypeData] = useState<typeDataProps>([])
@@ -45,9 +47,9 @@ const Worklog: React.FC = ({}) => {
     created_product: '',
     created_name: '',
     created_text: '',
-    created_type: '',
-    created_brand: '',
-    created_status: '',
+    created_type: null,
+    created_brand: null,
+    created_status: null,
     created_remark: '',
   })
 
@@ -57,8 +59,19 @@ const Worklog: React.FC = ({}) => {
     }
   }
 
+  // get profiles
+  const getProfilesUsername = async () => {
+    getProfiles()
+    .then(res => {
+      if(res) {
+        setWorkOrderForm({...workOrderForm, created_name: res[0].username})
+      }
+    })
+  }
+
   const modalAddHanlder = async () => {
     setIsModalAddOpen(true)
+    getProfilesUsername()
 
     // get Product type
     getWorkOrderType()
@@ -81,6 +94,18 @@ const Worklog: React.FC = ({}) => {
     setIsModalAddOpen(false)
   }
 
+  const onClosedHandler =() => {
+    setWorkOrderForm({
+      ...workOrderForm, 
+      created_product: '',
+      created_text: '', 
+      created_type: null, 
+      created_brand: null, 
+      created_status: null, 
+      created_remark: ''
+    })
+  }
+
   const getWorkOrderData = async () => {
     const { data: { user }, error } = await supabase.auth.getUser()
     if (user?.id) {
@@ -93,14 +118,28 @@ const Worklog: React.FC = ({}) => {
   }
 
   const selectProductType = async (keys: string) => {
-    setSelectDisable(false)
-    let key = keys
-    setWorkOrderForm({...workOrderForm, created_type: key})
-
-    getWorkBrand(key)
+    if(keys) {
+      setWorkOrderForm({...workOrderForm, created_type: keys})
+      getWorkBrand(keys)
       .then(res => {
+        setLayoutWidth(8)
+        setProductBrandShow(true)
         setTypeDataBrand(res![0].product_brand as typeDataBrandProps)
+        setWorkOrderForm({
+          ...workOrderForm, 
+          created_brand: res![0].product_brand[0].value,
+          created_type: keys
+        })
       })
+    }else {
+      setProductBrandShow(false)
+      setLayoutWidth(12)
+      setTypeDataBrand([])
+    }
+  }
+
+  const selectProductStatus = (e: string) => {
+
   }
 
   useEffect(() => {
@@ -123,6 +162,7 @@ const Worklog: React.FC = ({}) => {
             onCancel={hideModal}
             okText="Confirm"
             cancelText="Cancel"
+            afterClose={onClosedHandler}
           >
             <Divider />
             <Space direction="vertical" size="middle" style={{width: '100%'}}>
@@ -138,6 +178,7 @@ const Worklog: React.FC = ({}) => {
                     style={{ width: '100%' }}
                     placeholder='Product name'
                     value={workOrderForm.created_product}
+                    onChange={e => setWorkOrderForm({...workOrderForm, created_product: e.target.value})}
                   />
                 </Col>
                 <Col span={12}>
@@ -149,12 +190,13 @@ const Worklog: React.FC = ({}) => {
                   </label>
                   <Input
                     style={{ width: '100%' }}
-                    placeholder='Description'
+                    readOnly
+                    value={workOrderForm.created_name}
                   />
                 </Col>
               </Row>            
               <Row gutter={20}>
-                <Col span={8}>
+                <Col span={layoutWidth}>
                   {/* product type */}
                   <label 
                     htmlFor="Type"
@@ -168,25 +210,32 @@ const Worklog: React.FC = ({}) => {
                     placeholder='Product Type'
                     onChange={selectProductType}
                     value={workOrderForm.created_type}
+                    allowClear
                   >
                   </Select>
                 </Col>
-                <Col span={8}>
-                  <label 
-                    htmlFor="Brand"
-                    className='mb-1'
-                  >
-                    Brand
-                  </label>
-                  <Select
-                    style={{ width: '100%' }}
-                    placeholder='Product Brand'
-                    options={typeDataBrand}
-                    disabled={selectDisable}
-                  >
-                  </Select>
-                </Col>
-                <Col span={8}>
+                {productBrandShow && (
+                  <Col span={layoutWidth}>
+                    <label 
+                      htmlFor="Brand"
+                      className='mb-1'
+                    >
+                      Brand
+                    </label>
+                    <Select
+                      style={{ width: '100%' }}
+                      placeholder='Product Brand'
+                      options={typeDataBrand}
+                      value={workOrderForm.created_brand}
+                      onChange={e => setWorkOrderForm({...workOrderForm, created_brand: e})}
+                      allowClear
+                      defaultValue={typeDataBrand[0].key}
+                    >
+                    </Select>
+                  </Col>
+                )}
+                
+                <Col span={layoutWidth}>
                   <label 
                     htmlFor="Status"
                     className='mb-1'
@@ -197,6 +246,8 @@ const Worklog: React.FC = ({}) => {
                     style={{ width: '100%' }}
                     placeholder='Status'
                     options={typeStatus}
+                    value={workOrderForm.created_status}
+                    onChange={selectProductStatus}
                   >
                   </Select>
                 </Col>

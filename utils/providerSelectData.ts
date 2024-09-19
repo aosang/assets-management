@@ -23,6 +23,17 @@ export const getUser = async () => {
   }
 }
 
+// get profiles
+export const getProfiles = async () => {
+  const {data, error} = await supabase.from('profiles').select('*')
+  try {
+    if (data) return data
+    useMessage(2, error!.message, 'error')
+  } catch (error) {
+    throw error
+  }
+}
+
 // get workOrder type
 export const getWorkOrderType = async () => {
   const {data, error} = await supabase.from('product_type').select('*')
