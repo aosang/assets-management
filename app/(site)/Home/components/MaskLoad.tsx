@@ -34,7 +34,8 @@ const MaskLoad = () => {
     <div>
       {isShow && 
         <div style={maskStyle}>
-          <Image 
+          <Image
+            priority 
             src="/load-blue.gif" 
             alt="loadingGif" 
             width={240} height={240}

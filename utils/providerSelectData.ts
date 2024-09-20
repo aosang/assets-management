@@ -1,5 +1,7 @@
 import { supabase } from "./clients"
 import useMessage from "./message"
+import { workOrderFormProps } from "./dbType"
+import { nanoid } from 'nanoid'
 
 // get session
 export const getSession = async () => {
@@ -68,3 +70,50 @@ export const getWorkOrderStatus = async () => {
   }
 }
 
+// get workOrder
+export const getWorkOrder = async (id: string) => {
+  const {data, error} = await supabase.
+    from('work_order')
+    .select('*')
+    .match({id: id})
+  try {
+    if(data) return data
+    useMessage(2, error!.message, 'error')
+  }catch (error) {
+    throw error
+  }
+}
+
+export const insertUpdateWorkOrder = async ({
+    created_product, 
+    created_name, 
+    created_text, 
+    created_solved, 
+    created_type,
+    created_brand,
+    created_status,
+    created_remark
+  }) => {
+  let number: number = Math.floor(Math.random() * 99) + 1
+  const {data, error} = await supabase
+  .from('work_order')
+  .insert({
+    created_id: nanoid() + number,
+    created_product,
+    created_name: created_name,
+    created_text: created_text,
+    created_solved,
+    created_type,
+    created_brand,
+    created_status,
+    created_remark,
+  })
+  .select()
+
+  try {
+    if(data) return useMessage(2, 'Create sucessful!','success')
+    useMessage(2, error!.message, 'error')
+  }catch (error) {
+    throw error
+  }
+}

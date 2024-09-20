@@ -10,13 +10,16 @@ import {
   getWorkOrderType,
   getWorkOrderStatus,
   getWorkBrand,
-  getProfiles
+  getProfiles,
+  getUser,
+  getWorkOrder,
+  insertUpdateWorkOrder
 } from '@/utils/providerSelectData'
-import { supabase } from '@/utils/clients'
 import { Card, Space, Button, Row, Col, Tabs, Modal, Divider, Select, Input } from 'antd'
 import type { TabsProps } from 'antd'
-import WorkTable from '../components/WorkTable'
 import { useState, useEffect } from 'react'
+import WorkTable from '../components/WorkTable'
+import useMessage from '@/utils/message'
 
 
 const workTabsTitle: TabsProps['items'] = [{
@@ -35,7 +38,7 @@ type typeDataProps = typeDataName[]
 type typeDataBrandProps = typeDataBrand[]
 type statusItemProps = statusItem[]
 
-const Worklog: React.FC = ({}) => {
+const WorkOrder: React.FC = ({}) => {
   const [layoutWidth, setLayoutWidth] = useState<number>(12)
   const [productBrandShow, setProductBrandShow] = useState<boolean>(false)
   const [isModalAddOpen, setIsModalAddOpen] = useState(false)
@@ -47,6 +50,7 @@ const Worklog: React.FC = ({}) => {
     created_product: '',
     created_name: '',
     created_text: '',
+    created_solved: '',
     created_type: null,
     created_brand: null,
     created_status: null,
@@ -75,30 +79,54 @@ const Worklog: React.FC = ({}) => {
 
     // get Product type
     getWorkOrderType()
-      .then(res => {
-        setTypeData(res as typeDataProps)
-      })
-      .catch(error => {
-        throw error
-      })
-
+    .then(res => {
+      setTypeData(res as typeDataProps)
+    })
+    .catch(error => {
+      throw error
+    })
 
     // get status
     getWorkOrderStatus()
-      .then(res => {
-        setTypeStatus(res as statusItemProps)
-      })
+    .then(res => {
+      setTypeStatus(res as statusItemProps)
+    })
   }
 
-  const hideModal = () => {
+  const confirmModalForm = () => {
+    const {created_brand, created_status, created_product, created_text, created_solved, created_type } = workOrderForm
+    // verify form
+    if(!created_product) {
+      useMessage(2, 'Enter product name', 'error')
+    }else if(!created_type) { 
+      useMessage(2, 'Select product type', 'error')
+    }else if(!created_brand) {
+      useMessage(2, 'Select product brand', 'error')
+    }else if(!created_status) {
+      useMessage(2, 'Select status', 'error')
+    }else if(!created_text) {
+      useMessage(2, 'Describe the device problem', 'error')
+    }else if(!created_solved) {
+      useMessage(2, 'Describe the solution', 'error')
+    }else {
+      insertUpdateWorkOrder(workOrderForm)
+      getWorkOrderData()
+      setIsModalAddOpen(false)
+    } 
+  }
+
+  const cancelModalForm = () => {
     setIsModalAddOpen(false)
   }
 
   const onClosedHandler =() => {
+    setProductBrandShow(false)
+    setLayoutWidth(12)
     setWorkOrderForm({
       ...workOrderForm, 
       created_product: '',
-      created_text: '', 
+      created_text: '',
+      created_solved: '', 
       created_type: null, 
       created_brand: null, 
       created_status: null, 
@@ -107,19 +135,19 @@ const Worklog: React.FC = ({}) => {
   }
 
   const getWorkOrderData = async () => {
-    const { data: { user }, error } = await supabase.auth.getUser()
-    if (user?.id) {
-      const { data, error } = await supabase
-        .from('work_order')
-        .select('*')
-        .match({ id: user?.id })
-      setWorkData(data as tableItems[])
-    }
+    // get workorder data
+    getUser()
+    .then(res => {
+      let id = res?.user?.id
+      getWorkOrder(id as string)
+     .then(res => {
+        setWorkData(res as tableItems[])
+      })
+    })
   }
 
   const selectProductType = async (keys: string) => {
     if(keys) {
-      setWorkOrderForm({...workOrderForm, created_type: keys})
       getWorkBrand(keys)
       .then(res => {
         setLayoutWidth(8)
@@ -132,14 +160,15 @@ const Worklog: React.FC = ({}) => {
         })
       })
     }else {
+      setWorkOrderForm({
+        ...workOrderForm, 
+        created_type: null,
+        created_brand: null
+      })
       setProductBrandShow(false)
       setLayoutWidth(12)
       setTypeDataBrand([])
     }
-  }
-
-  const selectProductStatus = (e: string) => {
-
   }
 
   useEffect(() => {
@@ -158,11 +187,12 @@ const Worklog: React.FC = ({}) => {
             title="Create Work Order"
             width={960}
             open={isModalAddOpen}
-            onOk={hideModal}
-            onCancel={hideModal}
+            onOk={confirmModalForm}
+            onCancel={cancelModalForm}
             okText="Confirm"
             cancelText="Cancel"
             afterClose={onClosedHandler}
+            maskClosable={false}
           >
             <Divider />
             <Space direction="vertical" size="middle" style={{width: '100%'}}>
@@ -170,8 +200,9 @@ const Worklog: React.FC = ({}) => {
                 <Col span={12}>
                   <label 
                     htmlFor="Product"
-                    className='mb-1'
+                    className='mb-1 flex items-center font-semibold'
                     >
+                      <span className='mr-1 text-red-600 font-thin'>*</span>
                       Product
                   </label>
                   <Input
@@ -184,8 +215,9 @@ const Worklog: React.FC = ({}) => {
                 <Col span={12}>
                   <label 
                     htmlFor="Create_name"
-                    className='mb-1'
+                    className='mb-1 flex items-center font-semibold'
                   >
+                    <span className='mr-1 text-red-600  font-thin'>*</span>
                     Create name
                   </label>
                   <Input
@@ -200,14 +232,15 @@ const Worklog: React.FC = ({}) => {
                   {/* product type */}
                   <label 
                     htmlFor="Type"
-                    className='mb-1'
+                    className='mb-1 flex items-center font-semibold'
                   >
+                    <span className='mr-1 text-red-600 font-thin'>*</span>
                     Type
                   </label>
                   <Select
                     style={{ width: '100%' }}
                     options={typeData}
-                    placeholder='Product Type'
+                    placeholder='Product type'
                     onChange={selectProductType}
                     value={workOrderForm.created_type}
                     allowClear
@@ -218,13 +251,14 @@ const Worklog: React.FC = ({}) => {
                   <Col span={layoutWidth}>
                     <label 
                       htmlFor="Brand"
-                      className='mb-1'
+                      className='mb-1 flex items-center font-semibold'
                     >
+                      <span className='mr-1 text-red-600 font-thin'>*</span>
                       Brand
                     </label>
                     <Select
                       style={{ width: '100%' }}
-                      placeholder='Product Brand'
+                      placeholder='Product brand'
                       options={typeDataBrand}
                       value={workOrderForm.created_brand}
                       onChange={e => setWorkOrderForm({...workOrderForm, created_brand: e})}
@@ -238,8 +272,10 @@ const Worklog: React.FC = ({}) => {
                 <Col span={layoutWidth}>
                   <label 
                     htmlFor="Status"
-                    className='mb-1'
+                    className='mb-1 flex items-center font-semibold'
+
                   >
+                    <span className='mr-1 text-red-600 font-thin'>*</span>
                     Status
                   </label>
                   <Select
@@ -247,7 +283,7 @@ const Worklog: React.FC = ({}) => {
                     placeholder='Status'
                     options={typeStatus}
                     value={workOrderForm.created_status}
-                    onChange={selectProductStatus}
+                    onChange={e => setWorkOrderForm({...workOrderForm, created_status: e})}
                   >
                   </Select>
                 </Col>
@@ -256,14 +292,39 @@ const Worklog: React.FC = ({}) => {
                 <Col span={24}>
                   <label 
                     htmlFor="Problem"
-                    className='mb-1'
+                    className='mb-1 flex items-center font-semibold'
                   >
+                    <span className='mr-1 text-red-600 font-thin'>*</span>
                     Problem
                   </label>
                   <Input.TextArea 
-                    rows={6}
+                    rows={5}
+                    autoSize={{ minRows: 5, maxRows: 5 }}
                     placeholder='Describe the device problem'
-                    autoSize={{ minRows: 6, maxRows: 6 }}
+                    value={workOrderForm.created_text}
+                    onChange={e => setWorkOrderForm({...workOrderForm, created_text: e.target.value})}
+                    maxLength={260}
+                    showCount
+                  />
+                </Col>
+              </Row>
+              <Row>
+                <Col span={24}>
+                  <label
+                    htmlFor="Solution"
+                    className='mb-1 flex items-center font-semibold'
+                  >
+                    <span className='mr-1 text-red-600 font-thin'>*</span>
+                    Solution
+                  </label>
+                  <Input.TextArea
+                    rows={5}
+                    placeholder='Describe the solution'
+                    autoSize={{ minRows: 5, maxRows: 5 }}
+                    value={workOrderForm.created_solved}
+                    onChange={e => setWorkOrderForm({...workOrderForm, created_solved: e.target.value})}
+                    maxLength={260}
+                    showCount
                   />
                 </Col>
               </Row>
@@ -271,14 +332,18 @@ const Worklog: React.FC = ({}) => {
                 <Col span={24}>
                   <label 
                     htmlFor="Remark"
-                    className='mb-1'
+                    className='mb-1 flex items-center font-semibold'
                   >
                     Remark
                   </label>
                   <Input.TextArea 
                     rows={4}
                     placeholder='Remark'
-                    autoSize={{ minRows: 4, maxRows: 4 }}
+                    autoSize={{ minRows: 3, maxRows: 3 }}
+                    value={workOrderForm.created_remark}
+                    onChange={e => setWorkOrderForm({...workOrderForm, created_remark: e.target.value})}
+                    maxLength={120}
+                    showCount
                   />
                 </Col>
               </Row>
@@ -293,10 +358,7 @@ const Worklog: React.FC = ({}) => {
               return {
                 label: `${item.label}`,
                 key: id,
-                children: <WorkTable
-                  workInfo={workData}
-                  id={id}
-                />
+                children: <WorkTable workInfo={workData} id={id} />
               }
             })}
           />
@@ -306,4 +368,4 @@ const Worklog: React.FC = ({}) => {
   )
 }
 
-export default Worklog;
+export default WorkOrder;

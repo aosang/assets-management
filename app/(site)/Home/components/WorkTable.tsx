@@ -1,5 +1,5 @@
 'use client'
-import { Table, Tag  } from "antd"
+import { Button, Table, Tag  } from "antd"
 import type { TableColumnsType  } from 'antd'
 import dayjs from "dayjs"
 
@@ -21,7 +21,7 @@ const colums: TableColumnsType<tableItems> = [{
   dataIndex: 'created_id',
   key: 'created_id',
   render: (text: string) => {
-    return <a onClick={() => console.log(123)}>{text}</a>
+    return <a>{text}</a>
   }
 }, {
   title: 'Product',
@@ -38,14 +38,14 @@ const colums: TableColumnsType<tableItems> = [{
   render: (text: string) => {
     return (
       <>
-        {text === '1' && <Tag color="green">Finished</Tag>}
-        {text === '2' && <Tag color="red">Processing</Tag>}
-        {text === '3' && <Tag color="orange">Paused</Tag>}
+        {text === 'Finished' && <Tag color="green">Finished</Tag>}
+        {text === 'Processing' && <Tag color="red">Processing</Tag>}
+        {text === 'Pending' && <Tag color="orange">Pending</Tag>}
       </>
     )
   }
 }, {
-  title: 'Problem',
+  title: 'Created name',
   dataIndex: 'created_name',
   key: 'created_name'
 }, {
@@ -59,6 +59,26 @@ const colums: TableColumnsType<tableItems> = [{
   title: 'Remark',
   dataIndex: 'created_remark',
   key: 'created_remark'
+}, {
+  title: 'Other',
+  render: () => {
+    return (
+      <>
+        <div>
+          <Button 
+            className="mr-2 text-xs" 
+            size="small" 
+            type="primary"
+          >
+            Details
+          </Button>
+          <Button className="mr-2 text-xs" size="small" type="primary">Edit</Button>
+          <Button className="text-xs" danger size="small" type="primary">Delete</Button>
+        </div>
+        
+      </>
+    )
+  }
 }]
 
 interface workTableProps {
