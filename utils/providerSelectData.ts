@@ -1,7 +1,7 @@
 import { supabase } from "./clients"
 import useMessage from "./message"
-import { workOrderFormProps } from "./dbType"
 import { nanoid } from 'nanoid'
+import dayjs from "dayjs"
 
 // get session
 export const getSession = async () => {
@@ -71,14 +71,21 @@ export const getWorkOrderStatus = async () => {
 }
 
 // get workOrder
-export const getWorkOrder = async (id: string) => {
+export const getWorkOrder = async (id?: string) => {
   const {data, error} = await supabase.
     from('work_order')
     .select('*')
     .match({id: id})
   try {
-    if(data) return data
-    useMessage(2, error!.message, 'error')
+    if(data) { 
+       data.forEach((item) => { 
+        item.created_at = dayjs(item.created_at).format('YYYY-MM-DD HH:mm:ss')
+      })
+      data.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+      return data
+    }else {
+      useMessage(2, error!.message, 'error')
+    }
   }catch (error) {
     throw error
   }
@@ -111,7 +118,10 @@ export const insertUpdateWorkOrder = async ({
   .select()
 
   try {
-    if(data) return useMessage(2, 'Create sucessful!','success')
+    if(data) {
+      useMessage(2, 'Create sucessful!','success')
+      return data
+    }
     useMessage(2, error!.message, 'error')
   }catch (error) {
     throw error

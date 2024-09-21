@@ -27,14 +27,17 @@ const colums: TableColumnsType<tableItems> = [{
   title: 'Product',
   dataIndex: 'created_product',
   key: 'created_product',
+  width: 200
 }, {
   title: 'Brand',
   dataIndex: 'created_brand',
-  key: 'created_brand'
+  key: 'created_brand',
+  width: 120
 }, {
   title: 'Status',
   dataIndex: 'created_status',
   key: 'created_status',
+  width: 100,
   render: (text: string) => {
     return (
       <>
@@ -47,20 +50,20 @@ const colums: TableColumnsType<tableItems> = [{
 }, {
   title: 'Created name',
   dataIndex: 'created_name',
-  key: 'created_name'
+  key: 'created_name',
+  width: 150
 }, {
   title: 'Create Time',
   dataIndex: 'created_at',
   key: 'created_at',
-  render: (text: any) => {
-    return dayjs(text).format('YYYY-MM-DD HH:mm:ss')
-  }
+  width: 200,
 }, {
   title: 'Remark',
   dataIndex: 'created_remark',
-  key: 'created_remark'
+  key: 'created_remark',
 }, {
   title: 'Other',
+  width: 200,
   render: () => {
     return (
       <>
@@ -103,6 +106,8 @@ const WorkTable: React.FC<workTableProps> = ({ workInfo }) => {
           columns={colums} 
           dataSource={workInfo}
           bordered
+          scroll={{y: 400}}
+          size="middle"
         />
       </div>
     </>

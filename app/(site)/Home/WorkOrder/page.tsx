@@ -20,6 +20,7 @@ import type { TabsProps } from 'antd'
 import { useState, useEffect } from 'react'
 import WorkTable from '../components/WorkTable'
 import useMessage from '@/utils/message'
+import { useRouter } from 'next/navigation'
 
 
 const workTabsTitle: TabsProps['items'] = [{
@@ -46,6 +47,7 @@ const WorkOrder: React.FC = ({}) => {
   const [typeData, setTypeData] = useState<typeDataProps>([])
   const [typeDataBrand, setTypeDataBrand] = useState<typeDataBrandProps>([])
   const [typeStatus, setTypeStatus] = useState<statusItemProps>([])
+  const router = useRouter()
   const [workOrderForm, setWorkOrderForm] = useState<workOrderFormProps>({
     created_product: '',
     created_name: '',
@@ -109,9 +111,14 @@ const WorkOrder: React.FC = ({}) => {
     }else if(!created_solved) {
       useMessage(2, 'Describe the solution', 'error')
     }else {
-      insertUpdateWorkOrder(workOrderForm)
-      getWorkOrderData()
-      setIsModalAddOpen(false)
+
+      insertUpdateWorkOrder(workOrderForm).then(res => {
+        if(res) {
+          useMessage(1, 'Create success!','success')
+          setIsModalAddOpen(false)
+          getWorkOrderData()
+        }
+      })
     } 
   }
 
@@ -181,6 +188,7 @@ const WorkOrder: React.FC = ({}) => {
         <Card title="WorkOrder">
           <Row gutter={10}>
             <Col><Button type='primary' onClick={modalAddHanlder}>Create</Button></Col>
+            <Col><Button type='primary' onClick={() => getWorkOrderData()}>Refresh</Button></Col>
             <Col><Button type='primary' danger>Delete</Button></Col>
           </Row>
           <Modal
