@@ -106,7 +106,7 @@ const WorkTable: React.FC<workTableProps> = ({ workInfo }) => {
           columns={colums} 
           dataSource={workInfo}
           bordered
-          scroll={{y: 400}}
+          scroll={{y: 510}}
           size="middle"
         />
       </div>

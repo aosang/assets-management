@@ -2,6 +2,7 @@ import { supabase } from "./clients"
 import useMessage from "./message"
 import { nanoid } from 'nanoid'
 import dayjs from "dayjs"
+import { getTimeNumber } from "./pubFunProvider"
 
 // get session
 export const getSession = async () => {
@@ -91,6 +92,7 @@ export const getWorkOrder = async (id?: string) => {
   }
 }
 
+// insert workOrder
 export const insertUpdateWorkOrder = async ({
     created_product, 
     created_name, 
@@ -101,11 +103,10 @@ export const insertUpdateWorkOrder = async ({
     created_status,
     created_remark
   }) => {
-  let number: number = Math.floor(Math.random() * 99) + 1
   const {data, error} = await supabase
   .from('work_order')
   .insert({
-    created_id: nanoid() + number,
+    created_id: getTimeNumber(),
     created_product,
     created_name: created_name,
     created_text: created_text,
@@ -126,4 +127,9 @@ export const insertUpdateWorkOrder = async ({
   }catch (error) {
     throw error
   }
+}
+
+// Delete workOrder
+export const deleteWorkOrder = async () => {
+  const { error } = await supabase.from('work_order').delete().eq('id', ['1','2'])
 }

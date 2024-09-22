@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Input, Button } from 'antd'
-import { emailRegFunc, passwordRegFunc } from '@/utils/validate'
+import { emailRegFunc, passwordRegFunc } from '@/utils/pubFunProvider'
 import { supabase } from '@/utils/clients'
 import { formCollect } from '@/utils/dbType'
 import authScss from './auth.module.scss'

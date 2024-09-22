@@ -23,7 +23,7 @@ const siderStyle: React.CSSProperties = {
 
 const headerStyle: React.CSSProperties = {
   position: 'fixed',
-  width: '88%',
+  width: '87%',
   top: '0',
   right: '0',
   color: '#001529',
@@ -34,7 +34,7 @@ const headerStyle: React.CSSProperties = {
 }
 
 const contentStyle: React.CSSProperties = {
-  width: 'calc(100% - 12%)',
+  width: 'calc(100% - 13%)',
   margin: '64px 0 48px auto'
 }
 
@@ -42,7 +42,7 @@ const footerStyle: React.CSSProperties = {
   position: 'fixed',
   bottom: 0,
   right: 0,
-  width: 'calc(100% - 12%)',
+  width: 'calc(100% - 13%)',
   height: 48,
   display: 'flex',
   alignItems: 'center',
@@ -89,7 +89,7 @@ const AppLayout = ({children}) => {
     <div>
       {userInfo && (
         <Layout style={{ minHeight: '100vh'}}>
-          <Sider width="12%" style={siderStyle}>
+          <Sider width="13%" style={siderStyle}>
             <div className={siderBarCss.sidebarTop}>Assets Management</div>
             <SideBarItem />
           </Sider>
