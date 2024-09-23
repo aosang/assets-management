@@ -11,7 +11,7 @@ export const passwordRegFunc = (password: string) => {
 }
 
 export const getTimeNumber = () => {
-  let number: number = Math.floor(Math.random() * 99) + 1
+  let number: number = Math.floor(Math.random() * (99 - 10 + 1)) + 10
   let date = new Date()
   let y = date.getFullYear()
   let m = date.getMonth() + 1<10? '0'+(date.getMonth() + 1):(date.getMonth() + 1)

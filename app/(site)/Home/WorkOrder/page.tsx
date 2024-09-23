@@ -16,23 +16,10 @@ import {
   insertUpdateWorkOrder
 } from '@/utils/providerSelectData'
 import { Card, Space, Button, Row, Col, Tabs, Modal, Divider, Select, Input } from 'antd'
-import type { TabsProps } from 'antd'
 import { useState, useEffect } from 'react'
 import WorkTable from '../components/WorkTable'
 import useMessage from '@/utils/message'
-import { useRouter } from 'next/navigation'
 
-
-const workTabsTitle: TabsProps['items'] = [{
-  key: '1',
-  label: 'All',
-}, {
-  key: '2',
-  label: 'Processing',
-}, {
-  key: '3',
-  label: 'Finished',
-}]
 
 type tableData = tableItems[]
 type typeDataProps = typeDataName[]
@@ -47,7 +34,6 @@ const WorkOrder: React.FC = ({}) => {
   const [typeData, setTypeData] = useState<typeDataProps>([])
   const [typeDataBrand, setTypeDataBrand] = useState<typeDataBrandProps>([])
   const [typeStatus, setTypeStatus] = useState<statusItemProps>([])
-  const router = useRouter()
   const [workOrderForm, setWorkOrderForm] = useState<workOrderFormProps>({
     created_product: '',
     created_name: '',
@@ -59,11 +45,6 @@ const WorkOrder: React.FC = ({}) => {
     created_remark: '',
   })
 
-  const changeTabId = (e: string) => {
-    if (e === '1') {
-
-    }
-  }
 
   // get profiles
   const getProfilesUsername = async () => {
@@ -356,22 +337,11 @@ const WorkOrder: React.FC = ({}) => {
             </Space>
             <Divider />
           </Modal>
-          <Tabs
-            onChange={changeTabId}
-            style={{ marginTop: '15px' }}
-            items={workTabsTitle.map((item, index) => {
-              const id = String(index + 1)
-              return {
-                label: `${item.label}`,
-                key: id,
-                children: <WorkTable workInfo={workData} id={id} />
-              }
-            })}
-          />
+          <WorkTable workInfo={workData} />
         </Card>
       </Space>
     </div>
   )
 }
 
-export default WorkOrder;
+export default WorkOrder
