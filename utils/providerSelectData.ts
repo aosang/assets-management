@@ -130,6 +130,17 @@ export const insertUpdateWorkOrder = async ({
 }
 
 // Delete workOrder
-export const deleteWorkOrder = async () => {
-  const { error } = await supabase.from('work_order').delete().eq('id', ['1','2'])
+export const deleteWorkOrder = async (deleteId: string[]) => {
+  const { error } = await supabase
+    .from('work_order')
+    .delete()
+    .in('created_id', deleteId)
+
+  try {
+    if(error) return useMessage(2, error.message, 'error')
+    useMessage(2, 'Delete success!','success')
+  }catch (error) {
+    throw error
+  }
+
 }

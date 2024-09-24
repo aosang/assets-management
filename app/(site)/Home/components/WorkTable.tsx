@@ -1,50 +1,22 @@
 'use client'
 import { Button, Table, Tag, Modal  } from "antd"
 import type { TableColumnsType} from 'antd'
-import { useState } from'react'
-import { supabase } from "@/utils/clients"
-
-type tableItems = {
-  key: string
-  user_id: string
-  created_product: string
-  created_id: string
-  created_name: string
-  created_at: string
-  created_type: string
-  created_brand: string
-  created_status: string
-  created_remark: string
-}
-
+import { tableItems } from "@/utils/dbType"
 
 interface workTableProps {
   workInfo: tableItems[]
+  onChangeSelectData: (data:tableItems[]) => void
 }
 
-
-const WorkTable: React.FC<workTableProps> = ({ workInfo }) => {
-  const [isModalVisible, setIsModalVisible] = useState(false)
-  const [selectedRowId, setSelectedRowId] = useState<string | null>('')
+const WorkTable: React.FC<workTableProps> = ({ workInfo, onChangeSelectData }) => {
 
   const rowSelection = {
     onChange: (selectedRowKeys: React.Key[], selectedRows: tableItems[]) => {
-      // setSelectedRowKeys(selectedRows)
-      setSelectedRowId(selectedRows[0]?.created_id? selectedRows[0]?.created_id : null )
+      onChangeSelectData(selectedRows)
     }
   }
 
-  const checkDeleteData = () => {
-    if(selectedRowId && selectedRowId !== null) {
-      setIsModalVisible(true)
-    }else {
-      alert('Please select a row')
-    }
-  }  
-
-  const onDeleteConfirm = async () => {
-    const {data, error} = await supabase.from('work_order').select('*').eq('created_id', selectedRowId)
-  }
+  
 
   const colums: TableColumnsType<tableItems> = [{
     title: 'Number',
@@ -94,7 +66,7 @@ const WorkTable: React.FC<workTableProps> = ({ workInfo }) => {
     key: 'created_remark',
   }, {
     title: 'Other',
-    width: 200,
+    width: 180,
   
     render: () => {
       return (
@@ -107,16 +79,13 @@ const WorkTable: React.FC<workTableProps> = ({ workInfo }) => {
             >
               Details
             </Button>
-            <Button className="mr-2 text-xs" size="small" type="primary">Edit</Button>
             <Button 
-              className="text-xs" 
-              danger 
+              className="mr-2 text-xs" 
               size="small" 
               type="primary"
-              onClick={checkDeleteData}
             >
-              Delete
-            </Button>  
+              Edit
+            </Button>
           </div>   
         </>
       )
@@ -125,19 +94,11 @@ const WorkTable: React.FC<workTableProps> = ({ workInfo }) => {
 
   return (
     <>
-      <Modal 
-        title="Tips" 
-        open={isModalVisible}
-        onOk={() => setIsModalVisible(false)}
-        onCancel={() => setIsModalVisible(false)}
-      >
-        <p className="text-sm text-black">Are you sure you want to delete this data?</p>
-      </Modal>
       <div className="mt-5">
         <Table
           rowSelection={{
-            ...rowSelection,
-          }} 
+           ...rowSelection
+          }}
           columns={colums} 
           dataSource={workInfo}
           bordered

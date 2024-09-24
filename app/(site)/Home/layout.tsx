@@ -1,6 +1,6 @@
 'use client'
 import SideBar from './components/Sidebar/Sidebar'
-import MaskLoad from './components/MaskLoad'
+import MaskLoad from '../components/MaskLoad'
 import { supabase } from '@/utils/clients'
 import { useEffect } from 'react'
 
@@ -21,7 +21,7 @@ export default function RootLayout({
   return (
     <div>
       <SideBar>
-        <MaskLoad />
+        {/* <MaskLoad /> */}
         {children}
       </SideBar>
     </div>

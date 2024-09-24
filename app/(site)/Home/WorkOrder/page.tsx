@@ -13,12 +13,14 @@ import {
   getProfiles,
   getUser,
   getWorkOrder,
-  insertUpdateWorkOrder
+  insertUpdateWorkOrder,
+  deleteWorkOrder
 } from '@/utils/providerSelectData'
-import { Card, Space, Button, Row, Col, Tabs, Modal, Divider, Select, Input } from 'antd'
+import { Card, Space, Button, Row, Col, Modal, Divider, Select, Input } from 'antd'
 import { useState, useEffect } from 'react'
 import WorkTable from '../components/WorkTable'
 import useMessage from '@/utils/message'
+import { supabase } from "@/utils/clients"
 
 
 type tableData = tableItems[]
@@ -29,7 +31,10 @@ type statusItemProps = statusItem[]
 const WorkOrder: React.FC = ({}) => {
   const [layoutWidth, setLayoutWidth] = useState<number>(12)
   const [productBrandShow, setProductBrandShow] = useState<boolean>(false)
+  const [deleteDataId, setDeleteDataId] = useState<string[]>([])
+
   const [isModalAddOpen, setIsModalAddOpen] = useState(false)
+  const [isModalDelete, setIsModalDelete] = useState(false)
   const [workData, setWorkData] = useState<tableData>([])
   const [typeData, setTypeData] = useState<typeDataProps>([])
   const [typeDataBrand, setTypeDataBrand] = useState<typeDataBrandProps>([])
@@ -45,6 +50,33 @@ const WorkOrder: React.FC = ({}) => {
     created_remark: '',
   })
 
+  const onDeleteConfirm = async () => { 
+    deleteWorkOrder(deleteDataId)
+    .then(res => {
+      setIsModalDelete(false)
+      getWorkOrderData()
+      console.log(res)
+    })
+
+    // const { error } = await supabase
+    // .from('work_order')
+    // .delete()
+    // .in('created_id', deleteDataId)
+
+    // setIsModalDelete(false)
+    // if(!error) return useMessage(2, 'Delete success!','success')
+    // getWorkOrderData()  
+  }
+
+  const onDeleteModal = () => {
+    if(deleteDataId.length !== 0) return setIsModalDelete(true)
+    useMessage(2, 'Please select delete data', 'error')
+  } 
+
+  const onDeleteData = (selectData: tableItems[]) => {
+    let uniqueData = Array.from(new Set(selectData.map(item => item.created_id)))
+    setDeleteDataId(uniqueData)
+  }
 
   // get profiles
   const getProfilesUsername = async () => {
@@ -167,9 +199,21 @@ const WorkOrder: React.FC = ({}) => {
       <Space direction="vertical" size={16} style={{ width: '100%' }}>
         <Card title="WorkOrder">
           <Row gutter={10}>
-            <Col><Button type='primary' onClick={modalAddHanlder}>Create</Button></Col>
-            <Col><Button type='primary' danger>Delete</Button></Col>
+            <Col>
+              <Button type='primary' onClick={modalAddHanlder}>Create</Button>
+            </Col>
+            <Col>
+              <Button type='primary' danger onClick={onDeleteModal}>Delete</Button>
+            </Col>
           </Row>
+          <Modal 
+            title="Tips" 
+            open={isModalDelete}
+            onOk={onDeleteConfirm}
+            onCancel={() => setIsModalDelete(false)}
+          >
+            <p className="text-sm text-black">Are you sure you want to delete this data?</p>
+          </Modal>
           <Modal
             title="Create Work Order"
             width={960}
@@ -337,7 +381,7 @@ const WorkOrder: React.FC = ({}) => {
             </Space>
             <Divider />
           </Modal>
-          <WorkTable workInfo={workData} />
+          <WorkTable workInfo={workData} onChangeSelectData={onDeleteData}  />
         </Card>
       </Space>
     </div>

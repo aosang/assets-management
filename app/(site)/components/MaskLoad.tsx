@@ -28,7 +28,7 @@ const MaskLoad = () => {
   useEffect(() => {
     setTimeout(() => {
       setIsShow(false)
-    }, 1000)
+    }, 500)
   }, [isShow])
   return (
     <div>

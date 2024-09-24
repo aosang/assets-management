@@ -12,6 +12,7 @@ export interface tableItems {
   created_id: string
   created_name: string
   created_text: string
+  created_solved: string
   created_at: string
   created_type: string
   created_brand: string
