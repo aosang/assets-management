@@ -16,12 +16,11 @@ import {
   insertUpdateWorkOrder,
   deleteWorkOrder
 } from '@/utils/providerSelectData'
+import { getFilterWorkStatus, getFilterWorkType, searchTypeData } from '@/utils/pubFilterProviders'
 import { Card, Space, Button, Row, Col, Modal, Divider, Select, Input } from 'antd'
 import { useState, useEffect } from 'react'
 import WorkTable from '../components/WorkTable'
 import useMessage from '@/utils/message'
-import { supabase } from "@/utils/clients"
-
 
 type tableData = tableItems[]
 type typeDataProps = typeDataName[]
@@ -32,6 +31,11 @@ const WorkOrder: React.FC = ({}) => {
   const [layoutWidth, setLayoutWidth] = useState<number>(12)
   const [productBrandShow, setProductBrandShow] = useState<boolean>(false)
   const [deleteDataId, setDeleteDataId] = useState<string[]>([])
+
+  const [typeFilter, setTypeFilter] = useState<[]>([])
+  const [statusFilter, setStatusFilter] = useState<[]>([])
+  const [filterTypeValue, setFilterTypeValue] = useState<string | null>(null)
+  const [filterStatusValue, setFilterStatusValue] = useState<string | null>(null)
 
   const [isModalAddOpen, setIsModalAddOpen] = useState(false)
   const [isModalDelete, setIsModalDelete] = useState(false)
@@ -52,20 +56,10 @@ const WorkOrder: React.FC = ({}) => {
 
   const onDeleteConfirm = async () => { 
     deleteWorkOrder(deleteDataId)
-    .then(res => {
+    .then(() => {
       setIsModalDelete(false)
       getWorkOrderData()
-      console.log(res)
     })
-
-    // const { error } = await supabase
-    // .from('work_order')
-    // .delete()
-    // .in('created_id', deleteDataId)
-
-    // setIsModalDelete(false)
-    // if(!error) return useMessage(2, 'Delete success!','success')
-    // getWorkOrderData()  
   }
 
   const onDeleteModal = () => {
@@ -190,6 +184,25 @@ const WorkOrder: React.FC = ({}) => {
     }
   }
 
+  // filter data
+  const getFilterType = async() => {
+    getFilterWorkType().then(res => setTypeFilter(res as []))
+  }
+
+  const getFilterStatus = async() => {
+    getFilterWorkStatus().then(res => setStatusFilter(res as []))
+  }
+
+  const searchFilterTypeData = async(e: string) => {
+    setFilterTypeValue(e)
+    searchTypeData(e, filterStatusValue).then(res => console.log(res))
+  }
+
+  const searchFilterStatusData = async(e: string) => {
+    setFilterStatusValue(e)
+    searchTypeData(filterTypeValue, e).then(res => console.log(res))
+  }
+
   useEffect(() => {
     getWorkOrderData()
   }, [])
@@ -200,10 +213,43 @@ const WorkOrder: React.FC = ({}) => {
         <Card title="WorkOrder">
           <Row gutter={10}>
             <Col>
-              <Button type='primary' onClick={modalAddHanlder}>Create</Button>
+              <Button 
+                type='primary' 
+                onClick={modalAddHanlder}
+              >
+                  Create
+              </Button>
             </Col>
             <Col>
-              <Button type='primary' danger onClick={onDeleteModal}>Delete</Button>
+              <Button 
+                type='primary' 
+                danger 
+                onClick={onDeleteModal}
+              >
+                Delete
+              </Button>
+            </Col>
+            <Col className='flex-e'>
+              <Select 
+                className='w-40 mr-3' 
+                placeholder="Type" 
+                onFocus={getFilterType}
+                onChange={searchFilterTypeData} 
+                options={typeFilter}
+                value={filterTypeValue}
+                allowClear
+              >  
+              </Select>
+              <Select 
+                className='w-40' 
+                placeholder="Status" 
+                onFocus={getFilterStatus}
+                onChange={searchFilterStatusData} 
+                options={statusFilter}
+                value={filterStatusValue}
+                allowClear
+              >  
+              </Select>
             </Col>
           </Row>
           <Modal 

@@ -9,14 +9,11 @@ interface workTableProps {
 }
 
 const WorkTable: React.FC<workTableProps> = ({ workInfo, onChangeSelectData }) => {
-
   const rowSelection = {
     onChange: (selectedRowKeys: React.Key[], selectedRows: tableItems[]) => {
       onChangeSelectData(selectedRows)
     }
   }
-
-  
 
   const colums: TableColumnsType<tableItems> = [{
     title: 'Number',
@@ -31,6 +28,11 @@ const WorkTable: React.FC<workTableProps> = ({ workInfo, onChangeSelectData }) =
     dataIndex: 'created_product',
     key: 'created_product',
     width: 200
+  }, {
+    title: 'Type',
+    dataIndex: 'created_type',
+    key: 'created_type',
+    width: 120
   }, {
     title: 'Brand',
     dataIndex: 'created_brand',
@@ -56,7 +58,7 @@ const WorkTable: React.FC<workTableProps> = ({ workInfo, onChangeSelectData }) =
     key: 'created_name',
     width: 150
   }, {
-    title: 'Create Time',
+    title: 'Created Time',
     dataIndex: 'created_at',
     key: 'created_at',
     width: 200,
