@@ -21,8 +21,10 @@ export const getFilterWorkStatus = async () => {
   }
 }
 
-export const searchTypeData = async (type?: string | null, status?: string | null) => {
-  if(type && !status) {
+export const searchTypeData = async (
+  type?: string | null, status?: string | null, startTime?: string | null, endTime?: string | null
+) => {
+  if(type && !status && !startTime) {
     const {data, error} = await supabase.
     from('work_order')
     .select('*')
@@ -34,7 +36,7 @@ export const searchTypeData = async (type?: string | null, status?: string | nul
     } catch (error) {
       throw error
     }
-  }else if(status && !type) {
+  }else if(status && !type && !startTime) {
     const {data, error} = await supabase.
     from('work_order')
     .select('*')
@@ -46,7 +48,7 @@ export const searchTypeData = async (type?: string | null, status?: string | nul
     } catch (error) {
       throw error
     }  
-  }else if(status && type) {
+  }else if(status && type && !startTime) {
     const {data, error} = await supabase.
     from('work_order')
     .select('*')
@@ -59,6 +61,27 @@ export const searchTypeData = async (type?: string | null, status?: string | nul
     } catch (error) {
       throw error
     }
+  }else if(!type && !status && startTime) {
+    const {data, error} = await supabase
+    .from('work_order')
+    .select('*')
+    .gte('created_time', startTime)
+    .lte('created_time', endTime)
+
+    try {
+      if (data) return data
+      useMessage(2, error!.message, 'error')
+    } catch (error) {
+      throw error
+    }
+
+
+  }else if(type &&!status && startTime) {
+
+  }else if(!type &&status && startTime) {
+
+  }else if(type &&status && startTime) {
+
   }else {
     const {data, error} = await supabase.
     from('work_order')

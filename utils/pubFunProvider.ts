@@ -21,6 +21,7 @@ export const getTimeNumber = () => {
   let mm = date.getMinutes()<10? '0'+date.getMinutes():date.getMinutes()
   let s = date.getSeconds()<10? '0'+date.getSeconds():date.getSeconds()
   
+  let timeFilter = y + '-' + m + '-' + d + ' ' + h + ':' + mm + ':' + s
   let timeNumber = y + '' + m + '' + d + '' + h + '' + mm + '' +  s + number
-  return timeNumber
+  return [timeFilter, timeNumber]
 }

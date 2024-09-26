@@ -59,8 +59,8 @@ const WorkTable: React.FC<workTableProps> = ({ workInfo, onChangeSelectData }) =
     width: 150
   }, {
     title: 'Created Time',
-    dataIndex: 'created_at',
-    key: 'created_at',
+    dataIndex: 'created_time',
+    key: 'created_time',
     width: 200,
   }, {
     title: 'Remark',

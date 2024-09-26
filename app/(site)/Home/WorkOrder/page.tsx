@@ -17,10 +17,13 @@ import {
   deleteWorkOrder
 } from '@/utils/providerSelectData'
 import { getFilterWorkStatus, getFilterWorkType, searchTypeData } from '@/utils/pubFilterProviders'
-import { Card, Space, Button, Row, Col, Modal, Divider, Select, Input } from 'antd'
+import { Card, Space, Button, Row, Col, Modal, Divider, Select, Input, DatePicker } from 'antd'
+import { IoIosSearch } from "react-icons/io"
 import { useState, useEffect } from 'react'
+import { getTimeNumber } from '@/utils/pubFunProvider'
 import WorkTable from '../components/WorkTable'
 import useMessage from '@/utils/message'
+import dayjs from 'dayjs'
 
 type tableData = tableItems[]
 type typeDataProps = typeDataName[]
@@ -36,6 +39,8 @@ const WorkOrder: React.FC = ({}) => {
   const [statusFilter, setStatusFilter] = useState<[]>([])
   const [filterTypeValue, setFilterTypeValue] = useState<string | null>(null)
   const [filterStatusValue, setFilterStatusValue] = useState<string | null>(null)
+  const [startTime, setStartTime] = useState<string | null>(null)
+  const [endTime, setEndTime] = useState<string | null>(null)
 
   const [isModalAddOpen, setIsModalAddOpen] = useState(false)
   const [isModalDelete, setIsModalDelete] = useState(false)
@@ -45,6 +50,7 @@ const WorkOrder: React.FC = ({}) => {
   const [typeStatus, setTypeStatus] = useState<statusItemProps>([])
   const [workOrderForm, setWorkOrderForm] = useState<workOrderFormProps>({
     created_product: '',
+    created_time: '',
     created_name: '',
     created_text: '',
     created_solved: '',
@@ -77,7 +83,10 @@ const WorkOrder: React.FC = ({}) => {
     getProfiles()
     .then(res => {
       if(res) {
-        setWorkOrderForm({...workOrderForm, created_name: res[0].username})
+        setWorkOrderForm({...workOrderForm, 
+          created_name: res[0].username,
+          created_time: getTimeNumber()[0]
+        })
       }
     })
   }
@@ -85,7 +94,7 @@ const WorkOrder: React.FC = ({}) => {
   const modalAddHanlder = async () => {
     setIsModalAddOpen(true)
     getProfilesUsername()
-
+    
     // get Product type
     getWorkOrderType()
     .then(res => {
@@ -195,12 +204,24 @@ const WorkOrder: React.FC = ({}) => {
 
   const searchFilterTypeData = async(e: string) => {
     setFilterTypeValue(e)
-    searchTypeData(e, filterStatusValue).then(res => console.log(res))
   }
 
   const searchFilterStatusData = async(e: string) => {
     setFilterStatusValue(e)
-    searchTypeData(filterTypeValue, e).then(res => console.log(res))
+  }
+
+  const getTimeFilterData = (dateString: any) => {
+    let startTime = dateString? dateString[0].$d : ''
+    let endTime = dateString? dateString[1].$d : ''
+    startTime = dayjs(startTime).format('YYYY-MM-DD')
+    endTime = dayjs(endTime).format('YYYY-MM-DD')
+    setStartTime(startTime)
+    setEndTime(endTime)
+  }
+
+  const searchFilterWorkOrderData = () => {
+    searchTypeData(filterTypeValue, filterStatusValue, startTime, endTime)
+    .then(res => console.log(res))
   }
 
   useEffect(() => {
@@ -229,7 +250,7 @@ const WorkOrder: React.FC = ({}) => {
                 Delete
               </Button>
             </Col>
-            <Col className='flex-e'>
+            <Col className='flex my-0 mr-0 ml-auto'>
               <Select 
                 className='w-40 mr-3' 
                 placeholder="Type" 
@@ -241,7 +262,7 @@ const WorkOrder: React.FC = ({}) => {
               >  
               </Select>
               <Select 
-                className='w-40' 
+                className='w-40 mr-3' 
                 placeholder="Status" 
                 onFocus={getFilterStatus}
                 onChange={searchFilterStatusData} 
@@ -250,6 +271,12 @@ const WorkOrder: React.FC = ({}) => {
                 allowClear
               >  
               </Select>
+              <DatePicker.RangePicker
+                className='mr-3'
+                onChange={getTimeFilterData} 
+                format={'YYYY-MM-DD'}
+              />
+              <Button type='primary' icon={<IoIosSearch />} onClick={searchFilterWorkOrderData}></Button>
             </Col>
           </Row>
           <Modal 
@@ -274,7 +301,7 @@ const WorkOrder: React.FC = ({}) => {
             <Divider />
             <Space direction="vertical" size="middle" style={{width: '100%'}}>
               <Row gutter={20}>
-                <Col span={12}>
+                <Col span={8}>
                   <label 
                     htmlFor="Product"
                     className='mb-1 flex items-center font-semibold'
@@ -289,7 +316,7 @@ const WorkOrder: React.FC = ({}) => {
                     onChange={e => setWorkOrderForm({...workOrderForm, created_product: e.target.value})}
                   />
                 </Col>
-                <Col span={12}>
+                <Col span={8}>
                   <label 
                     htmlFor="Create_name"
                     className='mb-1 flex items-center font-semibold'
@@ -301,6 +328,20 @@ const WorkOrder: React.FC = ({}) => {
                     style={{ width: '100%' }}
                     readOnly
                     value={workOrderForm.created_name}
+                  />
+                </Col>
+                <Col span={8}>
+                  <label 
+                    htmlFor="Create_name"
+                    className='mb-1 flex items-center font-semibold'
+                  >
+                    <span className='mr-1 text-red-600  font-thin'>*</span>
+                    Create time
+                  </label>
+                  <Input
+                    style={{ width: '100%' }}
+                    readOnly
+                    value={workOrderForm.created_time}
                   />
                 </Col>
               </Row>            

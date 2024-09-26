@@ -1,6 +1,5 @@
 import { supabase } from "./clients"
 import useMessage from "./message"
-import { nanoid } from 'nanoid'
 import dayjs from "dayjs"
 import { getTimeNumber } from "./pubFunProvider"
 
@@ -79,10 +78,7 @@ export const getWorkOrder = async (id?: string) => {
     .match({id: id})
   try {
     if(data) { 
-       data.forEach((item) => { 
-        item.created_at = dayjs(item.created_at).format('YYYY-MM-DD HH:mm:ss')
-      })
-      data.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+      data.sort((a, b) => new Date(b.created_time).getTime() - new Date(a.created_time).getTime())
       return data
     }else {
       useMessage(2, error!.message, 'error')
@@ -95,7 +91,8 @@ export const getWorkOrder = async (id?: string) => {
 // insert workOrder
 export const insertUpdateWorkOrder = async ({
     created_product, 
-    created_name, 
+    created_name,
+    created_time, 
     created_text, 
     created_solved, 
     created_type,
@@ -106,8 +103,9 @@ export const insertUpdateWorkOrder = async ({
   const {data, error} = await supabase
   .from('work_order')
   .insert({
-    created_id: getTimeNumber(),
+    created_id: getTimeNumber()[1],
     created_product,
+    created_time,
     created_name: created_name,
     created_text: created_text,
     created_solved,
