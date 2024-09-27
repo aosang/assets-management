@@ -6,12 +6,19 @@ import { tableItems } from "@/utils/dbType"
 interface workTableProps {
   workInfo: tableItems[]
   onChangeSelectData: (data:tableItems[]) => void
+  onGetEditData: (data:tableItems, typeNum: number) => void
 }
 
-const WorkTable: React.FC<workTableProps> = ({ workInfo, onChangeSelectData }) => {
+const WorkTable: React.FC<workTableProps> = ({ workInfo, onChangeSelectData, onGetEditData }) => {
   const rowSelection = {
     onChange: (selectedRowKeys: React.Key[], selectedRows: tableItems[]) => {
       onChangeSelectData(selectedRows)
+    }
+  }
+
+  const onRowData = {
+    onClick: (record: tableItems) => {
+      onGetEditData(record, 1)
     }
   }
 
@@ -85,6 +92,7 @@ const WorkTable: React.FC<workTableProps> = ({ workInfo, onChangeSelectData }) =
               className="mr-2 text-xs" 
               size="small" 
               type="primary"
+              onClick={() => onGetEditData}
             >
               Edit
             </Button>
@@ -98,9 +106,12 @@ const WorkTable: React.FC<workTableProps> = ({ workInfo, onChangeSelectData }) =
     <>
       <div className="mt-5">
         <Table
-          rowSelection={{
-           ...rowSelection
-          }}
+          rowSelection={{...rowSelection}}
+          onRow={(record) => ({
+            onClick: () => {
+              onRowData.onClick(record)
+            }
+          })}
           columns={colums} 
           dataSource={workInfo}
           bordered

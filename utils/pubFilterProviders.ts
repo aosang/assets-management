@@ -75,11 +75,35 @@ export const searchTypeData = async (
       throw error
     }
 
-
   }else if(type &&!status && startTime) {
+    const {data, error} = await supabase
+    .from('work_order')
+    .select('*')
+    .eq('created_type', type)
+    .gte('created_time', startTime)
+    .lte('created_time', endTime)
+
+    try {
+      if (data) return data
+      useMessage(2, error!.message, 'error')
+    } catch (error) {
+      throw error
+    }
 
   }else if(!type &&status && startTime) {
+    const {data, error} = await supabase
+    .from('work_order')
+    .select('*')
+    .eq('created_status', status)
+    .gte('created_time', startTime)
+    .lte('created_time', endTime)
 
+    try {
+      if (data) return data
+      useMessage(2, error!.message, 'error')
+    } catch (error) {
+      throw error
+    }
   }else if(type &&status && startTime) {
 
   }else {

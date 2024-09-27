@@ -1,6 +1,9 @@
 "use client"
 import React, { useEffect, useState } from "react"
 import Image from "next/image"
+import { getSession } from '@/utils/providerSelectData'
+import { useRouter } from 'next/navigation'
+
 
 const maskStyle: React.CSSProperties = {
   position: 'fixed',
@@ -24,12 +27,25 @@ type isShowMask = boolean
 
 const MaskLoad = () => {
   const [isShow, setIsShow] = useState<isShowMask>(true)
+  const router = useRouter()
+
+  const checkSession =  () => {
+    getSession().then((res) => {
+      if (res?.session !== null) {
+        setTimeout(() => {
+          router.replace('/Home')
+          setIsShow(false)
+        }, 2000)
+      }else {
+        setIsShow(false)
+        router.replace('/')
+      }
+    })
+  }
 
   useEffect(() => {
-    setTimeout(() => {
-      setIsShow(false)
-    }, 500)
-  }, [isShow])
+    checkSession()
+  })
   return (
     <div>
       {isShow && 

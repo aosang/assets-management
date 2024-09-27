@@ -37,7 +37,6 @@ const DropDownMenu: React.FC<userInfoProps> = ({userInfo}) => {
       const { error } = await supabase.auth.signOut()
       if(error) throw new Error(error.message)
       router.push('/')
-      router.refresh()
       useMessage(2, 'Sign out!','success')
     }
   }

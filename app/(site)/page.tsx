@@ -28,7 +28,7 @@ const Auth: React.FC = () => {
     if (session) {
       setMySession(session)
       router.push('/Home')
-    } 
+    }
   }
 
   // 注册提交表单
@@ -78,8 +78,8 @@ const Auth: React.FC = () => {
             useMessage(2, 'Login in successfully!', 'success')
             router.push('/Home')
           } else if (error) {
-            if(error.message === 'Invalid login credentials')
-            useMessage(2, 'Incorrect email or password.', 'error')
+            if (error.message === 'Invalid login credentials')
+              useMessage(2, 'Incorrect email or password.', 'error')
           }
         } catch (error) {
           throw error
@@ -120,7 +120,7 @@ const Auth: React.FC = () => {
     <>
       <MaskLoad />
       {!mySession && <div>
-        {isVerify? <Verify emailAddress={formState.email} /> : (
+        {isVerify ? <Verify emailAddress={formState.email} /> : (
           <div className={authScss.background}>
             <div className={authScss.signUpForm}>
               <h3>Assets Management</h3>
