@@ -5,7 +5,6 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import SideBarItem from './components/sideBarItem'
 import DropDownMenu from './components/dropDownMenu'
-import siderBarCss from './sideBar.module.scss'
 
 
 const { Header, Content, Footer, Sider } = Layout;
@@ -23,7 +22,7 @@ const siderStyle: React.CSSProperties = {
 
 const headerStyle: React.CSSProperties = {
   position: 'fixed',
-  width: '87%',
+  width: '86%',
   top: '0',
   right: '0',
   color: '#001529',
@@ -34,7 +33,7 @@ const headerStyle: React.CSSProperties = {
 }
 
 const contentStyle: React.CSSProperties = {
-  width: 'calc(100% - 13%)',
+  width: 'calc(100% - 14%)',
   margin: '64px 0 48px auto'
 }
 
@@ -42,7 +41,7 @@ const footerStyle: React.CSSProperties = {
   position: 'fixed',
   bottom: 0,
   right: 0,
-  width: 'calc(100% - 13%)',
+  width: 'calc(100% - 14%)',
   height: 48,
   display: 'flex',
   alignItems: 'center',
@@ -89,8 +88,16 @@ const AppLayout = ({children}) => {
     <div>
       {userInfo && (
         <Layout style={{ minHeight: '100vh'}}>
-          <Sider width="13%" style={siderStyle}>
-            <div className={siderBarCss.sidebarTop}>Assets Management</div>
+          <Sider width="14%" style={siderStyle}>
+            <div className='
+            h-16
+           text-white 
+            text-lg
+            leading-64 
+            whitespace-nowrap
+            border-b
+            border-gray-600'
+          >Assets Management</div>
             <SideBarItem />
           </Sider>
           <Layout>

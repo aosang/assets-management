@@ -1,20 +1,24 @@
 import { Menu } from 'antd'
-import { DiffOutlined } from '@ant-design/icons'
 import type { MenuProps } from 'antd'
 import { useRouter } from 'next/navigation'
 import {useState, useEffect} from 'react'
-import { AiTwotoneHome, AiFillProfile  } from "react-icons/ai";
+import { AiTwotoneHome, AiFillProfile  } from "react-icons/ai"
+import { RiComputerFill  } from 'react-icons/ri'
 
 type MenuItem = Required<MenuProps>['items'][number]
 
 const items: MenuItem[] = [{
   key: 'Home',
   label: 'Home',
-  icon: <AiTwotoneHome />,
+  icon: <AiTwotoneHome style={{fontSize: '16px'}} />,
 }, {
   key: 'WorkOrder',
   label: 'WorkOrder',
-  icon: <AiFillProfile />,
+  icon: <AiFillProfile style={{fontSize: '16px'}} />,
+}, {
+  key: 'WorkItAssets',
+  label: 'IT Assets',
+  icon: <RiComputerFill style={{fontSize: '16px'}} />,
 }]
 
 const SideBarItem: React.FC = () => {

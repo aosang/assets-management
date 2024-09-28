@@ -26,7 +26,7 @@ const WorkTable: React.FC<workTableProps> = ({ workInfo, onChangeSelectData, onG
     title: 'Number',
     dataIndex: 'created_id',
     key: 'created_id',
-    width: 200,
+    width: 160,
     render: (text: string) => {
       return <a>{text}</a>
     }
@@ -73,21 +73,14 @@ const WorkTable: React.FC<workTableProps> = ({ workInfo, onChangeSelectData, onG
     title: 'Remark',
     dataIndex: 'created_remark',
     key: 'created_remark',
+    width: 260
   }, {
     title: 'Other',
-    width: 180,
-  
+    width: 100,
     render: () => {
       return (
         <>
           <div>
-            <Button 
-              className="mr-2 text-xs" 
-              size="small" 
-              type="primary"
-            >
-              Details
-            </Button>
             <Button 
               className="mr-2 text-xs" 
               size="small" 
@@ -127,4 +120,4 @@ const WorkTable: React.FC<workTableProps> = ({ workInfo, onChangeSelectData, onG
   )
 }
  
-export default WorkTable;
+export default WorkTable
