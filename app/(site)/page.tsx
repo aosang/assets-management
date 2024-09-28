@@ -31,6 +31,15 @@ const Auth: React.FC = () => {
     }
   }
 
+  // 回车登录
+  const onPressEnterSigin = (e:any) => { 
+    if(!formVisiable) {
+      if(e.key === 'Enter') validateSignUpForm(2)
+    } else {
+      if(e.key === 'Enter') validateSignUpForm(1)
+    }
+  }
+
   // 注册提交表单
   const validateSignUpForm = async (type: number) => {
     const { email, password, company, username } = formState
@@ -125,7 +134,7 @@ const Auth: React.FC = () => {
             <div className={authScss.signUpForm}>
               <h3>Assets Management</h3>
               <span className={authScss.line}></span>
-              {formVisiable ? (
+              {formVisiable? (
                 <>
                   {/* sign up */}
                   <form>
@@ -136,6 +145,7 @@ const Auth: React.FC = () => {
                           placeholder="Enter email"
                           value={formState.email}
                           onChange={changeEmailValue}
+                          onKeyDown={onPressEnterSigin}
                         />
                       </li>
                       <li className={authScss.commitFormItem}>
@@ -144,6 +154,7 @@ const Auth: React.FC = () => {
                           placeholder="Enter password"
                           value={formState.password}
                           onChange={changePasswordValue}
+                          onKeyDown={onPressEnterSigin}
                         />
                       </li>
                       <li className={authScss.commitFormItem}>
@@ -152,6 +163,7 @@ const Auth: React.FC = () => {
                           placeholder="Company name"
                           value={formState.company}
                           onChange={changeCompanyValue}
+                          onKeyDown={onPressEnterSigin}
                         />
                       </li>
                       <li className={authScss.commitFormItem}>
@@ -160,6 +172,7 @@ const Auth: React.FC = () => {
                           placeholder="Enter username"
                           value={formState.username}
                           onChange={changeUsernameValue}
+                          onKeyDown={onPressEnterSigin}
                         />
                       </li>
                     </ul>
@@ -192,6 +205,7 @@ const Auth: React.FC = () => {
                           placeholder="Enter email"
                           value={formState.email}
                           onChange={changeEmailValue}
+                          onKeyDown={onPressEnterSigin}
                         />
                       </li>
                       <li className={authScss.commitFormItem}>
@@ -200,6 +214,7 @@ const Auth: React.FC = () => {
                           placeholder="Enter password"
                           value={formState.password}
                           onChange={changePasswordValue}
+                          onKeyDown={onPressEnterSigin}
                         />
                       </li>
                     </ul>

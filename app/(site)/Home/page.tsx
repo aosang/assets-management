@@ -90,7 +90,7 @@ const Home = () => {
                 </div>
                 <div style={workTotal}>
                   <span style={{fontSize: '36px', fontWeight: '600'}}>10</span>
-                  <p style={{fontSize: '15px'}}>Pending</p>
+                  <p style={{fontSize: '15px'}}>Processing</p>
                 </div>
               </div>
             </Col>
@@ -101,7 +101,7 @@ const Home = () => {
                 </div>
                 <div style={workTotal}>
                   <span style={{fontSize: '36px', fontWeight: '600'}}>10</span>
-                  <p style={{fontSize: '15px'}}>Paused</p>
+                  <p style={{fontSize: '15px'}}>Pending</p>
                 </div>
               </div>
             </Col>
