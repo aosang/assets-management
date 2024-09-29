@@ -43,7 +43,9 @@ export interface typeDataName {
 export interface typeDataBrand {
   id: string
   value: string
-  key: string
+  label: string
+  key: string,
+  logo_url: string
 }
 
 export interface statusItem {

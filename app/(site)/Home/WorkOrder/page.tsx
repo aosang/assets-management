@@ -25,6 +25,7 @@ import { getTimeNumber } from '@/utils/pubFunProvider'
 import WorkTable from '../components/WorkTable'
 import useMessage from '@/utils/message'
 import dayjs from 'dayjs'
+import Image from 'next/image'
 
 type tableData = tableItems[]
 type typeDataProps = typeDataName[]
@@ -280,8 +281,6 @@ const WorkOrder: React.FC = ({}) => {
     })
   }
 
-  
-
   useEffect(() => {
     getWorkOrderData()
   }, [])
@@ -439,12 +438,18 @@ const WorkOrder: React.FC = ({}) => {
                     <Select
                       style={{ width: '100%' }}
                       placeholder='Product brand'
-                      options={typeDataBrand}
+                      options={typeDataBrand.map(item => {
+                        return {
+                          label: <div className='flex'>
+                              {<Image src={item.logo_url} width={22} height={0} alt='avatar' className='mr-2' />}<span className='w-7'>{item.label}</span>
+                            </div>,
+                          value: item.value
+                        }
+                      })}
                       value={workOrderForm.created_brand}
                       onChange={e => setWorkOrderForm({...workOrderForm, created_brand: e})}
                       allowClear
-                      defaultValue={typeDataBrand[0].key}
-                    >
+                    > 
                     </Select>
                   </Col>
                 )}

@@ -49,7 +49,9 @@ export const getWorkOrderType = async () => {
 // get workOrder brand
 export const getWorkBrand = async (keys: string) => {
   let key = keys
-  const {data, error} = await supabase.from('product_type').select(`key, product_brand (value)`).eq('key', key)
+  const {data, error} = await supabase.from('product_type').select(`key, product_brand (value, label, logo_url)`).eq('key', key)
+
+  console.log(data)
   try {
     if(data) return data
     useMessage(2, error!.message, 'error')
