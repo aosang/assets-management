@@ -46,6 +46,7 @@ const WorkOrder: React.FC = ({}) => {
 
   const [isModalAddOpen, setIsModalAddOpen] = useState(false)
   const [isModalDelete, setIsModalDelete] = useState(false)
+  const [selectOpen, setSelectOpen] = useState<boolean>(false)
 
   const [isModalEditOpen, setIsModalEditOpen] = useState(false)
   const [editId, setEditId] = useState<string>('')
@@ -227,9 +228,13 @@ const WorkOrder: React.FC = ({}) => {
     if(keys) {
       getWorkBrand(keys)
       .then(res => {
+        let brandData = res![0].product_brand.reverse() as typeDataBrandProps
+        brandData = brandData.sort((a, b) => {
+          return Number(a.brand_id) - Number(b.brand_id)
+        })
         setLayoutWidth(8)
         setProductBrandShow(true)
-        setTypeDataBrand(res![0].product_brand as typeDataBrandProps)
+        setTypeDataBrand(brandData)
         setWorkOrderForm({
           ...workOrderForm, 
           created_brand: res![0].product_brand[0].value,
@@ -279,6 +284,10 @@ const WorkOrder: React.FC = ({}) => {
     .then(res => {
       setWorkData(res as tableItems[])
     })
+  }
+
+  const onTriggerSelected = (open: boolean) => {
+    setSelectOpen(open)
   }
 
   useEffect(() => {
@@ -440,8 +449,9 @@ const WorkOrder: React.FC = ({}) => {
                       placeholder='Product brand'
                       options={typeDataBrand.map(item => {
                         return {
-                          label: <div className='flex'>
-                              {<Image src={item.logo_url} width={22} height={0} alt='avatar' className='mr-2' />}<span className='w-7'>{item.label}</span>
+                          label: 
+                            <div className='flex'>
+                              {selectOpen && <img src={item.logo_url} alt='avatar' className='mr-2 w-6' />}<span className='w-7 mt-0.5'>{item.value}</span>
                             </div>,
                           value: item.value
                         }
@@ -449,6 +459,7 @@ const WorkOrder: React.FC = ({}) => {
                       value={workOrderForm.created_brand}
                       onChange={e => setWorkOrderForm({...workOrderForm, created_brand: e})}
                       allowClear
+                      onDropdownVisibleChange={onTriggerSelected}
                     > 
                     </Select>
                   </Col>
@@ -458,7 +469,6 @@ const WorkOrder: React.FC = ({}) => {
                   <label 
                     htmlFor="Status"
                     className='mb-1 flex items-center font-semibold'
-
                   >
                     <span className='mr-1 text-red-600 font-thin'>*</span>
                     Status
@@ -641,7 +651,6 @@ const WorkOrder: React.FC = ({}) => {
                   <label 
                     htmlFor="Status"
                     className='mb-1 flex items-center font-semibold'
-
                   >
                     <span className='mr-1 text-red-600 font-thin'>*</span>
                     Status

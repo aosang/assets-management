@@ -15,7 +15,11 @@ const config: Config = {
       },
       lineHeight: {
         '64': '64px'
+      },
+      marginTop: {
+        '0.5': '2px'
       }
+
     },
   },
   plugins: [],
