@@ -46,20 +46,6 @@ const WorkTable: React.FC<workTableProps> = ({ workInfo, onChangeSelectData, onG
     key: 'created_brand',
     width: 120
   }, {
-    title: 'Status',
-    dataIndex: 'created_status',
-    key: 'created_status',
-    width: 100,
-    render: (text: string) => {
-      return (
-        <>
-          {text === 'Finished' && <Tag color="green">Finished</Tag>}
-          {text === 'Processing' && <Tag color="red">Processing</Tag>}
-          {text === 'Pending' && <Tag color="orange">Pending</Tag>}
-        </>
-      )
-    }
-  }, {
     title: 'Created name',
     dataIndex: 'created_name',
     key: 'created_name',
@@ -70,10 +56,25 @@ const WorkTable: React.FC<workTableProps> = ({ workInfo, onChangeSelectData, onG
     key: 'created_time',
     width: 200,
   }, {
-    title: 'Remark',
-    dataIndex: 'created_remark',
-    key: 'created_remark',
-    width: 260
+    title: 'Problem',
+    dataIndex: 'created_text',
+    key: 'created_text',
+    width: 260,
+    ellipsis: true
+  }, {
+    title: 'Status',
+    dataIndex: 'created_status',
+    key: 'created_status',
+    width: 120,
+    render: (text: string) => {
+      return (
+        <>
+          {text === 'Finished' && <Tag color="green">Finished</Tag>}
+          {text === 'Processing' && <Tag color="red">Processing</Tag>}
+          {text === 'Pending' && <Tag color="orange">Pending</Tag>}
+        </>
+      )
+    }
   }, {
     title: 'Other',
     width: 100,

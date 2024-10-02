@@ -25,7 +25,6 @@ import { getTimeNumber } from '@/utils/pubFunProvider'
 import WorkTable from '../components/WorkTable'
 import useMessage from '@/utils/message'
 import dayjs from 'dayjs'
-import Image from 'next/image'
 
 type tableData = tableItems[]
 type typeDataProps = typeDataName[]

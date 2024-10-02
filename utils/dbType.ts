@@ -53,3 +53,14 @@ export interface statusItem {
   id: string
   status: string
 }
+
+export interface productItem {
+  id: string
+  product_id: string
+  product_time: string
+  product_name: string
+  product_type: string
+  product_brand: string
+  product_num: string
+  product_remark: string
+}

@@ -143,5 +143,4 @@ export const deleteWorkOrder = async (deleteId: string[]) => {
   }catch (error) {
     throw error
   }
-
 }
