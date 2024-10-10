@@ -56,7 +56,6 @@ const AppLayout = ({children}) => {
   const [userInfo, setUserInfo] = useState<any>('')
   const router = useRouter()
 
-  
   const getUser = async () => {
     const { data: { user }, error } = await supabase.auth.getUser()
     try{
@@ -97,7 +96,9 @@ const AppLayout = ({children}) => {
             whitespace-nowrap
             border-b
             border-gray-600'
-          >Assets Management</div>
+          >
+            Assets Management
+          </div>
             <SideBarItem />
           </Sider>
           <Layout>

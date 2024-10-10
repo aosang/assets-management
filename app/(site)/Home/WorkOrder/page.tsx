@@ -636,11 +636,19 @@ const WorkOrder: React.FC = ({}) => {
                     <Select
                       style={{ width: '100%' }}
                       placeholder='Product brand'
-                      options={typeDataBrand}
+                      options={typeDataBrand.map(item => {
+                        return {
+                          label: 
+                            <div className='flex'>
+                              {selectOpen && <img src={item.logo_url} alt='avatar' className='mr-2 w-6' />}<span className='w-7 mt-0.5'>{item.value}</span>
+                            </div>,
+                          value: item.value
+                        }
+                      })}
                       value={workOrderForm.created_brand}
                       onChange={e => setWorkOrderForm({...workOrderForm, created_brand: e})}
                       allowClear
-                      defaultValue={typeDataBrand[0].key}
+                      onDropdownVisibleChange={onTriggerSelected}
                     >
                     </Select>
                   </Col>
