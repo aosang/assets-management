@@ -1,5 +1,5 @@
 'use client'
-import { Button, Table, Tag, Modal  } from "antd"
+import { Button, Table, Tag } from "antd"
 import type { TableColumnsType} from 'antd'
 import { tableItems } from "@/utils/dbType"
 
@@ -26,40 +26,32 @@ const WorkTable: React.FC<workTableProps> = ({ workInfo, onChangeSelectData, onG
     title: 'Number',
     dataIndex: 'created_id',
     key: 'created_id',
-    width: 160,
-    render: (text: string) => {
-      return <a>{text}</a>
-    }
+    width: 160
   }, {
     title: 'Product',
     dataIndex: 'created_product',
-    key: 'created_product',
-    width: 200
+    key: 'created_product'
   }, {
     title: 'Type',
     dataIndex: 'created_type',
     key: 'created_type',
-    width: 120
   }, {
     title: 'Brand',
     dataIndex: 'created_brand',
     key: 'created_brand',
-    width: 120
   }, {
     title: 'Created name',
     dataIndex: 'created_name',
-    key: 'created_name',
-    width: 150
+    key: 'created_name'
   }, {
     title: 'Created Time',
     dataIndex: 'created_time',
     key: 'created_time',
-    width: 200,
+    width: 160
   }, {
     title: 'Problem',
     dataIndex: 'created_text',
     key: 'created_text',
-    width: 260,
     ellipsis: true
   }, {
     title: 'Status',

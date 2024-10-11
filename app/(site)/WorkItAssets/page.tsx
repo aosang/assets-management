@@ -4,6 +4,7 @@ import WorkItAssetsTable from "../components/WorkItAssetsTable"
 import { productItem } from '@/utils/dbType'
 import { useState, useEffect } from "react"
 import { getItAssetsTabbleData } from '@/utils/providerItAssetsData'
+import SideBar from '../components/Sidebar'
 
 type asstesDataProps = productItem[]
 
@@ -21,11 +22,14 @@ const WorkItAssets = () => {
     getMyItAssetsData()
   })
   return (
-    <div className="p-3">
-      <Card title="IT Assets">
-        <WorkItAssetsTable assetsInfo={assetsData} />
-      </Card>
-    </div>
+    <SideBar>
+      <div className="p-3">
+        <Card title="IT Assets">
+          <WorkItAssetsTable assetsInfo={assetsData} />
+        </Card>
+      </div>
+    </SideBar>
+    
   )
 }
  

@@ -56,7 +56,7 @@ const SideBarItem: React.FC = () => {
 
   useEffect(() => {
     let currentUrlLink = window.location.pathname
-    currentUrlLink === '/Home'? currentUrlLink = currentUrlLink.split('/')[1] : currentUrlLink = currentUrlLink.split('/')[2]
+    currentUrlLink = currentUrlLink.split('/')[1] 
     setCurrentUrl(currentUrlLink)
   }, [])
 

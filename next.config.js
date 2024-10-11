@@ -6,9 +6,10 @@ const nextConfig = {
     domains: ['www.wangle.run'], // 确保这里的数组包含你要使用的域名
     unoptimized: true,
   },
-  output: 'export',
-  basePath: '/out',
-  assetPrefix: './out'
+  // trailingSlash: true,
+  // output: 'export',
+  // basePath: '',
+  // assetPrefix: '',
 }
 
 module.exports = nextConfig
