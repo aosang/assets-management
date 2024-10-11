@@ -1,7 +1,25 @@
-import { Card, Col, Row, Input, Upload } from "antd"
+'use client'
+import React, { useState } from "react"
+import { Card, Col, Row, Input, Image, Upload } from "antd"
+import { PlusOutlined } from '@ant-design/icons'
 import dayjs from "dayjs"
 
 const Profile = () => {
+  const [fileList, setFileList] = useState([])
+  const [imageUrl, setImageUrl] = useState<string>()
+
+  const uploadButton = (
+    <button style={{border: 0, background: 'none'}} type="button">
+      <PlusOutlined />
+      <div className="ant-upload-text">Upload</div>
+    </button>
+  )
+
+  // upload images
+  const uploadAvatarImage: React.ChangeEventHandler<HTMLInputElement> = async (e: any) => {
+    console.log(e.target.files[0])
+  }
+
   return (
     <div className="p-3">
       <Card title="My Infomation">
@@ -33,7 +51,21 @@ const Profile = () => {
         </Row>
         {/* upload avatar image */}
         <div className="mt-3">
-          
+          <label htmlFor="avatar" className="font-semibold">Avatar</label>
+          {/* <Upload 
+            listType="picture-card" 
+            className="mt-1"
+            onChange={uploadAvatarImage}
+            maxCount={1}
+          >
+            {imageUrl? <img src={imageUrl} alt="avatar" style={{ width: '100%' }} /> : uploadButton}
+          </Upload> */}
+          <input
+            type="file"
+            id="single"
+            accept="image/*"
+            onChange={uploadAvatarImage}
+        />
         </div>
       </Card>
     </div>

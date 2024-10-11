@@ -7,7 +7,7 @@ interface itAssetsTableProps  {
   assetsInfo: productItem[]
 }
 
-const workItAssets: React.FC<itAssetsTableProps> = ({ assetsInfo }) => {
+const WorkItAssetsTable: React.FC<itAssetsTableProps> = ({ assetsInfo }) => {
   const columns = [{
     title: 'Number',
     dataIndex: 'product_id',
@@ -78,4 +78,4 @@ const workItAssets: React.FC<itAssetsTableProps> = ({ assetsInfo }) => {
   )
 }
  
-export default workItAssets
+export default WorkItAssetsTable

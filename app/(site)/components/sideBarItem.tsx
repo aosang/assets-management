@@ -26,6 +26,8 @@ const items: MenuItem[] = [{
   key: 'WorkItAssets',
   label: 'IT Assets',
   icon: <RiComputerFill style={{fontSize: '16px'}} />,
+  
+
   style: {
     marginBottom: '12px'
   }
@@ -39,13 +41,17 @@ const SideBarItem: React.FC = () => {
   const router = useRouter()
   const [currentUrl, setCurrentUrl] = useState<string>('')
   const swithcMenuItem: MenuProps['onClick'] = (e: any) => {
-    if(e.key === 'Home') {
-      router.push(`/${e.key}`)
-      setCurrentUrl(e.key)
-    } else {
-      router.push(`/Home/${e.key}`)
-      setCurrentUrl(e.key)
-    }
+    router.push(`/${e.key}`)
+
+    // if(e.key === 'Home') {
+    //   console.log('1', e.key);
+    //   router.push(`/${e.key}`)
+    //   setCurrentUrl(e.key)
+    // } else {
+    //   console.log('2', e.key);      
+    //   router.push(`/Home/${e.key}`)
+    //   setCurrentUrl(e.key)
+    // }
   }
 
   useEffect(() => {

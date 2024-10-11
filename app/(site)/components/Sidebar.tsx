@@ -3,8 +3,8 @@ import { Layout } from 'antd';
 import { supabase } from '@/utils/clients'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import SideBarItem from './components/sideBarItem'
-import DropDownMenu from './components/dropDownMenu'
+import SideBarItem from './sideBarItem'
+import DropDownMenu from './dropDownMenu'
 
 
 const { Header, Content, Footer, Sider } = Layout;

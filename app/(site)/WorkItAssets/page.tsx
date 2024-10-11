@@ -1,13 +1,13 @@
 'use client'
 import { Card } from "antd"
-import WorkItAssets from "../components/WorkItAssets"
+import WorkItAssetsTable from "../components/WorkItAssetsTable"
 import { productItem } from '@/utils/dbType'
 import { useState, useEffect } from "react"
 import { getItAssetsTabbleData } from '@/utils/providerItAssetsData'
 
 type asstesDataProps = productItem[]
 
-const workItAssets = () => {
+const WorkItAssets = () => {
   const [assetsData, setAssetsData] = useState<asstesDataProps>([])
 
   const getMyItAssetsData = () => {
@@ -23,10 +23,10 @@ const workItAssets = () => {
   return (
     <div className="p-3">
       <Card title="IT Assets">
-        <WorkItAssets assetsInfo={assetsData} />
+        <WorkItAssetsTable assetsInfo={assetsData} />
       </Card>
     </div>
   )
 }
  
-export default workItAssets
+export default WorkItAssets
