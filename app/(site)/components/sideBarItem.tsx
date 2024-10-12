@@ -52,18 +52,20 @@ const SideBarItem: React.FC = () => {
 
   useEffect(() => {
     let currentUrlLink = window.location.pathname
+    currentUrlLink =currentUrlLink.replace(/^.*\/([^\/]+)\/?$/, "$1")
+    setCurrentUrl(currentUrlLink)
 
-    const isProd = process.env.NODE_ENV === 'production'
-    if(isProd) {
-      currentUrlLink === '/Home/' || '/Home'? currentUrlLink = currentUrlLink.replace(/\//g, "") : currentUrlLink = currentUrlLink.match(/[^\/]+$/)![0]
-      setCurrentUrl(currentUrlLink)
-    }else {
-      currentUrlLink === '/Home/'? currentUrlLink = currentUrlLink.replace(/\//, "") : currentUrlLink = currentUrlLink.replace(/^.*\/([^\/]+)\/?$/, "$1")
-      // console.log(currentUrlLink)
+    // const isProd = process.env.NODE_ENV === 'production'
+    // if(isProd) {
+    //   currentUrlLink === '/Home/' || '/Home'? currentUrlLink = currentUrlLink.replace(/\//, "") : currentUrlLink = currentUrlLink.replace(/^.*\/([^\/]+)\/?$/, "$1")
+    //   setCurrentUrl(currentUrlLink)
+    // }else {
+    //   currentUrlLink === '/Home/' || '/Home'? currentUrlLink = currentUrlLink.replace(/^.*\/([^\/]+)\/?$/, "$1") : currentUrlLink = currentUrlLink.replace(/^.*\/([^\/]+)\/?$/, "$1")
+    //   // currentUrlLink === '/Home'? currentUrlLink = currentUrlLink.split('/')[1] : currentUrlLink = currentUrlLink.split('/')[2]
+    //   console.log(currentUrlLink)
       
-      // currentUrlLink === '/Home'? currentUrlLink = currentUrlLink.split('/')[1] : currentUrlLink = currentUrlLink.split('/')[2]
-      setCurrentUrl(currentUrlLink)
-    }     
+      
+    // }     
   }, [])
 
   return (
