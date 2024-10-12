@@ -6,7 +6,6 @@ import { MdOutlineComputer } from "react-icons/md"
 import { HiOutlineServer } from "react-icons/hi"
 import { BsToggles } from "react-icons/bs"
 import { LuMouse } from "react-icons/lu"
-import SideBar from '../components/Sidebar'
 
 const workCardInfo: React.CSSProperties = {
   display: 'flex',
@@ -58,121 +57,118 @@ const assetsText: React.CSSProperties = {
 
 const Home = () => {
   return (
-    <SideBar>
-      <div style={{ width: '100%', padding: '12px', boxSizing: 'border-box' }}>
-        <Space direction="vertical" size={12} style={{ width: '100%' }}>
-          <Card title="WorkOrder Info">
-            <Row gutter={20}>
-              <Col span={6}>
-                <div style={workCardInfo} className="bg-[#54a0ff]">
-                  <div style={workIcon}>
-                    <AiOutlineBars style={workIconText} size={30} />
-                  </div>
-                  <div style={workTotal}>
-                    <span style={{ fontSize: '36px', fontWeight: '600' }}>10</span>
-                    <p style={{ fontSize: '15px' }}>Total</p>
-                  </div>
+    <div style={{ width: '100%', padding: '12px', boxSizing: 'border-box' }}>
+      <Space direction="vertical" size={12} style={{ width: '100%' }}>
+        <Card title="WorkOrder Info">
+          <Row gutter={20}>
+            <Col span={6}>
+              <div style={workCardInfo} className="bg-[#54a0ff]">
+                <div style={workIcon}>
+                  <AiOutlineBars style={workIconText} size={30} />
                 </div>
-              </Col>
-              <Col span={6}>
-                <div style={workCardInfo} className="bg-[#10ac84]">
-                  <div style={workIcon}>
-                    <AiOutlineCheck style={workIconText} size={30} />
-                  </div>
-                  <div style={workTotal}>
-                    <span style={{ fontSize: '36px', fontWeight: '600' }}>10</span>
-                    <p style={{ fontSize: '15px' }}>Finished</p>
-                  </div>
+                <div style={workTotal}>
+                  <span style={{ fontSize: '36px', fontWeight: '600' }}>10</span>
+                  <p style={{ fontSize: '15px' }}>Total</p>
                 </div>
-              </Col>
-              <Col span={6}>
-                <div style={workCardInfo} className="bg-[#ee5253]">
-                  <div style={workIcon}>
-                    <AiOutlineFileSync style={workIconText} size={30} />
-                  </div>
-                  <div style={workTotal}>
-                    <span style={{ fontSize: '36px', fontWeight: '600' }}>10</span>
-                    <p style={{ fontSize: '15px' }}>Processing</p>
-                  </div>
+              </div>
+            </Col>
+            <Col span={6}>
+              <div style={workCardInfo} className="bg-[#10ac84]">
+                <div style={workIcon}>
+                  <AiOutlineCheck style={workIconText} size={30} />
                 </div>
-              </Col>
-              <Col span={6}>
-                <div style={workCardInfo} className="bg-[#f39c12]">
-                  <div style={workIcon}>
-                    <AiOutlinePause style={workIconText} size={30} />
-                  </div>
-                  <div style={workTotal}>
-                    <span style={{ fontSize: '36px', fontWeight: '600' }}>10</span>
-                    <p style={{ fontSize: '15px' }}>Pending</p>
-                  </div>
+                <div style={workTotal}>
+                  <span style={{ fontSize: '36px', fontWeight: '600' }}>10</span>
+                  <p style={{ fontSize: '15px' }}>Finished</p>
                 </div>
-              </Col>
-            </Row>
-          </Card>
-        </Space>
-        <Space direction="vertical" size={12} style={{ width: '100%', marginTop: '12px' }}>
-          <Card title="Asset information">
-            <Row gutter={20}>
-              <Col span={4} >
-                <div style={assetsInfo}>
-                  <FiMonitor size={26} />
-                  <div style={assetsTotal}>
-                    <span style={assetsText}>10</span>
-                    <p>Computer</p>
-                  </div>
+              </div>
+            </Col>
+            <Col span={6}>
+              <div style={workCardInfo} className="bg-[#ee5253]">
+                <div style={workIcon}>
+                  <AiOutlineFileSync style={workIconText} size={30} />
                 </div>
-              </Col>
-              <Col span={4} >
-                <div style={assetsInfo}>
-                  <MdOutlineComputer size={26} />
-                  <div style={assetsTotal}>
-                    <span style={assetsText}>10</span>
-                    <p>Laptop</p>
-                  </div>
+                <div style={workTotal}>
+                  <span style={{ fontSize: '36px', fontWeight: '600' }}>10</span>
+                  <p style={{ fontSize: '15px' }}>Processing</p>
                 </div>
-              </Col>
-              <Col span={4} >
-                <div style={assetsInfo}>
-                  <HiOutlineServer size={26} />
-                  <div style={assetsTotal}>
-                    <span style={assetsText}>10</span>
-                    <p>Server</p>
-                  </div>
+              </div>
+            </Col>
+            <Col span={6}>
+              <div style={workCardInfo} className="bg-[#f39c12]">
+                <div style={workIcon}>
+                  <AiOutlinePause style={workIconText} size={30} />
                 </div>
-              </Col>
-              <Col span={4} >
-                <div style={assetsInfo}>
-                  <BsToggles size={26} />
-                  <div style={assetsTotal}>
-                    <span style={assetsText}>10</span>
-                    <p>Switch</p>
-                  </div>
+                <div style={workTotal}>
+                  <span style={{ fontSize: '36px', fontWeight: '600' }}>10</span>
+                  <p style={{ fontSize: '15px' }}>Pending</p>
                 </div>
-              </Col>
-              <Col span={4}>
-                <div style={assetsInfo}>
-                  <FiPrinter size={26} />
-                  <div style={assetsTotal}>
-                    <span style={assetsText}>10</span>
-                    <p>Print</p>
-                  </div>
+              </div>
+            </Col>
+          </Row>
+        </Card>
+      </Space>
+      <Space direction="vertical" size={12} style={{ width: '100%', marginTop: '12px' }}>
+        <Card title="Asset information">
+          <Row gutter={20}>
+            <Col span={4} >
+              <div style={assetsInfo}>
+                <FiMonitor size={26} />
+                <div style={assetsTotal}>
+                  <span style={assetsText}>10</span>
+                  <p>Computer</p>
                 </div>
-              </Col>
-              <Col span={4}>
-                <div style={assetsInfo}>
-                  <LuMouse size={26} />
-                  <div style={assetsTotal}>
-                    <span style={assetsText}>10</span>
-                    <p>Others</p>
-                  </div>
+              </div>
+            </Col>
+            <Col span={4} >
+              <div style={assetsInfo}>
+                <MdOutlineComputer size={26} />
+                <div style={assetsTotal}>
+                  <span style={assetsText}>10</span>
+                  <p>Laptop</p>
                 </div>
-              </Col>
-            </Row>
-          </Card>
-        </Space>
-      </div>
-    </SideBar>
-
+              </div>
+            </Col>
+            <Col span={4} >
+              <div style={assetsInfo}>
+                <HiOutlineServer size={26} />
+                <div style={assetsTotal}>
+                  <span style={assetsText}>10</span>
+                  <p>Server</p>
+                </div>
+              </div>
+            </Col>
+            <Col span={4} >
+              <div style={assetsInfo}>
+                <BsToggles size={26} />
+                <div style={assetsTotal}>
+                  <span style={assetsText}>10</span>
+                  <p>Switch</p>
+                </div>
+              </div>
+            </Col>
+            <Col span={4}>
+              <div style={assetsInfo}>
+                <FiPrinter size={26} />
+                <div style={assetsTotal}>
+                  <span style={assetsText}>10</span>
+                  <p>Print</p>
+                </div>
+              </div>
+            </Col>
+            <Col span={4}>
+              <div style={assetsInfo}>
+                <LuMouse size={26} />
+                <div style={assetsTotal}>
+                  <span style={assetsText}>10</span>
+                  <p>Others</p>
+                </div>
+              </div>
+            </Col>
+          </Row>
+        </Card>
+      </Space>
+    </div>
   )
 }
 

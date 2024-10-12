@@ -41,23 +41,29 @@ const SideBarItem: React.FC = () => {
   const router = useRouter()
   const [currentUrl, setCurrentUrl] = useState<string>('')
   const swithcMenuItem: MenuProps['onClick'] = (e: any) => {
-    router.push(`/${e.key}`)
-
-    // if(e.key === 'Home') {
-    //   console.log('1', e.key);
-    //   router.push(`/${e.key}`)
-    //   setCurrentUrl(e.key)
-    // } else {
-    //   console.log('2', e.key);      
-    //   router.push(`/Home/${e.key}`)
-    //   setCurrentUrl(e.key)
-    // }
+    if(e.key === 'Home') {
+      router.push(`/${e.key}`)
+      setCurrentUrl(e.key)
+    } else {
+      router.push(`/Home/${e.key}`)
+      setCurrentUrl(e.key)
+    }
   }
 
   useEffect(() => {
     let currentUrlLink = window.location.pathname
-    currentUrlLink = currentUrlLink.split('/')[1] 
-    setCurrentUrl(currentUrlLink)
+
+    const isProd = process.env.NODE_ENV === 'production'
+    if(isProd) {
+      currentUrlLink === '/Home/' || '/Home'? currentUrlLink = currentUrlLink.replace(/\//g, "") : currentUrlLink = currentUrlLink.match(/[^\/]+$/)![0]
+      setCurrentUrl(currentUrlLink)
+    }else {
+      currentUrlLink === '/Home/'? currentUrlLink = currentUrlLink.replace(/\//, "") : currentUrlLink = currentUrlLink.replace(/^.*\/([^\/]+)\/?$/, "$1")
+      // console.log(currentUrlLink)
+      
+      // currentUrlLink === '/Home'? currentUrlLink = currentUrlLink.split('/')[1] : currentUrlLink = currentUrlLink.split('/')[2]
+      setCurrentUrl(currentUrlLink)
+    }     
   }, [])
 
   return (
@@ -69,8 +75,7 @@ const SideBarItem: React.FC = () => {
         items={items}
         onClick={swithcMenuItem}
       />
-    </div>
-    
+    </div>   
   )
 }
 

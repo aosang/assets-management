@@ -127,7 +127,7 @@ const Auth: React.FC = () => {
 
   return (
     <>
-      {/* <MaskLoad /> */}
+      <MaskLoad />
       {!mySession && <div>
         {isVerify ? <Verify emailAddress={formState.email} /> : (
           <div className={authScss.background}>

@@ -4,7 +4,6 @@ import Image from "next/image"
 import { getSession } from '@/utils/providerSelectData'
 import { useRouter } from 'next/navigation'
 
-
 const maskStyle: React.CSSProperties = {
   position: 'fixed',
   top: '0',
