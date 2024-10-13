@@ -7,7 +7,7 @@ const nextConfig = {
     unoptimized: true,
   },
   trailingSlash: true,
-  output: 'export',
+  // output: 'export',
   basePath: '',
   assetPrefix: '',
 }

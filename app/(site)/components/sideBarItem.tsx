@@ -63,8 +63,6 @@ const SideBarItem: React.FC = () => {
     //   currentUrlLink === '/Home/' || '/Home'? currentUrlLink = currentUrlLink.replace(/^.*\/([^\/]+)\/?$/, "$1") : currentUrlLink = currentUrlLink.replace(/^.*\/([^\/]+)\/?$/, "$1")
     //   // currentUrlLink === '/Home'? currentUrlLink = currentUrlLink.split('/')[1] : currentUrlLink = currentUrlLink.split('/')[2]
     //   console.log(currentUrlLink)
-      
-      
     // }     
   }, [])
 
