@@ -1,6 +1,8 @@
 import { supabase } from "./clients"
 import useMessage from "./message"
 import { getTimeNumber } from "./pubFunProvider"
+import { updateProfilesItem } from '@/utils/dbType'
+
 
 // get session
 export const getSession = async () => {
@@ -34,6 +36,15 @@ export const getProfiles = async () => {
     throw error
   }
 }
+
+// update profiles
+export const updateProfiles = async (userId: string, updateForm: updateProfilesItem) => {
+  const {data, error} = await supabase
+ .from('profiles')
+ .update(updateForm)
+ .eq('id', userId)
+}
+
 
 // get workOrder type
 export const getWorkOrderType = async () => {

@@ -64,3 +64,10 @@ export interface productItem {
   product_num: string
   product_remark: string
 }
+
+export interface updateProfilesItem {
+  email: string
+  username: string
+  company: string
+  avatar: string
+}

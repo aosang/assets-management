@@ -1,25 +1,33 @@
 'use client'
-import React, { useState } from "react"
-import { Card, Col, Row, Input, Upload, Image } from "antd"
-import { PlusOutlined } from '@ant-design/icons'
+import { useEffect, useState } from "react"
+import { Card, Col, Row, Input, Upload, Image, Button } from "antd"
+import { PlusOutlined, InfoCircleFilled } from '@ant-design/icons'
+import { RiDeleteBin5Fill } from "react-icons/ri"
+import { IoEyeSharp } from "react-icons/io5"
 import { getTimeNumber } from "@/utils/pubFunProvider"
 import { supabase } from "@/utils/clients"
-import type { GetProp, UploadFile, UploadProps } from 'antd'
+import { getProfiles, updateProfiles } from "@/utils/providerSelectData"
+import useMessage from '@/utils/message'
+import dayjs from "dayjs"
 
-type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0]
-
-const getBase64 = (file: FileType): Promise<string> =>
-  new Promise((resolve, reject) => {
-    const reader = new FileReader()
-    reader.readAsDataURL(file)
-    reader.onload = () => resolve(reader.result as string)
-    reader.onerror = (error) => reject(error)
-  })
+type myProfileInfoProps = {
+  email: string,
+  createTime: string,
+  username: string,
+  company: string,
+  avatar: string
+}
 
 const Profile = () => {
-  const [previewOpen, setPreviewOpen] = useState(false)
   const [imageUrl, setImageUrl] = useState<string>('')
-  const [fileList, setFileList] = useState<UploadFile[]>([])
+  const [userId, setUserId] = useState<string>('')
+  const [myProfileInfo, setMyProfileInfo] = useState<myProfileInfoProps>({
+    email: '',
+    createTime: '',
+    username: '',
+    company: '',
+    avatar: ''
+  })
 
   const uploadButton = (
     <button style={{ border: 0, background: 'none' }} type="button">
@@ -29,109 +37,149 @@ const Profile = () => {
   )
 
   // upload images
-  const uploadAvatarImage = async (e: any) => {    
-      let file = e.file
-      let fileExt = file.name.split('.').pop() 
-      let filePath = `${getTimeNumber()[1]}.${fileExt}`
+  const uploadAvatarImage = async (e: any) => {
+    let file = e.file
+    let fileExt = file.name.split('.').pop()
+    let filePath = `${getTimeNumber()[1]}.${fileExt}`
 
-      const { data, error } = await supabase.storage.from('avatars').upload(filePath, file)
-      if (error) {
-        alert(error.message)
-      }else {
-        const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(filePath)
-        setImageUrl(publicUrl)
-      }
-  }
-  
-  const handlePreview = async (file: UploadFile) => {
-    if (!file.url && !file.preview) {
-      file.preview = await getBase64(file.originFileObj as FileType);
+    const { data, error } = await supabase.storage
+    .from('avatars')
+    .upload(filePath, file)
+    if (error) {
+      useMessage(2, error.message, 'error')
+    } else {
+      const { data: { publicUrl } } = supabase.storage
+      .from('avatars')
+      .getPublicUrl(filePath)
+
+      setImageUrl(publicUrl)
+      setMyProfileInfo({...myProfileInfo, avatar: publicUrl})
     }
-
-    setImageUrl(file.url || (file.preview as string));
-    setPreviewOpen(true);
   }
 
-  const handleChange: UploadProps['onChange'] = ({ fileList: newFileList }) => setFileList(newFileList);
-
-  const testMyEvent = (e: any) => {
-    e.stopPropagation();
-    console.log("btn clicked");
+  // get user infomation
+  const getUserInfo = () => {
+    getProfiles()
+    .then(res => {
+      setUserId(res![0].id)
+      setMyProfileInfo({
+        ...myProfileInfo,
+        email: res![0].email,
+        createTime: dayjs(res![0].create_time).format('YYYY-MM-DD HH:mm:ss'),
+        username: res![0].username,
+        company: res![0].company,
+        avatar: res![0].avatar_url
+      })
+    })
   }
+
+  const changeUsernameValue = (e: any) => {
+    setMyProfileInfo({
+     ...myProfileInfo,
+      username: e.target.value
+    })
+  }
+
+  const changeCompanyValue = (e: any) => {
+    setMyProfileInfo({
+      ...myProfileInfo,
+      company: e.target.value
+    })
+  }
+
+  const updateProfileInfo = () => {
+    const { username, company } = myProfileInfo
+    if(username === '' || company === '') {
+      useMessage(2, 'Please fill in the username or company', 'error')
+    }else {
+      updateProfiles(userId, myProfileInfo)
+    }
+  }
+
+  const deleteAvatarsImages = (e: any) => {
+    e.stopPropagation()
+  }
+
+  useEffect(() => {
+    getUserInfo()
+  }, [])
+
 
   return (
     <div className="p-3">
       <Card title="My Infomation">
         <Row gutter={30}>
-          <Col span={6}>
-            <div>
+          <Col span={12}>
+            <div className="mb-5">
               <label htmlFor="Email" className="font-semibold mb-1">Email</label>
-              <Input type="text" readOnly />
+              <Input type="text" value={myProfileInfo.email} readOnly disabled />
             </div>
-          </Col>
-          <Col span={6}>
-            <div>
-              <label htmlFor="Username" className="font-semibold mb-1">Username</label>
-              <Input type="text" />
-            </div>
-          </Col>
-          <Col span={6}>
-            <div>
-              <label htmlFor="Company" className="font-semibold mb-1">Company</label>
-              <Input type="text" />
-            </div>
-          </Col>
-          <Col span={6}>
-            <div>
+            <div className="mb-5">
               <label htmlFor="CreateTime" className="font-semibold mb-1">Create Time</label>
-              <Input type="text" readOnly />
+              <Input type="text" value={myProfileInfo.createTime} readOnly disabled />
+            </div>
+            <div className="mb-5">
+              <label htmlFor="Username" className="font-semibold mb-1">Username</label>
+              <Input 
+                type="text" 
+                value={myProfileInfo.username}
+                onChange={changeUsernameValue} 
+              />
+            </div>
+            <div className="mb-5">
+              <label htmlFor="Company" className="font-semibold mb-1">Company</label>
+              <Input 
+                type="text" 
+                value={myProfileInfo.company}
+                onChange={changeCompanyValue} 
+              />
             </div>
           </Col>
-        </Row>
-        {/* upload avatar image */}
-        <div className="mt-3">
-          <label htmlFor="avatar" className="font-semibold">Avatar</label>
-          <Row gutter={10}>
-            <Col>
-              <Upload 
-                listType="picture-card" 
-                className="mt-1"
+          <Col span={12}>
+            <div className="flex items-center pl-6">
+              {imageUrl &&
+                <div>
+                  <label htmlFor="avatar" className="font-semibold">Avatar</label>
+                  <Image
+                    src={imageUrl}
+                    width={108}
+                    height={108}
+                    alt="avatar"
+                    className="rounded-md"
+                    preview={{
+                      mask:
+                        <div
+                          className="ant-image-preview-mask flex items-center"
+                        >
+                          <IoEyeSharp className=" text-white text-lg mr-2" />
+                          <RiDeleteBin5Fill onClick={deleteAvatarsImages} className="text-white text-lg" />
+                        </div>
+                    }}
+                  />
+                </div>
+              }
+              {/* upload avatar image */}
+              <Upload
+                listType="picture-card"
+                className="mt-3 ml-4"
                 customRequest={uploadAvatarImage}
                 maxCount={1}
                 showUploadList={false}
-                // fileList={fileList}
-                // onPreview={handlePreview}
-                // onChange={handleChange}
               >
                 {uploadButton}
               </Upload>
-            </Col>
-            <Col className="mt-1">
-              {imageUrl && 
-                <Image
-                  src={imageUrl} 
-                  width={100} 
-                  height={100} 
-                  alt="avatar" 
-                  className="rounded-md"
-                  
-                  preview={{
-                    // visible: previewOpen,
-                    // onVisibleChange: (visible) => setPreviewOpen(visible),
-                    mask: <div className="ant-image-preview-mask" onClick={testMyEvent}>123</div>,
-                  }} 
-                /> 
-              }
-            </Col>
-          </Row>
-          
-          
-          {/* <input
-            type="file"
-            id="single"
-            accept="image/*"
-            onChange={uploadAvatarImage}
-          /> */}
+            </div>
+            <p 
+              className="text-sm text-gray-400 flex pl-6 mt-2 ml-1 items-center">
+              <span className="text-orange-600 text-base mr-1">
+                <InfoCircleFilled />
+              </span>
+              Supports JPG and PNG image formats, with a maximum upload size of 2MB.
+            </p>
+          </Col>
+        </Row>
+        <div className="flex mt-3">
+          <Button type="primary" onClick={updateProfileInfo}>Save</Button>
         </div>
       </Card>
     </div>
