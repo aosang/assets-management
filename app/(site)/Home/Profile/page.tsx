@@ -12,21 +12,22 @@ import dayjs from "dayjs"
 
 type myProfileInfoProps = {
   email: string,
-  createTime: string,
+  created_at: string,
   username: string,
   company: string,
-  avatar: string
+  avatar_url: string
 }
 
 const Profile = () => {
   const [imageUrl, setImageUrl] = useState<string>('')
   const [userId, setUserId] = useState<string>('')
+
   const [myProfileInfo, setMyProfileInfo] = useState<myProfileInfoProps>({
     email: '',
-    createTime: '',
+    created_at: '',
     username: '',
     company: '',
-    avatar: ''
+    avatar_url: ''
   })
 
   const uploadButton = (
@@ -53,7 +54,7 @@ const Profile = () => {
       .getPublicUrl(filePath)
 
       setImageUrl(publicUrl)
-      setMyProfileInfo({...myProfileInfo, avatar: publicUrl})
+      setMyProfileInfo({...myProfileInfo, avatar_url: publicUrl})
     }
   }
 
@@ -65,10 +66,10 @@ const Profile = () => {
       setMyProfileInfo({
         ...myProfileInfo,
         email: res![0].email,
-        createTime: dayjs(res![0].create_time).format('YYYY-MM-DD HH:mm:ss'),
+        created_at: dayjs(res![0].create_time).format('YYYY-MM-DD HH:mm:ss'),
         username: res![0].username,
         company: res![0].company,
-        avatar: res![0].avatar_url
+        avatar_url: res![0].avatar_url
       })
     })
   }
@@ -93,6 +94,10 @@ const Profile = () => {
       useMessage(2, 'Please fill in the username or company', 'error')
     }else {
       updateProfiles(userId, myProfileInfo)
+      .then(res => {
+        useMessage(2, 'Update useinfo sucessful!','success')
+        window.location.reload()
+      })
     }
   }
 
@@ -116,7 +121,7 @@ const Profile = () => {
             </div>
             <div className="mb-5">
               <label htmlFor="CreateTime" className="font-semibold mb-1">Create Time</label>
-              <Input type="text" value={myProfileInfo.createTime} readOnly disabled />
+              <Input type="text" value={myProfileInfo.created_at} readOnly disabled />
             </div>
             <div className="mb-5">
               <label htmlFor="Username" className="font-semibold mb-1">Username</label>

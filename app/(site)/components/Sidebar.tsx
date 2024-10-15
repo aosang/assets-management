@@ -1,10 +1,10 @@
 "use client"
 import { Layout } from 'antd';
-import { supabase } from '@/utils/clients'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import SideBarItem from './sideBarItem'
 import DropDownMenu from './dropDownMenu'
+import { getProfiles } from '@/utils/providerSelectData';
 
 
 const { Header, Content, Footer, Sider } = Layout;
@@ -56,31 +56,16 @@ const AppLayout = ({children}) => {
   const [userInfo, setUserInfo] = useState<any>('')
   const router = useRouter()
 
-  const getUser = async () => {
-    const { data: { user }, error } = await supabase.auth.getUser()
-    try{
-      if(user) {
-        setUserInfo(user)
-        updateProfile(user)
-      }else if(error) {
-        router.replace('/')
-      }
-    }catch(error) {
-      throw error
-    }
-  }
-
-  const updateProfile = async (user: any) => {
-    const {error} = await supabase.from('profiles').update({
-      username: user?.user_metadata.username,
-      company: user?.user_metadata.company,
-      email: user?.email
+  const getMyInfomation = async () => {
+    getProfiles()
+   .then(res => {
+      if (res) return setUserInfo(res)
+      router.replace('/')
     })
-    if(error) throw new Error(error.message)
   }
 
   useEffect(() => {
-    getUser()
+    getMyInfomation()
   }, [])
 
   return (

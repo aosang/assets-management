@@ -66,8 +66,7 @@ export interface productItem {
 }
 
 export interface updateProfilesItem {
-  email: string
   username: string
   company: string
-  avatar: string
+  avatar_url: string
 }

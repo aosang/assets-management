@@ -121,6 +121,17 @@ const Auth: React.FC = () => {
     setFormVisiable(visible)
   }
 
+  const sendResetPasswordEmail = async () => {
+    const { data,  error } = await supabase.auth.resetPasswordForEmail('3001335841@qq.com', {
+      redirectTo: 'https://www.baidu.com',
+    })
+    if (data) {
+      useMessage(2, 'Reset password email sent!','success')
+    }else {
+      useMessage(2, error!.message, 'error')
+    }
+  }
+
   useEffect(() => {
     getSession()
   })
@@ -226,6 +237,7 @@ const Auth: React.FC = () => {
                     >
                       Sign in
                     </Button>
+                    <Button onClick={sendResetPasswordEmail}>Reset password</Button>
                   </form>
                   <p className={authScss.commitFormInfo}>
                     Don't have an account yet? <a onClick={() => changeFormVisible(true)}>Sign up</a>
