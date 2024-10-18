@@ -15,7 +15,6 @@ const Auth: React.FC = () => {
   const [mySession, setMySession] = useState<any>('')
   const [isVerify, setIsVerify] = useState<boolean>(false)
   const [formVisiable, setFormVisiable] = useState(false)
-
   const [formState, setFormState] = useState<formCollect>({
     email: '',
     password: '',
@@ -30,6 +29,7 @@ const Auth: React.FC = () => {
       router.push('/Home')
     }
   }
+
 
   // 回车登录
   const onPressEnterSigin = (e:any) => { 
@@ -119,17 +119,6 @@ const Auth: React.FC = () => {
   const changeFormVisible = (visible: boolean) => {
     setFormState({ ...formState, email: '', password: '', company: '', username: '' })
     setFormVisiable(visible)
-  }
-
-  const sendResetPasswordEmail = async () => {
-    const { data,  error } = await supabase.auth.resetPasswordForEmail('3001335841@qq.com', {
-      redirectTo: 'https://www.baidu.com',
-    })
-    if (data) {
-      useMessage(2, 'Reset password email sent!','success')
-    }else {
-      useMessage(2, error!.message, 'error')
-    }
   }
 
   useEffect(() => {
@@ -228,6 +217,14 @@ const Auth: React.FC = () => {
                           onKeyDown={onPressEnterSigin}
                         />
                       </li>
+                      <div className='flex'>
+                        <a 
+                          className='text-xs ml-auto underline cursor-pointer -mt-1' 
+                          onClick={() => router.push('/resetPassword')}
+                        >
+                          Forget password?
+                        </a>
+                      </div>
                     </ul>
                     <Button
                       type="primary"
@@ -237,7 +234,6 @@ const Auth: React.FC = () => {
                     >
                       Sign in
                     </Button>
-                    <Button onClick={sendResetPasswordEmail}>Reset password</Button>
                   </form>
                   <p className={authScss.commitFormInfo}>
                     Don't have an account yet? <a onClick={() => changeFormVisible(true)}>Sign up</a>

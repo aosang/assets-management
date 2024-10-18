@@ -6,6 +6,9 @@ import { MdOutlineComputer } from "react-icons/md"
 import { HiOutlineServer } from "react-icons/hi"
 import { BsToggles } from "react-icons/bs"
 import { LuMouse } from "react-icons/lu"
+import { getSession } from '@/utils/providerSelectData'
+import { useEffect } from 'react'
+import { useRouter } from 'next/navigation'  
 
 const workCardInfo: React.CSSProperties = {
   display: 'flex',
@@ -56,6 +59,7 @@ const assetsText: React.CSSProperties = {
 }
 
 const Home = () => {
+  
   return (
     <div style={{ width: '100%', padding: '12px', boxSizing: 'border-box' }}>
       <Space direction="vertical" size={12} style={{ width: '100%' }}>
