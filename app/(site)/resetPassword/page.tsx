@@ -1,7 +1,8 @@
 'use client'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Input, Button } from 'antd'
 import { supabase } from '@/utils/clients'
+import useMessage from '@/utils/message'
 
 const resetBg: React.CSSProperties = {
   position: 'relative',
@@ -15,35 +16,22 @@ const resetBox: React.CSSProperties = {
 }
 
 const resetPassword = () => {
+  const [resetEmail, setResetEmail] = useState<string>('')
+
   const sendResetEmailInfo = async () => {
-    const {data, error} = await supabase.auth.resetPasswordForEmail('3001335841@qq.com', {
+    const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
       redirectTo: 'http://localhost:3000/resetPassword/'
     })
-    if (error) {
-      console.error('发送密码重置邮件时出错:', error.message);
-    } else {
-      console.log('密码重置邮件已发送:', data);
+    if(!resetEmail) {
+      useMessage(2, 'Please enter your email', 'error')
+    }else {
+      if(error) {
+        useMessage(2, error.message, 'error')
+      }else {
+        useMessage(2, 'Check your email for reset password link','success')
+      }
     }
   }
-
-  // const getResetType = () => {
-  //   supabase.auth.onAuthStateChange(async (event, session) => {
-  //     console.log(event)
-  //   })
-  // }
-
-  useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log(subscription)
-      console.log(event)
-      
-      
-      if (event === 'PASSWORD_RECOVERY') {
-        console.log('用户请求重置密码');
-        // 处理重置密码逻辑
-      }
-    })
-  }, [])
 
   return (
     <div style={resetBg}>
@@ -63,7 +51,12 @@ const resetPassword = () => {
         <div className="w-350 mx-auto my-0">
           <div className='mb-4'>
             <label htmlFor="email" className='text-sm mb-1'>Email</label>
-            <Input placeholder='Enter your email' allowClear />
+            <Input 
+              placeholder='Enter your email' 
+              allowClear  
+              value={resetEmail}
+              onChange={(e) => setResetEmail(e.target.value)}
+            />
           </div>
           <Button
             type='primary'

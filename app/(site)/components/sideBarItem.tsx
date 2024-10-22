@@ -54,16 +54,6 @@ const SideBarItem: React.FC = () => {
     let currentUrlLink = window.location.pathname
     currentUrlLink =currentUrlLink.replace(/^.*\/([^\/]+)\/?$/, "$1")
     setCurrentUrl(currentUrlLink)
-
-    // const isProd = process.env.NODE_ENV === 'production'
-    // if(isProd) {
-    //   currentUrlLink === '/Home/' || '/Home'? currentUrlLink = currentUrlLink.replace(/\//, "") : currentUrlLink = currentUrlLink.replace(/^.*\/([^\/]+)\/?$/, "$1")
-    //   setCurrentUrl(currentUrlLink)
-    // }else {
-    //   currentUrlLink === '/Home/' || '/Home'? currentUrlLink = currentUrlLink.replace(/^.*\/([^\/]+)\/?$/, "$1") : currentUrlLink = currentUrlLink.replace(/^.*\/([^\/]+)\/?$/, "$1")
-    //   // currentUrlLink === '/Home'? currentUrlLink = currentUrlLink.split('/')[1] : currentUrlLink = currentUrlLink.split('/')[2]
-    //   console.log(currentUrlLink)
-    // }     
   }, [])
 
   return (

@@ -27,14 +27,25 @@ export const getUser = async () => {
 }
 
 // get profiles
-export const getProfiles = async () => {
-  const {data, error} = await supabase.from('profiles').select('*')
-  try {
-    if (data) return data
-    useMessage(2, error!.message, 'error')
-  } catch (error) {
-    throw error
+export const getProfiles = async (id?: string | null) => {
+  if(!id) {
+    const {data, error} = await supabase.from('profiles').select('*')
+    try {
+      if (data) return data
+      useMessage(2, error!.message, 'error')
+    } catch (error) {
+      throw error
+    }
+  }else {
+    const {data, error} = await supabase.from('profiles').select('*').eq('id', id)
+    try {
+      if (data) return data
+      useMessage(2, error!.message, 'error')
+    } catch (error) {
+      throw error
+    }
   }
+  
 }
 
 // update profiles

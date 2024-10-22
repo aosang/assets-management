@@ -60,7 +60,8 @@ const Profile = () => {
 
   // get user infomation
   const getUserInfo = () => {
-    getProfiles()
+    let userid = window.localStorage.getItem('myId')? window.localStorage.getItem('myId') : ''
+    getProfiles(userid)
     .then(res => {
       setUserId(res![0].id)
       setMyProfileInfo({

@@ -1,11 +1,10 @@
 "use client"
 import { Layout } from 'antd';
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import SideBarItem from './sideBarItem'
 import DropDownMenu from './dropDownMenu'
-import { getProfiles } from '@/utils/providerSelectData';
-
+import { getProfiles, updateProfiles } from '@/utils/providerSelectData';
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -52,16 +51,19 @@ const footerStyle: React.CSSProperties = {
 }
 
 
-const AppLayout = ({children}) => {  
+const AppLayout = ({children, userId, update}) => {  
   const [userInfo, setUserInfo] = useState<any>('')
   const router = useRouter()
 
   const getMyInfomation = async () => {
-    getProfiles()
+    updateProfiles(userId, update)
+    getProfiles(userId)
    .then(res => {
       if (res) return setUserInfo(res)
       router.replace('/')
     })
+
+    
   }
 
   useEffect(() => {

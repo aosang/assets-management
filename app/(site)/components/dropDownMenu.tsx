@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import type { MenuProps } from 'antd'
 import Image from 'next/image'
 import useMessage from '@/utils/message'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
 const items: MenuProps['items'] = [{
   key: '1',
@@ -24,8 +24,9 @@ interface userInfoProps  {
 
 const DropDownMenu: React.FC<userInfoProps> = ({userInfo}) => {
   const router = useRouter()
+  
   const [ username ] = useState(userInfo[0].username)
-  const [avatarUrl] = useState(userInfo[0].avatar_url)
+  const [ avatarUrl ] = useState(userInfo[0].avatar_url)
 
   const handleMenuClick: MenuProps['onClick'] = async ({ key }) => { 
     if(key === '1') {
