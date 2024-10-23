@@ -1,6 +1,6 @@
 'use client'
 import SideBar from '../components/Sidebar'
-import { getSession, getUser} from '@/utils/providerSelectData'
+import { getSession } from '@/utils/providerSelectData'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { updateProfilesItem } from '@/utils/dbType'
@@ -14,15 +14,12 @@ import { updateProfilesItem } from '@/utils/dbType'
     username: '',
     company: '',
     email: '',
-    avatar_url: '',
   })
-
 
   const getCheckSession = () => {
     getSession()
     .then(res => {
       const { session } = res!
-            
       setMySession(session)
       setUserId(session!.user!.id)
       window.localStorage.setItem('myId', session!.user.id)
@@ -38,23 +35,8 @@ import { updateProfilesItem } from '@/utils/dbType'
     })
   }
 
-  const getCheckUser = () => {
-    getUser()
-   .then(res => {
-      if(res!.user === null) {
-        console.log(456)
-        router.replace('/')
-      }else {
-        console.log(123)
-      }    
-    })
-
-  }
-
   useEffect(() => {
-    // getCheckUser()
     getCheckSession()
-
   }, [])
 
   return (
@@ -67,6 +49,5 @@ import { updateProfilesItem } from '@/utils/dbType'
         </div>
       )}
     </>
-    
   )
 }

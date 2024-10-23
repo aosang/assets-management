@@ -1,8 +1,9 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Input, Button } from 'antd'
 import { supabase } from '@/utils/clients'
 import useMessage from '@/utils/message'
+import { getProfiles } from '@/utils/providerSelectData'
 
 const resetBg: React.CSSProperties = {
   position: 'relative',
@@ -19,18 +20,33 @@ const resetPassword = () => {
   const [resetEmail, setResetEmail] = useState<string>('')
 
   const sendResetEmailInfo = async () => {
-    const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
-      redirectTo: 'http://localhost:3000/resetPassword/'
-    })
     if(!resetEmail) {
       useMessage(2, 'Please enter your email', 'error')
     }else {
-      if(error) {
-        useMessage(2, error.message, 'error')
-      }else {
-        useMessage(2, 'Check your email for reset password link','success')
-      }
+      getProfiles()
+      .then(res => {
+        let emailData = null
+        emailData = res?.find(item => item.email === resetEmail) || null
+        if(!emailData) {
+          useMessage(2, 'Email not found', 'error')
+        }else {
+          alert('good')
+        }
+      })
     }
+
+    // const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
+    //   redirectTo: 'http://localhost:3000/resetPassword/'
+    // })
+    // if(!resetEmail) {
+    //   useMessage(2, 'Please enter your email', 'error')
+    // }else {
+    //   if(error) {
+    //     useMessage(2, error.message, 'error')
+    //   }else {
+    //     useMessage(2, 'Check your email for reset password link','success')
+    //   }
+    // }
   }
 
   return (

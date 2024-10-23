@@ -22,7 +22,7 @@ interface userInfoProps  {
   userInfo: any
 }
 
-const DropDownMenu: React.FC<userInfoProps> = ({userInfo}) => {
+const DropDownMenu: React.FC<userInfoProps> = ({ userInfo }) => {
   const router = useRouter()
   
   const [ username ] = useState(userInfo[0].username)

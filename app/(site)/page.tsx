@@ -26,7 +26,7 @@ const Auth: React.FC = () => {
     const { data: { session }, error } = await supabase.auth.getSession()
     if (session) {
       setMySession(session)
-      // router.push('/Home')
+      router.push('/Home')
     }
   }
 
@@ -122,7 +122,7 @@ const Auth: React.FC = () => {
   }
 
   useEffect(() => {
-    // getSession()
+    getSession()
   })
 
   return (
