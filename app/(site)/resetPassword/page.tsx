@@ -61,7 +61,10 @@ const resetPassword = () => {
   // }
 
   useEffect(() => {
-    // getAuthState()
+    const urlParams = new URLSearchParams(window.location.search);
+    const accessToken = urlParams.get('token')
+    console.log(accessToken)
+    
   }, [])
 
   return (
