@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react'
 import { updateProfilesItem } from '@/utils/dbType'
 
 
- export default function RootLayout({ children } : { children: React.ReactNode }) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter()
   const [mySession, setMySession] = useState<any>('')
   const [userId, setUserId] = useState<string>('')
@@ -18,21 +18,23 @@ import { updateProfilesItem } from '@/utils/dbType'
 
   const getCheckSession = () => {
     getSession()
-    .then(res => {
-      const { session } = res!
-      setMySession(session)
-      setUserId(session!.user!.id)
-      window.localStorage.setItem('myId', session!.user.id)
-      
-      setUpdateForm({...updateForm,
-        username: session!.user.user_metadata.username, 
-        company: session!.user.user_metadata.company,
-        email: session!.user.email || '',
+      .then(res => {
+        const { session } = res!
+        setMySession(session)
+        if (!session) {
+          router.replace('/')
+        } else {
+          setUserId(session!.user?.id)
+          window.localStorage.setItem('myId', session!.user.id)
+
+          setUpdateForm({
+            ...updateForm,
+            username: session!.user.user_metadata.username,
+            company: session!.user.user_metadata.company,
+            email: session!.user.email || '',
+          })
+        }
       })
-      if(!session) {
-        router.replace('/')
-      }
-    })
   }
 
   useEffect(() => {
