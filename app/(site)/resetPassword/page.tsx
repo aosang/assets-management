@@ -1,11 +1,13 @@
 'use client'
+
+import useMessage from '@/utils/message'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Input, Button } from 'antd'
+import { Input, Button, Tooltip } from 'antd'
 import { supabase } from '@/utils/clients'
-import useMessage from '@/utils/message'
 import { getProfiles } from '@/utils/providerSelectData'
-import { RightOutlined } from '@ant-design/icons'
+import { RightOutlined, InfoCircleOutlined } from '@ant-design/icons'
+import { passwordRegFunc } from '@/utils/pubFunProvider'
 
 const resetBg: React.CSSProperties = {
   position: 'relative',
@@ -21,6 +23,9 @@ const resetBox: React.CSSProperties = {
 const resetPassword = () => {
   const [resetEmail, setResetEmail] = useState<string>('')
   const [setPassword, changeSetPassword] = useState<boolean>(false)
+  const [newPassword, setNewPassword] = useState<string>('')
+  const [confirmPassword, setConfirmPassword] = useState<string>('')
+
   const router = useRouter()
 
   const sendResetEmailInfo = async () => {
@@ -28,49 +33,76 @@ const resetPassword = () => {
       useMessage(2, 'Please enter your email', 'error')
     } else {
       getProfiles()
-        .then(async res => {
-          let emailData = null
-          emailData = res?.find(item => item.email === resetEmail) || null
-          if (!emailData) {
-            useMessage(2, 'Email not found', 'error')
-          } else {
-            const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
-              redirectTo: `${window.location.origin}/resetPassword`
-            })
-            try {
-              if(error !== null) return useMessage(2, 'The operation is too frequent, please try again later', 'error')
-              useMessage(2, 'Email sent! Please check your email', 'success')
-            }catch (error) {
-              throw error
-            }
+      .then(async res => {
+        let emailData = null
+        emailData = res?.find(item => item.email === resetEmail) || null
+        if (!emailData) {
+          useMessage(2, 'Email not found', 'error')
+        } else {
+          const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
+            redirectTo: `${window.location.origin}/resetPassword`
+          })
+          try {
+            if (error !== null) return useMessage(2, 'The operation is too frequent, please try again later', 'error')
+            useMessage(2, 'Email sent! Please check your email', 'success')
+          } catch (error) {
+            throw error
           }
-        })
+        }
+      })
     }
   }
 
-  // const getAuthState = () => {
-  //   supabase.auth.onAuthStateChange((event, session) => {
-  //     console.log(session)
-      
-  //     if (session) {
-  //       changeSetPassword(true)
-  //     } else {
-  //       changeSetPassword(false)
-  //     }
-  //   })
-  // }
+  const changeMyPassword = async () => {
+    if(newPassword!== confirmPassword) {
+      useMessage(2, 'Passwords do not match', 'error')
+    } else if (!newPassword || !confirmPassword) {
+      useMessage(2, 'Please enter your new password!', 'error')
+    } else if(!passwordRegFunc(newPassword)) {
+      useMessage(2, 'Password must be 8-20 characters long and contain at least one uppercase letter, one lowercase letter, and one number', 'error')
+    } else if (newPassword !== confirmPassword) {
+      useMessage(2, 'Passwords do not match', 'error')
+    } else {
+      const { data, error } = await supabase.auth.updateUser({
+        password: newPassword,
+      })
+      try {
+        if(data.user) {
+          useMessage(3, 'Password changed successfully!','success')
+          supabase.auth.signOut()
+          router.push('/')
+        }else if(error) {
+          useMessage(3, error.message,'error')
+          supabase.auth.signOut()
+        }
+      }
+      catch (error) {
+        throw error
+      }
+    }
+  }
 
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const accessToken = urlParams.get('token')
-    console.log(accessToken)
-    
+    const url = window.location.href
+    const parsedUrl = new URL(url)
+    let code: string | null = ''
+    code = parsedUrl.searchParams.get("code")
+
+    if (code) {
+      changeSetPassword(true)
+    } else {
+      changeSetPassword(false)
+    }
+
+    window.addEventListener('beforeunload', () => {
+      supabase.auth.signOut()
+    })
   }, [])
 
   return (
     <div style={resetBg}>
       {/* email */}
-      {!setPassword ? (
+      {setPassword ? (
         <div className="
           w-520 
           bg-white 
@@ -130,16 +162,42 @@ const resetPassword = () => {
 
           <div className="w-350 mx-auto my-0">
             <div className='mb-4'>
-              <label htmlFor="password" className='text-sm mb-1'>New Password</label>
-              <Input.Password placeholder='Enter your new password' />
+              <div className='flex items-center'>
+                <label htmlFor="password" className='text-sm mb-1 mr-1'>New Password</label>
+                <Tooltip placement='right' title='Password must be 8-20 characters long and contain at least one uppercase letter, one lowercase letter, and one number'>
+                  <InfoCircleOutlined className='-mt-1 text-sm text-blue-700' />
+                </Tooltip>
+              </div>
+              <Input.Password
+                placeholder='Enter your new password'
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+              />
             </div>
             <div>
               <label htmlFor="password" className='text-sm mb-1'>Confirm Password</label>
-              <Input.Password placeholder='Confirm your password' />
+              <Input.Password
+                placeholder='Confirm your password'
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+              />
+            </div>
+            <div
+              className='text-xs cursor-pointer flex underline'
+            >
+              <div
+                className='mt-3 mb-0 mr-0 ml-auto flex items-center'
+                onClick={() => router.push('/')}
+              >
+                <span>Go to login</span>
+                <RightOutlined />
+              </div>
             </div>
             <Button
               type='primary'
-              className='w-full h-10 mt-4 text-base mb-12 leading-10'>
+              className='w-full h-10 mt-5 text-base mb-12 leading-10'
+              onClick={changeMyPassword}
+            >
               Confirm
             </Button>
           </div>

@@ -1,10 +1,11 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Input, Button } from 'antd'
+import { Input, Button, Tooltip  } from 'antd'
 import { emailRegFunc, passwordRegFunc } from '@/utils/pubFunProvider'
 import { supabase } from '@/utils/clients'
 import { formCollect } from '@/utils/dbType'
+import { InfoCircleOutlined } from '@ant-design/icons'
 import authScss from './auth.module.scss'
 import useMessage from '@/utils/message'
 import Verify from './components/Verify'
@@ -149,7 +150,15 @@ const Auth: React.FC = () => {
                         />
                       </li>
                       <li className={authScss.commitFormItem}>
-                        <label htmlFor="Email">Password</label>
+                        <div className='flex items-center'>
+                          <label htmlFor="Email" className='mr-1'>Password</label>
+                          <Tooltip 
+                            placement='right' 
+                            title='Password must be 8-20 characters long and contain at least one uppercase letter, one lowercase letter, and one number'
+                          >
+                            <InfoCircleOutlined className='text-sm -mt-1 text-blue-700' />
+                          </Tooltip> 
+                        </div>
                         <Input.Password
                           placeholder="Enter password"
                           value={formState.password}
