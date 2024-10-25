@@ -147,6 +147,7 @@ const Auth: React.FC = () => {
                           value={formState.email}
                           onChange={changeEmailValue}
                           onKeyDown={onPressEnterSigin}
+                          allowClear
                         />
                       </li>
                       <li className={authScss.commitFormItem}>
@@ -164,6 +165,7 @@ const Auth: React.FC = () => {
                           value={formState.password}
                           onChange={changePasswordValue}
                           onKeyDown={onPressEnterSigin}
+                          allowClear
                         />
                       </li>
                       <li className={authScss.commitFormItem}>
@@ -173,6 +175,7 @@ const Auth: React.FC = () => {
                           value={formState.company}
                           onChange={changeCompanyValue}
                           onKeyDown={onPressEnterSigin}
+                          allowClear
                         />
                       </li>
                       <li className={authScss.commitFormItem}>
@@ -182,6 +185,7 @@ const Auth: React.FC = () => {
                           value={formState.username}
                           onChange={changeUsernameValue}
                           onKeyDown={onPressEnterSigin}
+                          allowClear
                         />
                       </li>
                     </ul>
@@ -215,6 +219,7 @@ const Auth: React.FC = () => {
                           value={formState.email}
                           onChange={changeEmailValue}
                           onKeyDown={onPressEnterSigin}
+                          allowClear
                         />
                       </li>
                       <li className={authScss.commitFormItem}>
@@ -224,6 +229,7 @@ const Auth: React.FC = () => {
                           value={formState.password}
                           onChange={changePasswordValue}
                           onKeyDown={onPressEnterSigin}
+                          allowClear
                         />
                       </li>
                       <div className='flex'>
