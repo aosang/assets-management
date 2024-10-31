@@ -62,8 +62,6 @@ const AppLayout = ({children, userId, update}) => {
       if (res) return setUserInfo(res)
       router.replace('/')
     })
-
-    
   }
 
   useEffect(() => {

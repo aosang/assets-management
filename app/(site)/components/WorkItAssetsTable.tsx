@@ -1,5 +1,6 @@
 'use client'
-import { Button, Row, Col, Select, DatePicker, Table } from 'antd'
+import { useState } from 'react'
+import { Button, Row, Col, Select, DatePicker, Table, Modal } from 'antd'
 import { IoIosSearch } from 'react-icons/io'
 import { productItem } from '@/utils/dbType'
 
@@ -8,6 +9,8 @@ interface itAssetsTableProps  {
 }
 
 const WorkItAssetsTable: React.FC<itAssetsTableProps> = ({ assetsInfo }) => {
+  const [addItAssetsShow, setAddItAssetsShow] = useState(false)
+
   const columns = [{
     title: 'Number',
     dataIndex: 'product_id',
@@ -26,13 +29,13 @@ const WorkItAssetsTable: React.FC<itAssetsTableProps> = ({ assetsInfo }) => {
     dataIndex: 'product_brand',
     key: 'product_brand'
   }, {
-    title: 'Count',
-    dataIndex: 'product_num',
-    key: 'product_num'
+    title: 'User',
+    dataIndex: 'product_username',
+    key: 'product_username'
   }, {
-    title: 'Time',
-    dataIndex: 'product_time',
-    key: 'product_time'
+    title: 'Status',
+    dataIndex: 'product_status',
+    key: 'product_status'
   }, {
     title: 'Remark',
     dataIndex: 'product_remark',
@@ -41,9 +44,12 @@ const WorkItAssetsTable: React.FC<itAssetsTableProps> = ({ assetsInfo }) => {
 
   return (
     <div>
+      <Modal open={addItAssetsShow} title="Add an IT device">
+        <div>123</div>
+      </Modal>
       <Row gutter={10}>
         <Col>
-          <Button type='primary'>Create</Button>
+          <Button type='primary' onClick={() => setAddItAssetsShow(true)}>Create</Button>
         </Col>
         <Col>
          <Button type='primary' danger>Delete</Button>

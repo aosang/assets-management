@@ -45,8 +45,6 @@ const SideBarItem: React.FC = () => {
       router.push(`/${e.key}`)
       setCurrentUrl(e.key)
     } else {
-      console.log(`/Home/${e.key}`)
-      
       router.push(`/Home/${e.key}`)
       setCurrentUrl(e.key)
     }
