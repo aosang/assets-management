@@ -31,8 +31,7 @@ const Auth: React.FC = () => {
     }
   }
 
-
-  // 回车登录
+// 回车登录
   const onPressEnterSigin = (e:any) => { 
     if(!formVisiable) {
       if(e.key === 'Enter') validateSignUpForm(2)
@@ -129,136 +128,137 @@ const Auth: React.FC = () => {
   return (
     <>
       <MaskLoad />
-      {!mySession && <div>
-        {isVerify ? <Verify emailAddress={formState.email} /> : (
-          <div className={authScss.background}>
-            <div className={authScss.signUpForm}>
-              <h3>Assets Management</h3>
-              <span className={authScss.line}></span>
-              {formVisiable? (
-                <>
-                  {/* sign up */}
-                  <form>
-                    <ul className={authScss.commitForm}>
-                      <li className={authScss.commitFormItem}>
-                        <label htmlFor="Email">Email</label>
-                        <Input
-                          placeholder="Enter email"
-                          value={formState.email}
-                          onChange={changeEmailValue}
-                          onKeyDown={onPressEnterSigin}
-                          allowClear
-                        />
-                      </li>
-                      <li className={authScss.commitFormItem}>
-                        <div className='flex items-center'>
-                          <label htmlFor="Email" className='mr-1'>Password</label>
-                          <Tooltip 
-                            placement='right' 
-                            title='Password must be 8-20 characters long and contain at least one uppercase letter, one lowercase letter, and one number'
+      {!mySession && 
+        <div>
+          {isVerify ? <Verify emailAddress={formState.email} /> : (
+            <div className={authScss.background}>
+              <div className={authScss.signUpForm}>
+                <h3>Assets Management</h3>
+                <span className={authScss.line}></span>
+                {formVisiable? (
+                  <>
+                    {/* sign up */}
+                    <form>
+                      <ul className={authScss.commitForm}>
+                        <li className={authScss.commitFormItem}>
+                          <label htmlFor="Email">Email</label>
+                          <Input
+                            placeholder="Enter email"
+                            value={formState.email}
+                            onChange={changeEmailValue}
+                            onKeyDown={onPressEnterSigin}
+                            allowClear
+                          />
+                        </li>
+                        <li className={authScss.commitFormItem}>
+                          <div className='flex items-center'>
+                            <label htmlFor="Email" className='mr-1'>Password</label>
+                            <Tooltip 
+                              placement='right' 
+                              title='Password must be 8-20 characters long and contain at least one uppercase letter, one lowercase letter, and one number'
+                            >
+                              <InfoCircleOutlined className='text-sm -mt-1 text-blue-700' />
+                            </Tooltip> 
+                          </div>
+                          <Input.Password
+                            placeholder="Enter password"
+                            value={formState.password}
+                            onChange={changePasswordValue}
+                            onKeyDown={onPressEnterSigin}
+                            allowClear
+                          />
+                        </li>
+                        <li className={authScss.commitFormItem}>
+                          <label htmlFor="Company">Company</label>
+                          <Input
+                            placeholder="Company name"
+                            value={formState.company}
+                            onChange={changeCompanyValue}
+                            onKeyDown={onPressEnterSigin}
+                            allowClear
+                          />
+                        </li>
+                        <li className={authScss.commitFormItem}>
+                          <label htmlFor="Username">Username</label>
+                          <Input
+                            placeholder="Enter username"
+                            value={formState.username}
+                            onChange={changeUsernameValue}
+                            onKeyDown={onPressEnterSigin}
+                            allowClear
+                          />
+                        </li>
+                      </ul>
+                      <Button
+                        type="primary"
+                        className={authScss.commitButton}
+                        size="large"
+                        onClick={() => validateSignUpForm(1)}
+                        style={{
+                          background: 'linear-gradient(135deg, #6253E1, #04BEFE)',
+                          border: 'none',
+                        }}
+                      >
+                        Create an account
+                      </Button>
+                    </form>
+                    <p className={authScss.commitFormInfo}>
+                      Already have an account?
+                      <a onClick={() => changeFormVisible(false)}>Sign in</a>
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    {/* sign in */}
+                    <form>
+                      <ul className={authScss.commitForm}>
+                        <li className={authScss.commitFormItem}>
+                          <label htmlFor="Email">Email</label>
+                          <Input
+                            placeholder="Enter email"
+                            value={formState.email}
+                            onChange={changeEmailValue}
+                            onKeyDown={onPressEnterSigin}
+                            allowClear
+                          />
+                        </li>
+                        <li className={authScss.commitFormItem}>
+                          <label htmlFor="Password">Password</label>
+                          <Input.Password
+                            placeholder="Enter password"
+                            value={formState.password}
+                            onChange={changePasswordValue}
+                            onKeyDown={onPressEnterSigin}
+                            allowClear
+                          />
+                        </li>
+                        <div className='flex'>
+                          <a 
+                            className='text-xs ml-auto underline cursor-pointer -mt-1' 
+                            onClick={() => router.push('/resetPassword')}
                           >
-                            <InfoCircleOutlined className='text-sm -mt-1 text-blue-700' />
-                          </Tooltip> 
+                            Forget password?
+                          </a>
                         </div>
-                        <Input.Password
-                          placeholder="Enter password"
-                          value={formState.password}
-                          onChange={changePasswordValue}
-                          onKeyDown={onPressEnterSigin}
-                          allowClear
-                        />
-                      </li>
-                      <li className={authScss.commitFormItem}>
-                        <label htmlFor="Company">Company</label>
-                        <Input
-                          placeholder="Company name"
-                          value={formState.company}
-                          onChange={changeCompanyValue}
-                          onKeyDown={onPressEnterSigin}
-                          allowClear
-                        />
-                      </li>
-                      <li className={authScss.commitFormItem}>
-                        <label htmlFor="Username">Username</label>
-                        <Input
-                          placeholder="Enter username"
-                          value={formState.username}
-                          onChange={changeUsernameValue}
-                          onKeyDown={onPressEnterSigin}
-                          allowClear
-                        />
-                      </li>
-                    </ul>
-                    <Button
-                      type="primary"
-                      className={authScss.commitButton}
-                      size="large"
-                      onClick={() => validateSignUpForm(1)}
-                      style={{
-                        background: 'linear-gradient(135deg, #6253E1, #04BEFE)',
-                        border: 'none',
-                      }}
-                    >
-                      Create an account
-                    </Button>
-                  </form>
-                  <p className={authScss.commitFormInfo}>
-                    Already have an account?
-                    <a onClick={() => changeFormVisible(false)}>Sign in</a>
-                  </p>
-                </>
-              ) : (
-                <>
-                  {/* sign in */}
-                  <form>
-                    <ul className={authScss.commitForm}>
-                      <li className={authScss.commitFormItem}>
-                        <label htmlFor="Email">Email</label>
-                        <Input
-                          placeholder="Enter email"
-                          value={formState.email}
-                          onChange={changeEmailValue}
-                          onKeyDown={onPressEnterSigin}
-                          allowClear
-                        />
-                      </li>
-                      <li className={authScss.commitFormItem}>
-                        <label htmlFor="Password">Password</label>
-                        <Input.Password
-                          placeholder="Enter password"
-                          value={formState.password}
-                          onChange={changePasswordValue}
-                          onKeyDown={onPressEnterSigin}
-                          allowClear
-                        />
-                      </li>
-                      <div className='flex'>
-                        <a 
-                          className='text-xs ml-auto underline cursor-pointer -mt-1' 
-                          onClick={() => router.push('/resetPassword')}
-                        >
-                          Forget password?
-                        </a>
-                      </div>
-                    </ul>
-                    <Button
-                      type="primary"
-                      className={authScss.commitButton}
-                      size="large"
-                      onClick={() => validateSignUpForm(2)}
-                    >
-                      Sign in
-                    </Button>
-                  </form>
-                  <p className={authScss.commitFormInfo}>
-                    Don't have an account yet? <a onClick={() => changeFormVisible(true)}>Sign up</a>
-                  </p>
-                </>
-              )}
+                      </ul>
+                      <Button
+                        type="primary"
+                        className={authScss.commitButton}
+                        size="large"
+                        onClick={() => validateSignUpForm(2)}
+                      >
+                        Sign in
+                      </Button>
+                    </form>
+                    <p className={authScss.commitFormInfo}>
+                      Don't have an account yet? <a onClick={() => changeFormVisible(true)}>Sign up</a>
+                    </p>
+                  </>
+                )}
+              </div>
             </div>
-          </div>
-        )}
-      </div>}
+          )}
+        </div>}
     </>
 
   )
