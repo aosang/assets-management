@@ -99,7 +99,7 @@ const WorkOrder: React.FC = ({ }) => {
       })
   }
 
-  const modalAddHanlder = async () => {
+  const modalAddHandler = async () => {
     setIsModalAddOpen(true)
     getProfilesUsername()
 
@@ -303,7 +303,7 @@ const WorkOrder: React.FC = ({ }) => {
             <Col>
               <Button
                 type='primary'
-                onClick={modalAddHanlder}
+                onClick={modalAddHandler}
               >
                 Create
               </Button>
