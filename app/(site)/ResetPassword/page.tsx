@@ -40,7 +40,7 @@ const resetPassword = () => {
           useMessage(2, 'Email not found', 'error')
         } else {
           const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
-            redirectTo: `${window.location.origin}/resetPassword`
+            redirectTo: `${window.location.origin}/ResetPassword`
           })
           try {
             if (error !== null) return useMessage(2, 'The operation is too frequent, please try again later', 'error')
