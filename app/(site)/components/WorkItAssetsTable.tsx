@@ -1,6 +1,6 @@
 'use client'
-import { useState } from 'react'
-import{ typeDataName, typeDataBrand } from '@/utils/dbType'
+import { useEffect, useState } from 'react'
+import{ typeDataName, typeDataBrand, assetsItem, productItem } from '@/utils/dbType'
 import { 
   Button, 
   Row, 
@@ -12,10 +12,13 @@ import {
   Divider,
   Space,
   Input,
+  InputNumber,
+  Tag
 } from 'antd'
 import { getWorkOrderType, getWorkBrand } from '@/utils/providerSelectData'
+import { getItAssetsStatusData, insertItAssets } from '@/utils/providerItAssetsData'
+import { getTimeNumber } from '@/utils/pubFunProvider'
 import { IoIosSearch } from 'react-icons/io'
-import { productItem } from '@/utils/dbType'
 import useMessage from '@/utils/message'
 
 interface itAssetsTableProps  {
@@ -24,26 +27,68 @@ interface itAssetsTableProps  {
 
 type typeDataProps = typeDataName[]
 type typeDataBrandProps = typeDataBrand[]
+type assetsStatusProps = assetsItem[]
 
 const WorkItAssetsTable: React.FC<itAssetsTableProps> = ({ assetsInfo }) => {
   const [layoutWidth, setLayoutWidth] = useState<number>(12)
   const [productBrandShow, setProductBrandShow] = useState<boolean>(false)
   const [selectOpen, setSelectOpen] = useState<boolean>(false)
+  const [assetsStatusShow, setAssetsStatusShow] = useState<boolean>(false)
+  const [assetsStatusWidth, setAssetsStatusWidth] = useState<number>(12)
 
   const [addItAssetsShow, setAddItAssetsShow] = useState(false)
   const [typeData, setTypeData] = useState<typeDataProps>([])
   const [typeDataBrand, setTypeDataBrand] = useState<typeDataBrandProps>([])
+  const [assetsStatus, setAssetsStatus] = useState<assetsStatusProps>([])
+  const [assetsDataForm, setAssetsDataForm] = useState<productItem>({
+    product_id: '',
+    product_name: '',
+    product_time: '',
+    product_type: null,
+    product_brand: null,
+    product_status: null,
+    product_username: '',
+    product_price: 0,
+    product_remark: ''
+  })
+
+  // get create time 
+  const getCreateTime = () => {
+    let myCreateTimeData = getTimeNumber()[0]
+    setAssetsDataForm({
+     ...assetsDataForm,
+      product_time: myCreateTimeData
+    })
+  }
 
   const onAddItAssets = () => {
-    setAddItAssetsShow(false)
-    useMessage(2, 'Add an IT device successfully', 'success')
+    if(assetsDataForm.product_name === '') {
+      useMessage(2, 'Please enter the product name','error')
+    }else if(!assetsDataForm.product_type) {
+      useMessage(2, 'Please select the product type','error')
+    }else if(!assetsDataForm.product_brand) {
+      useMessage(2, 'Please select the product brand','error')
+    }else if(!assetsDataForm.product_status) {
+      useMessage(2, 'Please select the product status','error')
+    }else if(assetsDataForm.product_status === 'Checkout' && assetsDataForm.product_username === '') {
+      useMessage(2, 'Please enter the user name','error')
+    }else {
+      setAddItAssetsShow(false)
+      insertItAssets(assetsDataForm)
+    }
   }
 
   const modalAddDeviceHandler = () => {
+    getCreateTime()
     setAddItAssetsShow(true)
     getWorkOrderType()
     .then(res => {
       setTypeData(res as typeDataProps)
+    })
+
+    getItAssetsStatusData()
+    .then(res => {
+      setAssetsStatus(res as assetsStatusProps)
     })
   }
 
@@ -58,42 +103,108 @@ const WorkItAssetsTable: React.FC<itAssetsTableProps> = ({ assetsInfo }) => {
           setLayoutWidth(8)
           setProductBrandShow(true)
           setTypeDataBrand(brandData)
+          setAssetsDataForm({
+            ...assetsDataForm,
+            product_type: keys,
+            product_brand: brandData[0].value,
+          })
         })
     } else {
       setProductBrandShow(false)
       setLayoutWidth(12)
+      setAssetsDataForm({
+        ...assetsDataForm,
+        product_type: null,
+        product_brand: null
+      })
     }
   }
 
+  const selectItAssetsStatusText = (keys: string) => {
+    setAssetsDataForm({
+      ...assetsDataForm,
+       product_status: keys
+     })
+    if(keys === 'Checkout') {
+      setAssetsStatusShow(true)
+      setAssetsStatusWidth(8)
+    } else {
+      setAssetsStatusShow(false)
+      setAssetsStatusWidth(12)
+    }
+  }
+  
   const onTriggerSelected = (open: boolean) => {
     setSelectOpen(open)
   }
 
+  const assetsProductBrand = (keys: string) => {
+    setAssetsDataForm({
+    ...assetsDataForm,
+      product_brand: keys
+    })
+  }
+
+  // clear form data
+  const clearAssetsDataForm = () => {
+    setProductBrandShow(false)
+    setAssetsStatusShow(false)
+    setLayoutWidth(12)
+    setAssetsStatusWidth(12)
+
+    setAssetsDataForm({
+      product_id: '',
+      product_name: '',
+      product_type: null,
+      product_brand: null,
+      product_status: null,
+      product_time: '',
+      product_username: '',
+      product_price: 0,
+      product_remark: ''
+    })
+  }
+
+  useEffect(() => {
+    getCreateTime()
+  }, [])
+
   const columns = [{
     title: 'Number',
     dataIndex: 'product_id',
-    key: 'product_id',
+    key: 'product_id', 
+    width: 160
     // render: text => <a href="#">{text}</a>
   }, {
     title: 'Type',
     dataIndex: 'product_type',
     key: 'product_type',
   }, {
+    title: 'Brand',
+    dataIndex: 'product_brand',
+    key: 'product_brand'
+  },  {
     title: 'Product',
     dataIndex: 'product_name',
     key: 'product_name'
   }, {
-    title: 'Brand',
-    dataIndex: 'product_brand',
-    key: 'product_brand'
+    title: 'Status',
+    dataIndex: 'product_status',
+    key: 'product_status',
+    render: (text) => {
+      return (
+        <div>
+          {text === 'Putaway' && <Tag color='success'>{text}</Tag>}
+          {text === 'Checkout' && <Tag color='processing'>{text}</Tag>}
+          {text === 'Under maintenance' && <Tag color='warning'>{text}</Tag>}
+          {text === 'Decommission' && <Tag color='error'>{text}</Tag>}
+        </div>
+      )
+    }
   }, {
     title: 'User',
     dataIndex: 'product_username',
     key: 'product_username'
-  }, {
-    title: 'Status',
-    dataIndex: 'product_status',
-    key: 'product_status'
   }, {
     title: 'Remark',
     dataIndex: 'product_remark',
@@ -107,6 +218,7 @@ const WorkItAssetsTable: React.FC<itAssetsTableProps> = ({ assetsInfo }) => {
         title="Add an IT device"
         onCancel={() => setAddItAssetsShow(false)}
         onOk={onAddItAssets}
+        afterClose={clearAssetsDataForm}
         maskClosable={false}
         width={960}
       >
@@ -122,6 +234,13 @@ const WorkItAssetsTable: React.FC<itAssetsTableProps> = ({ assetsInfo }) => {
               <Input
                 style={{ width: '100%' }}
                 placeholder='Product name'
+                value={assetsDataForm.product_name}
+                onChange={e => {
+                  setAssetsDataForm({
+                   ...assetsDataForm,
+                    product_name: e.target.value
+                  })
+                }}
               />
             </Col>
           </Row>
@@ -141,6 +260,7 @@ const WorkItAssetsTable: React.FC<itAssetsTableProps> = ({ assetsInfo }) => {
                 allowClear
                 options={typeData}
                 onChange={selectProductType}
+                value={assetsDataForm.product_type}
               >
               </Select>
             </Col>
@@ -160,6 +280,8 @@ const WorkItAssetsTable: React.FC<itAssetsTableProps> = ({ assetsInfo }) => {
                   placeholder='Product brand'
                   allowClear
                   onDropdownVisibleChange={onTriggerSelected}
+                  value={assetsDataForm.product_brand}
+                  onChange={assetsProductBrand}
                   options={typeDataBrand.map(item => {
                     return {
                       label:
@@ -186,12 +308,13 @@ const WorkItAssetsTable: React.FC<itAssetsTableProps> = ({ assetsInfo }) => {
               <Input
                 style={{ width: '100%' }}
                 readOnly
+                value={assetsDataForm.product_time}
               />
             </Col>
           </Row>
           <Row gutter={20}>
             {/* status */}
-            <Col span={8}>
+            <Col span={assetsStatusWidth}>
               <label
                 htmlFor="Status"
                 className='mb-1 flex items-center font-semibold'
@@ -203,29 +326,52 @@ const WorkItAssetsTable: React.FC<itAssetsTableProps> = ({ assetsInfo }) => {
                 style={{ width: '100%' }}
                 placeholder='Status'
                 allowClear
+                options={assetsStatus}
+                onChange={selectItAssetsStatusText}
+                value={assetsDataForm.product_status}
               >
               </Select>
             </Col>
+
             {/* user */}
-            <Col span={8}>
-              <label htmlFor="User" className='mb-1 flex items-center font-semibold'>
-                <span className='mr-1 text-red-600 font-thin'>*</span>
-                User
-              </label>
-              <Input
-                style={{ width: '100%' }}
-                placeholder='Username'
-              />
-            </Col>
+            {assetsStatusShow && (
+              <Col span={assetsStatusWidth}>
+                <label htmlFor="User" className='mb-1 flex items-center font-semibold'>
+                  <span className='mr-1 text-red-600 font-thin'>*</span>
+                  User
+                </label>
+                <Input
+                  style={{ width: '100%' }}
+                  placeholder='Username'
+                  value={assetsDataForm.product_username}
+                  allowClear
+                  onChange={e => {
+                    setAssetsDataForm({
+                     ...assetsDataForm,
+                      product_username: e.target.value
+                    })
+                  }}
+                />
+              </Col>
+            )}
+          
             {/* price */}
-            <Col span={8}>
+            <Col span={assetsStatusWidth}>
               <label htmlFor="Price" className='mb-1 flex items-center font-semibold'>
                 Reference Price
               </label>
-              <Input
-                style={{ width: '100%' }}
+              <InputNumber
+                min={0}
+                style={{ width: '100%'}}
                 placeholder='Product price'
                 addonAfter="USD"
+                value={assetsDataForm.product_price}
+                onChange={e => {
+                  setAssetsDataForm({
+                 ...assetsDataForm,
+                    product_price: Number(e)
+                  })
+                }}
               />
             </Col>
           </Row>
@@ -242,6 +388,13 @@ const WorkItAssetsTable: React.FC<itAssetsTableProps> = ({ assetsInfo }) => {
                 autoSize={{ minRows: 5, maxRows: 5 }}
                 placeholder='Remark'
                 maxLength={260}
+                value={assetsDataForm.product_remark}
+                onChange={e => {
+                  setAssetsDataForm({
+                 ...assetsDataForm,
+                    product_remark: e.target.value
+                  })
+                }}
               />
             </Col>
           </Row>

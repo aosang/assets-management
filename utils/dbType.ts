@@ -54,15 +54,20 @@ export interface statusItem {
   status: string
 }
 
+export interface assetsItem {
+  id: string,
+  status: string
+}
+
 export interface productItem {
-  id: string
-  product_id: string
-  product_type: string
+  product_id: string,
   product_name: string
-  product_brand: string
+  product_type: null | string
+  product_brand: null | string
+  product_status: null | string
   product_time: string
-  product_status: string
   product_username: string
+  product_price: number
   product_remark: string
 }
 
