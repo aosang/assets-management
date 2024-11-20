@@ -1,5 +1,6 @@
 'use client'
 import { useEffect, useState } from 'react'
+
 import{ typeDataName, typeDataBrand, assetsItem, productItem } from '@/utils/dbType'
 import { 
   Button, 
@@ -16,7 +17,7 @@ import {
   Tag
 } from 'antd'
 import { getWorkOrderType, getWorkBrand } from '@/utils/providerSelectData'
-import { getItAssetsStatusData, insertItAssets } from '@/utils/providerItAssetsData'
+import { getItAssetsStatusData, insertItAssets, deleteItAssets } from '@/utils/providerItAssetsData'
 import { getTimeNumber } from '@/utils/pubFunProvider'
 import { IoIosSearch } from 'react-icons/io'
 import useMessage from '@/utils/message'
@@ -29,6 +30,7 @@ type typeDataProps = typeDataName[]
 type typeDataBrandProps = typeDataBrand[]
 type assetsStatusProps = assetsItem[]
 
+
 const WorkItAssetsTable: React.FC<itAssetsTableProps> = ({ assetsInfo }) => {
   const [layoutWidth, setLayoutWidth] = useState<number>(12)
   const [productBrandShow, setProductBrandShow] = useState<boolean>(false)
@@ -36,6 +38,9 @@ const WorkItAssetsTable: React.FC<itAssetsTableProps> = ({ assetsInfo }) => {
   const [assetsStatusShow, setAssetsStatusShow] = useState<boolean>(false)
   const [assetsStatusWidth, setAssetsStatusWidth] = useState<number>(12)
 
+  const [isModalDelete, setIsModalDelete] = useState<boolean>(false)
+
+  const [deleteAssetsDataId, setDeleteAssetsDataId] = useState<string[]>([])
   const [addItAssetsShow, setAddItAssetsShow] = useState(false)
   const [typeData, setTypeData] = useState<typeDataProps>([])
   const [typeDataBrand, setTypeDataBrand] = useState<typeDataBrandProps>([])
@@ -165,6 +170,28 @@ const WorkItAssetsTable: React.FC<itAssetsTableProps> = ({ assetsInfo }) => {
     })
   }
 
+  const rowSelection = {
+    onChange: (selectedRowKeys: React.Key[], selectedRows: productItem[]) => {
+      let ids: string[] = []
+      selectedRows.forEach(item => {
+        ids.push(item.product_id)
+      })
+      setDeleteAssetsDataId(ids)
+    }
+  }
+
+  // Delete data
+  const deleteAssetsDataIdHandler = () => {
+    if(deleteAssetsDataId.length > 0) return setIsModalDelete(true)
+    useMessage(2, 'Please select the data you want to delete','error')
+  }
+
+  // Confirm delete data
+  const confirmDeleteAssetsData = () => {
+    setIsModalDelete(false)
+    deleteItAssets(deleteAssetsDataId)
+  }
+
   useEffect(() => {
     getCreateTime()
   }, [])
@@ -179,18 +206,21 @@ const WorkItAssetsTable: React.FC<itAssetsTableProps> = ({ assetsInfo }) => {
     title: 'Type',
     dataIndex: 'product_type',
     key: 'product_type',
+    width: 100
   }, {
     title: 'Brand',
     dataIndex: 'product_brand',
-    key: 'product_brand'
+    key: 'product_brand',
+    width: 130
   },  {
     title: 'Product',
     dataIndex: 'product_name',
-    key: 'product_name'
+    key: 'product_name',
   }, {
     title: 'Status',
     dataIndex: 'product_status',
     key: 'product_status',
+    width: 100,
     render: (text) => {
       return (
         <div>
@@ -204,15 +234,66 @@ const WorkItAssetsTable: React.FC<itAssetsTableProps> = ({ assetsInfo }) => {
   }, {
     title: 'User',
     dataIndex: 'product_username',
-    key: 'product_username'
+    key: 'product_username',
+    width: 180
+  }, {
+    title: 'Reference Price',
+    dataIndex: 'product_price',
+    key: 'product_price',
+    width: 180,
+    render: (text) => {
+      return (
+        <>{'USD' + text}</>
+      )
+    }
+  }, {
+    title: 'Create time',
+    dataIndex: 'product_time',
+    key: 'product_time',
+    width: 160
   }, {
     title: 'Remark',
     dataIndex: 'product_remark',
     key: 'product_remark'
+  }, {
+    title: 'Other',
+    render: (text, record) => {
+      return (
+        <div>
+          <Button
+            className='mr-2'
+            type='primary'
+            size='small'
+            onClick={() => {}}
+            style={{fontSize: '13px'}}
+          >
+            Edit
+          </Button>
+
+          <Button
+            size='small'
+            onClick={() => {}}
+            style={{fontSize: '13px'}}
+            className='bg-green-400'
+          >
+            QR code
+          </Button>
+        </div>
+      )
+    }
   }]
 
   return (
     <div>
+      <Modal
+        title="Tips"
+        open={isModalDelete}
+        onCancel={() => setIsModalDelete(false)}
+        onOk={confirmDeleteAssetsData}
+      >
+        <p className="text-sm text-black">Are you sure you want to delete this data?</p>
+      </Modal>
+
       <Modal 
         open={addItAssetsShow} 
         title="Add an IT device"
@@ -411,7 +492,13 @@ const WorkItAssetsTable: React.FC<itAssetsTableProps> = ({ assetsInfo }) => {
           </Button>
         </Col>
         <Col>
-         <Button type='primary' danger>Delete</Button>
+         <Button 
+            type='primary' 
+            danger
+            onClick={deleteAssetsDataIdHandler}
+          >
+            Delete
+          </Button>
         </Col>
         <Col className='flex my-0 mr-0 ml-auto'>
           <Select
@@ -432,11 +519,17 @@ const WorkItAssetsTable: React.FC<itAssetsTableProps> = ({ assetsInfo }) => {
         </Col>
       </Row>
       <div className='mt-5'>
-        <Table 
+        <Table
+          rowSelection={{...rowSelection}} 
           size='middle'
           bordered
           columns={columns}
           dataSource={assetsInfo}
+          pagination={{ 
+            position: ['bottomRight'], 
+            pageSizeOptions: ['10', '20', '50'], 
+            showSizeChanger: true, 
+          }}
         />
       </div>
     </div>
