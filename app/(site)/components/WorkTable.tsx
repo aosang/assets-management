@@ -23,11 +23,6 @@ const WorkTable: React.FC<workTableProps> = ({ workInfo, onChangeSelectData, onG
   }
 
   const colums: TableColumnsType<tableItems> = [{
-    title: 'Number',
-    dataIndex: 'created_id',
-    key: 'created_id',
-    width: 160
-  }, {
     title: 'Product',
     dataIndex: 'created_product',
     key: 'created_product'
@@ -47,7 +42,7 @@ const WorkTable: React.FC<workTableProps> = ({ workInfo, onChangeSelectData, onG
     title: 'Created Time',
     dataIndex: 'created_time',
     key: 'created_time',
-    width: 160
+    width: 150
   }, {
     title: 'Problem',
     dataIndex: 'created_text',
@@ -57,7 +52,6 @@ const WorkTable: React.FC<workTableProps> = ({ workInfo, onChangeSelectData, onG
     title: 'Status',
     dataIndex: 'created_status',
     key: 'created_status',
-    width: 120,
     render: (text: string) => {
       return (
         <>
@@ -69,7 +63,6 @@ const WorkTable: React.FC<workTableProps> = ({ workInfo, onChangeSelectData, onG
     }
   }, {
     title: 'Other',
-    width: 100,
     render: () => {
       return (
         <>

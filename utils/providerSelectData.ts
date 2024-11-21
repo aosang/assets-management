@@ -45,7 +45,6 @@ export const getProfiles = async (id?: string | null) => {
       throw error
     }
   }
-  
 }
 
 // update profiles

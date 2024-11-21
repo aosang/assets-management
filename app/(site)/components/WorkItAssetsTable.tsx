@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, useState } from 'react'
-
+import dayjs from 'dayjs'
 import{ typeDataName, typeDataBrand, assetsItem, productItem } from '@/utils/dbType'
 import { 
   Button, 
@@ -17,21 +17,24 @@ import {
   Tag
 } from 'antd'
 import { getWorkOrderType, getWorkBrand } from '@/utils/providerSelectData'
-import { getItAssetsStatusData, insertItAssets, deleteItAssets } from '@/utils/providerItAssetsData'
+import { getItAssetsStatusData, insertItAssets, deleteItAssets, searchItAssetsData, getItAssetsTabbleData } from '@/utils/providerItAssetsData'
 import { getTimeNumber } from '@/utils/pubFunProvider'
 import { IoIosSearch } from 'react-icons/io'
 import useMessage from '@/utils/message'
 
-interface itAssetsTableProps  {
-  assetsInfo: productItem[]
-}
-
+type asstesDataProps = productItem[]
 type typeDataProps = typeDataName[]
 type typeDataBrandProps = typeDataBrand[]
 type assetsStatusProps = assetsItem[]
 
 
-const WorkItAssetsTable: React.FC<itAssetsTableProps> = ({ assetsInfo }) => {
+const WorkItAssetsTable: React.FC = () => {
+  const [assetsData, setAssetsData] = useState<asstesDataProps>([])
+  const [filterTypeValue, setFilterTypeValue] = useState<string | null>(null)
+  const [filterStatusValue, setFilterStatusValue] = useState<string | null>(null)
+  const [filterStartTime, setFilterStartTime] = useState<string>('')
+  const [filterEndTime, setFilterEndTime] = useState<string>('')
+
   const [layoutWidth, setLayoutWidth] = useState<number>(12)
   const [productBrandShow, setProductBrandShow] = useState<boolean>(false)
   const [selectOpen, setSelectOpen] = useState<boolean>(false)
@@ -39,6 +42,7 @@ const WorkItAssetsTable: React.FC<itAssetsTableProps> = ({ assetsInfo }) => {
   const [assetsStatusWidth, setAssetsStatusWidth] = useState<number>(12)
 
   const [isModalDelete, setIsModalDelete] = useState<boolean>(false)
+  const [isEditModalShow, setIsEditModalShow] = useState<boolean>(false)
 
   const [deleteAssetsDataId, setDeleteAssetsDataId] = useState<string[]>([])
   const [addItAssetsShow, setAddItAssetsShow] = useState(false)
@@ -80,21 +84,39 @@ const WorkItAssetsTable: React.FC<itAssetsTableProps> = ({ assetsInfo }) => {
     }else {
       setAddItAssetsShow(false)
       insertItAssets(assetsDataForm)
+      .then(() => {
+        getMyItAssetsData()
+      })
     }
+  }
+
+  const getMyItAssetsData = () => {
+    getItAssetsTabbleData()
+      .then(res => {
+        setAssetsData(res as asstesDataProps)
+      })
   }
 
   const modalAddDeviceHandler = () => {
     getCreateTime()
     setAddItAssetsShow(true)
-    getWorkOrderType()
-    .then(res => {
-      setTypeData(res as typeDataProps)
-    })
+  }
 
-    getItAssetsStatusData()
-    .then(res => {
-      setAssetsStatus(res as assetsStatusProps)
-    })
+  const onRowData = {
+    onClick: (record: productItem) => {
+      setIsEditModalShow(true)
+      setAssetsDataForm({
+       ...record,
+        product_name: record.product_name,
+        product_type: record.product_type,
+        product_brand: record. product_brand,
+        product_status: record.product_status,
+        product_time: record.product_time,
+        product_username: record.product_username,
+        product_price: record.product_price,
+        product_remark: record.product_remark
+      })
+    }
   }
 
   const selectProductType = (keys: string) => {
@@ -190,28 +212,58 @@ const WorkItAssetsTable: React.FC<itAssetsTableProps> = ({ assetsInfo }) => {
   const confirmDeleteAssetsData = () => {
     setIsModalDelete(false)
     deleteItAssets(deleteAssetsDataId)
+    .then (() => {
+      getMyItAssetsData()
+    })
+  }
+
+  // filter data
+  const filterTypeDataText = (e: string) => {
+    setFilterTypeValue(e)
+  }
+  
+  const filterStatusDataText = (e: string) => {
+    setFilterStatusValue(e)
+  }
+
+  const getTimeFilterData = (dateString: any) => {
+    let startTime = dateString ? dateString[0].$d : ''
+    let endTime = dateString ? dateString[1].$d : ''
+    startTime = dayjs(startTime).format('YYYY-MM-DD')
+    endTime = dayjs(endTime).format('YYYY-MM-DD')
+    setFilterStartTime(startTime)
+    setFilterEndTime(endTime)
+  }
+
+  const searchFilterItAssetsData = () => {
+    searchItAssetsData(filterTypeValue, filterStatusValue, filterStartTime, filterEndTime)
+    .then(res => {
+      setAssetsData(res as asstesDataProps)
+    })
   }
 
   useEffect(() => {
-    getCreateTime()
+    getWorkOrderType()
+    .then(res => {
+      setTypeData(res as typeDataProps)
+    })
+
+    getItAssetsStatusData()
+    .then(res => {
+      setAssetsStatus(res as assetsStatusProps)
+    })
+
+    getMyItAssetsData()
   }, [])
 
   const columns = [{
-    title: 'Number',
-    dataIndex: 'product_id',
-    key: 'product_id', 
-    width: 160
-    // render: text => <a href="#">{text}</a>
-  }, {
     title: 'Type',
     dataIndex: 'product_type',
     key: 'product_type',
-    width: 100
   }, {
     title: 'Brand',
     dataIndex: 'product_brand',
     key: 'product_brand',
-    width: 130
   },  {
     title: 'Product',
     dataIndex: 'product_name',
@@ -220,7 +272,6 @@ const WorkItAssetsTable: React.FC<itAssetsTableProps> = ({ assetsInfo }) => {
     title: 'Status',
     dataIndex: 'product_status',
     key: 'product_status',
-    width: 100,
     render: (text) => {
       return (
         <div>
@@ -234,37 +285,34 @@ const WorkItAssetsTable: React.FC<itAssetsTableProps> = ({ assetsInfo }) => {
   }, {
     title: 'User',
     dataIndex: 'product_username',
-    key: 'product_username',
-    width: 180
+    key: 'product_username'
   }, {
-    title: 'Reference Price',
+    title: 'Price',
     dataIndex: 'product_price',
     key: 'product_price',
-    width: 180,
     render: (text) => {
       return (
         <>{'USD' + text}</>
       )
     }
   }, {
-    title: 'Create time',
+    title: 'Created time',
     dataIndex: 'product_time',
     key: 'product_time',
-    width: 160
   }, {
     title: 'Remark',
     dataIndex: 'product_remark',
     key: 'product_remark'
   }, {
     title: 'Other',
-    render: (text, record) => {
+    render: (record: productItem) => {
       return (
         <div>
           <Button
             className='mr-2'
             type='primary'
             size='small'
-            onClick={() => {}}
+            onClick={() => onRowData.onClick(record)}
             style={{fontSize: '13px'}}
           >
             Edit
@@ -285,6 +333,7 @@ const WorkItAssetsTable: React.FC<itAssetsTableProps> = ({ assetsInfo }) => {
 
   return (
     <div>
+      {/* add modal */}
       <Modal
         title="Tips"
         open={isModalDelete}
@@ -482,6 +531,194 @@ const WorkItAssetsTable: React.FC<itAssetsTableProps> = ({ assetsInfo }) => {
         </Space>
         <Divider/>
       </Modal>
+
+      {/* edit modal */}
+      <Modal
+        title="Edit Device" 
+        open={isEditModalShow}
+        onCancel={() => setIsEditModalShow(false)}
+        width={960}
+      >
+        <Divider/>
+        <Space direction="vertical" size="middle" style={{ width: '100%' }}>
+          <Row gutter={20}>
+            {/* product name */}
+            <Col span={24}>
+              <label htmlFor="Product" className='mb-1 flex items-center font-semibold'>
+                <span className='mr-1 text-red-600 font-thin'>*</span>
+                Product Name
+              </label>
+              <Input
+                style={{ width: '100%' }}
+                placeholder='Product name'
+                value={assetsDataForm.product_name}
+                onChange={e => {
+                  setAssetsDataForm({
+                   ...assetsDataForm,
+                    product_name: e.target.value
+                  })
+                }}
+              />
+            </Col>
+          </Row>
+          <Row gutter={20}>
+            <Col span={layoutWidth}>
+              {/* product type */}
+              <label
+                htmlFor="Type"
+                className='mb-1 flex items-center font-semibold'
+              >
+                <span className='mr-1 text-red-600 font-thin'>*</span>
+                Product Type
+              </label>
+              <Select
+                style={{ width: '100%' }}
+                placeholder='Product type'
+                allowClear
+                options={typeData}
+                onChange={selectProductType}
+                value={assetsDataForm.product_type}
+              >
+              </Select>
+            </Col>
+
+            {/* product brand */}
+            {productBrandShow && (
+              <Col span={layoutWidth}>
+                <label
+                  htmlFor="Brand"
+                  className='mb-1 flex items-center font-semibold'
+                >
+                  <span className='mr-1 text-red-600 font-thin'>*</span>
+                  Brand
+                </label>
+                <Select
+                  style={{ width: '100%' }}
+                  placeholder='Product brand'
+                  allowClear
+                  onDropdownVisibleChange={onTriggerSelected}
+                  value={assetsDataForm.product_brand}
+                  onChange={assetsProductBrand}
+                  options={typeDataBrand.map(item => {
+                    return {
+                      label:
+                        <div className='flex'>
+                          {selectOpen && <img src={item.logo_url} alt='avatar' className='mr-2 w-6' />}<span className='w-7 mt-0.5'>{item.value}</span>
+                        </div>,
+                      value: item.value
+                    }
+                  })}
+                >
+                </Select>
+              </Col>
+            )}
+            
+            {/* create time */}
+            <Col span={layoutWidth}>
+              <label
+                htmlFor="Create_"
+                className='mb-1 flex items-center font-semibold'
+              >
+                <span className='mr-1 text-red-600  font-thin'>*</span>
+                Create time
+              </label>
+              <Input
+                style={{ width: '100%' }}
+                readOnly
+                value={assetsDataForm.product_time}
+              />
+            </Col>
+          </Row>
+          <Row gutter={20}>
+            {/* status */}
+            <Col span={assetsStatusWidth}>
+              <label
+                htmlFor="Status"
+                className='mb-1 flex items-center font-semibold'
+              >
+                <span className='mr-1 text-red-600 font-thin'>*</span>
+                Status
+              </label>
+              <Select
+                style={{ width: '100%' }}
+                placeholder='Status'
+                allowClear
+                options={assetsStatus}
+                onChange={selectItAssetsStatusText}
+                value={assetsDataForm.product_status}
+              >
+              </Select>
+            </Col>
+
+            {/* user */}
+            {assetsStatusShow && (
+              <Col span={assetsStatusWidth}>
+                <label htmlFor="User" className='mb-1 flex items-center font-semibold'>
+                  <span className='mr-1 text-red-600 font-thin'>*</span>
+                  User
+                </label>
+                <Input
+                  style={{ width: '100%' }}
+                  placeholder='Username'
+                  value={assetsDataForm.product_username}
+                  allowClear
+                  onChange={e => {
+                    setAssetsDataForm({
+                     ...assetsDataForm,
+                      product_username: e.target.value
+                    })
+                  }}
+                />
+              </Col>
+            )}
+          
+            {/* price */}
+            <Col span={assetsStatusWidth}>
+              <label htmlFor="Price" className='mb-1 flex items-center font-semibold'>
+                Reference Price
+              </label>
+              <InputNumber
+                min={0}
+                style={{ width: '100%'}}
+                placeholder='Product price'
+                addonAfter="USD"
+                value={assetsDataForm.product_price}
+                onChange={e => {
+                  setAssetsDataForm({
+                 ...assetsDataForm,
+                    product_price: Number(e)
+                  })
+                }}
+              />
+            </Col>
+          </Row>
+          <Row gutter={20}>
+            <Col span={24}>
+              <label
+                htmlFor="Problem"
+                className='mb-1 flex items-center font-semibold'
+              >
+                Remark
+              </label>
+              <Input.TextArea
+                rows={5}
+                autoSize={{ minRows: 5, maxRows: 5 }}
+                placeholder='Remark'
+                maxLength={260}
+                value={assetsDataForm.product_remark}
+                onChange={e => {
+                  setAssetsDataForm({
+                 ...assetsDataForm,
+                    product_remark: e.target.value
+                  })
+                }}
+              />
+            </Col>
+          </Row>
+        </Space>
+        <Divider/>
+      </Modal>
+
       <Row gutter={10}>
         <Col>
           <Button 
@@ -491,6 +728,7 @@ const WorkItAssetsTable: React.FC<itAssetsTableProps> = ({ assetsInfo }) => {
             Create
           </Button>
         </Col>
+
         <Col>
          <Button 
             type='primary' 
@@ -500,22 +738,36 @@ const WorkItAssetsTable: React.FC<itAssetsTableProps> = ({ assetsInfo }) => {
             Delete
           </Button>
         </Col>
+
         <Col className='flex my-0 mr-0 ml-auto'>
           <Select
             className='w-40 mr-3' 
             placeholder="Type" 
             allowClear
+            options={typeData}
+            onChange={filterTypeDataText}
+            value={filterTypeValue}
           />
           <Select
+            style={{width: '32%'}}
             className='w-40 mr-3' 
             placeholder="Status" 
             allowClear
+            options={assetsStatus}
+            onChange={filterStatusDataText}
+            value={filterStatusValue}
           />
           <DatePicker.RangePicker
             className='mr-3'
             format={'YYYY-MM-DD'}
+            onChange={getTimeFilterData}
           />
-          <Button type='primary' icon={<IoIosSearch />}></Button>
+          <Button 
+            type='primary' 
+            icon={<IoIosSearch />}
+            onClick={searchFilterItAssetsData}
+          >
+         </Button>
         </Col>
       </Row>
       <div className='mt-5'>
@@ -524,7 +776,7 @@ const WorkItAssetsTable: React.FC<itAssetsTableProps> = ({ assetsInfo }) => {
           size='middle'
           bordered
           columns={columns}
-          dataSource={assetsInfo}
+          dataSource={assetsData}
           pagination={{ 
             position: ['bottomRight'], 
             pageSizeOptions: ['10', '20', '50'], 
