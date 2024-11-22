@@ -58,6 +58,7 @@ const WorkOrder: React.FC = ({ }) => {
   const [workOrderForm, setWorkOrderForm] = useState<workOrderFormProps>({
     created_product: '',
     created_time: '',
+    created_update: '',
     created_name: '',
     created_text: '',
     created_solved: '',
@@ -93,7 +94,8 @@ const WorkOrder: React.FC = ({ }) => {
           setWorkOrderForm({
             ...workOrderForm,
             created_name: res[0].username,
-            created_time: getTimeNumber()[0]
+            created_time: getTimeNumber()[0],
+            created_update: getTimeNumber()[0]
           })
         }
       })
@@ -142,6 +144,7 @@ const WorkOrder: React.FC = ({ }) => {
         ...workOrderForm,
         created_product: selectData.created_product,
         created_time: selectData.created_time,
+        created_update: getTimeNumber()[0],
         created_name: selectData.created_name,
         created_text: selectData.created_text,
         created_solved: selectData.created_solved,
@@ -189,7 +192,7 @@ const WorkOrder: React.FC = ({ }) => {
   }
 
   const confirmEditModalForm = () => {
-    editWorkOrderData(editId, { ...workOrderForm, created_time: getTimeNumber()[0] })
+    editWorkOrderData(editId, { ...workOrderForm, created_update: getTimeNumber()[0] })
       .then(res => {
         setIsModalEditOpen(false)
         useMessage(2, 'Update success!', 'success')
@@ -295,7 +298,6 @@ const WorkOrder: React.FC = ({ }) => {
   }, [])
 
   return (
-
     <div style={{ width: '100%', padding: '12px', boxSizing: 'border-box' }}>
       <Space direction="vertical" size={16} style={{ width: '100%' }}>
         <Card title="WorkOrder">
@@ -371,8 +373,8 @@ const WorkOrder: React.FC = ({ }) => {
           >
             <Divider />
             <Space direction="vertical" size="middle" style={{ width: '100%' }}>
-              <Row gutter={20}>
-                <Col span={8}>
+              <Row gutter={15}>
+                <Col span={24}>
                   <label
                     htmlFor="Product"
                     className='mb-1 flex items-center font-semibold'
@@ -384,9 +386,14 @@ const WorkOrder: React.FC = ({ }) => {
                     style={{ width: '100%' }}
                     placeholder='Product name'
                     value={workOrderForm.created_product}
-                    onChange={e => setWorkOrderForm({ ...workOrderForm, created_product: e.target.value })}
+                    onChange={e => setWorkOrderForm({ 
+                      ...workOrderForm, 
+                      created_product: e.target.value 
+                    })}
                   />
                 </Col>
+              </Row>
+              <Row gutter={15}>
                 <Col span={8}>
                   <label
                     htmlFor="Create_name"
@@ -413,6 +420,20 @@ const WorkOrder: React.FC = ({ }) => {
                     style={{ width: '100%' }}
                     readOnly
                     value={workOrderForm.created_time}
+                  />
+                </Col>
+                <Col span={8}>
+                  <label
+                    htmlFor="Create_name"
+                    className='mb-1 flex items-center font-semibold'
+                  >
+                    <span className='mr-1 text-red-600  font-thin'>*</span>
+                    Update time
+                  </label>
+                  <Input
+                    style={{ width: '100%' }}
+                    readOnly
+                    value={workOrderForm.created_update}
                   />
                 </Col>
               </Row>
@@ -549,7 +570,7 @@ const WorkOrder: React.FC = ({ }) => {
 
           {/* edit */}
           <Modal
-            title="Create Work Order"
+            title="Edit Work Order"
             width={960}
             open={isModalEditOpen}
             onOk={confirmEditModalForm}
@@ -562,7 +583,7 @@ const WorkOrder: React.FC = ({ }) => {
             <Divider />
             <Space direction="vertical" size="middle" style={{ width: '100%' }}>
               <Row gutter={20}>
-                <Col span={8}>
+                <Col span={24}>
                   <label
                     htmlFor="Product"
                     className='mb-1 flex items-center font-semibold'
@@ -577,6 +598,8 @@ const WorkOrder: React.FC = ({ }) => {
                     onChange={e => setWorkOrderForm({ ...workOrderForm, created_product: e.target.value })}
                   />
                 </Col>
+              </Row>
+              <Row gutter={20}>
                 <Col span={8}>
                   <label
                     htmlFor="Create_name"
@@ -593,16 +616,30 @@ const WorkOrder: React.FC = ({ }) => {
                 </Col>
                 <Col span={8}>
                   <label
-                    htmlFor="Create_name"
+                    htmlFor="Create_time"
                     className='mb-1 flex items-center font-semibold'
                   >
                     <span className='mr-1 text-red-600  font-thin'>*</span>
-                    Create time
+                    Created time
                   </label>
                   <Input
                     style={{ width: '100%' }}
                     readOnly
                     value={workOrderForm.created_time}
+                  />
+                </Col>
+                <Col span={8}>
+                  <label
+                    htmlFor="Create_time"
+                    className='mb-1 flex items-center font-semibold'
+                  >
+                    <span className='mr-1 text-red-600  font-thin'>*</span>
+                    Updated time
+                  </label>
+                  <Input
+                    style={{ width: '100%' }}
+                    readOnly
+                    value={workOrderForm.created_update}
                   />
                 </Col>
               </Row>

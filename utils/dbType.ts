@@ -12,6 +12,7 @@ export interface tableItems {
   created_id: string
   created_name: string
   created_time: string
+  created_update: string
   created_text: string
   created_solved: string
   created_at: string
@@ -25,6 +26,7 @@ export interface workOrderFormProps {
   created_product: string
   created_name: string
   created_time: string
+  created_update: string
   created_text: string
   created_solved: string 
   created_type: null | string
@@ -65,7 +67,8 @@ export interface productItem {
   product_type: null | string
   product_brand: null | string
   product_status: null | string
-  product_time: string
+  product_time: string,
+  product_update: string,
   product_username: string
   product_price: number
   product_remark: string

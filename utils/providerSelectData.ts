@@ -121,7 +121,8 @@ export const getWorkOrder = async (id?: string) => {
 export const insertUpdateWorkOrder = async ({
     created_product, 
     created_name,
-    created_time, 
+    created_time,
+    created_update,
     created_text, 
     created_solved, 
     created_type,
@@ -135,6 +136,7 @@ export const insertUpdateWorkOrder = async ({
     created_id: getTimeNumber()[1],
     created_product,
     created_time,
+    created_update,
     created_name: created_name,
     created_text: created_text,
     created_solved,

@@ -34,6 +34,7 @@ export const getItAssetsStatusData = async () => {
 export const insertItAssets = async ({
   product_name,
   product_time,
+  product_update,
   product_type,
   product_brand,
   product_status,
@@ -45,6 +46,7 @@ export const insertItAssets = async ({
     product_id: getTimeNumber()[1],
     product_name,
     product_time,
+    product_update,
     product_type,
     product_brand,
     product_status,
@@ -177,6 +179,17 @@ export const searchItAssetsData = async (
   }
 }
 
+// update
 export const editItAssetsData = async (assetsId: string, assetsOrderForm: productItem) => {
-  
+  const { error } = await supabase
+  .from('it_assets')
+  .update(assetsOrderForm)
+  .eq('product_id', assetsId)
+
+  try {
+    if(error) return useMessage(2, error!.message, 'error')
+    useMessage(2, 'Update sucessful!','success')
+  } catch (error) {
+    throw error
+  }
 }

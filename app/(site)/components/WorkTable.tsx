@@ -42,7 +42,10 @@ const WorkTable: React.FC<workTableProps> = ({ workInfo, onChangeSelectData, onG
     title: 'Created Time',
     dataIndex: 'created_time',
     key: 'created_time',
-    width: 150
+  }, {
+    title: 'Updated Time',
+    dataIndex: 'created_update',
+    key: 'created_update',
   }, {
     title: 'Problem',
     dataIndex: 'created_text',
@@ -63,7 +66,7 @@ const WorkTable: React.FC<workTableProps> = ({ workInfo, onChangeSelectData, onG
     }
   }, {
     title: 'Other',
-    render: () => {
+    render: (record: tableItems) => {
       return (
         <>
           <div>
@@ -71,7 +74,7 @@ const WorkTable: React.FC<workTableProps> = ({ workInfo, onChangeSelectData, onG
               className="mr-2 text-xs" 
               size="small" 
               type="primary"
-              onClick={() => onGetEditData}
+              onClick={() => onRowData.onClick(record)}
             >
               Edit
             </Button>
@@ -86,11 +89,6 @@ const WorkTable: React.FC<workTableProps> = ({ workInfo, onChangeSelectData, onG
       <div className="mt-5">
         <Table
           rowSelection={{...rowSelection}}
-          onRow={(record) => ({
-            onClick: () => {
-              onRowData.onClick(record)
-            }
-          })}
           columns={colums} 
           dataSource={workInfo}
           bordered
