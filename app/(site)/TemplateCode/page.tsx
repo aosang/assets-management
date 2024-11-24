@@ -1,8 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
+import {flexible} from './phone.js'
 import QRCode from "qrcode.react";
 import tempcss from './temp.module.scss'
+
 
 
 const TemplateCode: React.FC = () => {
@@ -19,12 +21,41 @@ const TemplateCode: React.FC = () => {
     setQrCodeData(dataString);
   };
 
+  useEffect(() => {
+    flexible()
+  }, []);
+
   return (
-    <html lang="en">
-      <body className={tempcss.bgall}>
-        <div></div>
-      </body>
-    </html>
+    <div className={tempcss.rootLay}>
+      <div className={tempcss.container}>
+        <div className={tempcss.container_nav}>
+          <h2>Device Info</h2> 
+        </div>
+        <ul className={tempcss.container_info}>
+          <li>
+            <span>Device-number:</span>
+            <p>202411241916</p>
+          </li>
+          <li>
+            <span>Device-name:</span>
+            <p>Macbook M2</p>
+          </li>
+          <li>
+            <span>Device-type:</span>
+            <p>Laptod</p>
+          </li>
+          <li>
+            <span>Device-brand:</span>
+            <p>Apple</p>
+          </li>
+          <li>
+            <span>Device-remark:</span>
+            <p>AppleAppleAppleAppleAppleAppleAppleAppleApple</p>
+          </li>
+        </ul>
+      </div>
+      <div></div>
+    </div>
   )
 }
 

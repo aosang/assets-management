@@ -1,3 +1,59 @@
-.bgall {
-  background: #000;
-}
+ .rootLay {
+   position: fixed;
+   top: 0;
+   left: 0;
+   width: 100%;
+   height: 100vh;
+   background: #f7f7f7;
+ }
+
+ .container {
+   position: absolute;
+   top: 40%;
+   left: 50%;
+   transform: translate(-50%, -40%);
+   width: 3.2rem;
+   margin: 0 auto;
+   height: 5rem;
+   background: #fff;
+   border-radius: 0.1rem;
+   overflow: hidden;
+ }
+
+ .container_nav {
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   width: 100%;
+   height: 0.48rem;
+   background: #1677FF;
+
+   h2 {
+     font-size: 0.2rem;
+     color: #fff;
+   }
+ }
+
+ .container_info {
+   padding: 0.15rem 0.2rem 0 0.2rem;
+   box-sizing: border-box;
+   li {
+     display: flex;
+     border-bottom: 0.01rem solid #eee;
+     padding: 0.12rem 0;
+     flex-wrap: wrap;
+     justify-content: space-between;
+
+     span {
+      // flex: 2;
+      font-size: 0.16rem;
+      white-space: nowrap;
+     }
+
+     p {
+      // flex: 6;
+      font-size: 0.16rem;
+      word-break: break-all;
+     }
+   }
+ }
