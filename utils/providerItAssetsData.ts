@@ -6,8 +6,23 @@ import { productItem } from '@/utils/dbType'
 export const getItAssetsTabbleData = async () => {
   const { data, error } = await supabase
     .from("it_assets")
-    .select("*")
+    .select('*')
     .order('product_time', { ascending: false })
+
+  try {
+    if (data) return data || []
+    useMessage(2, error?.message, 'error')
+  }
+  catch (error) {
+    throw error
+  }
+}
+
+export const getCodeAssetsData = async (query?: string) => {
+  const { data, error } = await supabase
+  .from('it_assets')
+  .select('*')
+  .eq('product_id', query)
 
   try {
     if (data) return data || []

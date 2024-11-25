@@ -65,6 +65,14 @@ const WorkItAssetsTable: React.FC = () => {
     product_remark: ''
   })
 
+  // go to qrcode
+  const createQrCodePage = {
+    onClick: (record: productItem) => {
+      window.open(`/TemplateCode?id=${record.product_id}`, '_blank')
+      // router.push('/TemplateCode?id=' + record.product_id)
+    }
+  }
+
   // get create time 
   const getCreateTime = () => {
     let myCreateTimeData = getTimeNumber()[0]
@@ -353,7 +361,7 @@ const WorkItAssetsTable: React.FC = () => {
 
           <Button
             size='small'
-            onClick={() => window.open('/TemplateCode', '_blank')}
+            onClick={() => createQrCodePage.onClick(record)}
             style={{fontSize: '13px'}}
             className='bg-green-400'
           >
