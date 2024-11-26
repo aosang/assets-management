@@ -5,6 +5,7 @@ import {useState, useEffect} from 'react'
 import { AiTwotoneHome, AiFillProfile  } from "react-icons/ai"
 import { RiComputerFill  } from 'react-icons/ri'
 import { FaUser } from "react-icons/fa"
+import { IoDocumentText } from "react-icons/io5";
 
 type MenuItem = Required<MenuProps>['items'][number]
 
@@ -26,8 +27,13 @@ const items: MenuItem[] = [{
   key: 'WorkItAssets',
   label: 'IT Assets',
   icon: <RiComputerFill style={{fontSize: '16px'}} />,
-  
-
+  style: {
+    marginBottom: '12px'
+  }
+}, {
+  key: 'Inspection',
+  label: 'Inspection',
+  icon: <IoDocumentText style={{fontSize: '16px'}} />,
   style: {
     marginBottom: '12px'
   }

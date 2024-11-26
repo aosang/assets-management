@@ -1,6 +1,5 @@
 'use client'
 import { useEffect, useState} from 'react'
-import { useRouter } from 'next/navigation'
 import dayjs from 'dayjs'
 import{ typeDataName, typeDataBrand, assetsItem, productItem } from '@/utils/dbType'
 import { 
@@ -30,7 +29,6 @@ type assetsStatusProps = assetsItem[]
 
 
 const WorkItAssetsTable: React.FC = () => {
-  const router = useRouter()
   const [assetsData, setAssetsData] = useState<asstesDataProps>([])
   const [filterTypeValue, setFilterTypeValue] = useState<string | null>(null)
   const [filterStatusValue, setFilterStatusValue] = useState<string | null>(null)
@@ -69,7 +67,6 @@ const WorkItAssetsTable: React.FC = () => {
   const createQrCodePage = {
     onClick: (record: productItem) => {
       window.open(`/TemplateCode?id=${record.product_id}`, '_blank')
-      // router.push('/TemplateCode?id=' + record.product_id)
     }
   }
 
@@ -120,7 +117,7 @@ const WorkItAssetsTable: React.FC = () => {
       setIsEditModalShow(true)
       setIsEditId(record.product_id)
       setAssetsDataForm({
-       ...record,
+        ...record,
         product_name: record.product_name,
         product_type: record.product_type,
         product_brand: record. product_brand,
@@ -304,7 +301,7 @@ const WorkItAssetsTable: React.FC = () => {
   },  {
     title: 'Product',
     dataIndex: 'product_name',
-    key: 'product_name',
+    key: 'product_name'
   }, {
     title: 'Status',
     dataIndex: 'product_status',
@@ -613,7 +610,7 @@ const WorkItAssetsTable: React.FC = () => {
                 value={assetsDataForm.product_name}
                 onChange={e => {
                   setAssetsDataForm({
-                   ...assetsDataForm,
+                    ...assetsDataForm,
                     product_name: e.target.value
                   })
                 }}
