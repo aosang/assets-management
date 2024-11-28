@@ -47,6 +47,7 @@ export const getItAssetsStatusData = async () => {
 
 // insert it assets
 export const insertItAssets = async ({
+  product_id,
   product_name,
   product_time,
   product_update,
@@ -57,7 +58,8 @@ export const insertItAssets = async ({
   product_price,
   product_remark,
 }) => {
-  const { data, error } = await supabase.from('it_assets').insert({
+  const { data, error } = await supabase.from('it_assets')
+  .insert({
     product_id: getTimeNumber()[1],
     product_name,
     product_time,
@@ -69,7 +71,7 @@ export const insertItAssets = async ({
     product_price,
     product_remark,
   })
-    .select('*')
+  .select('*')
 
   try {
     if (data) {

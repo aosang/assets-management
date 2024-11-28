@@ -2,20 +2,39 @@
 import { useState } from "react"
 import { Collapse, Space, Card, Row, Col, Button, Modal, Input, Divider, Table, Badge, Select } from "antd"
 import { SearchOutlined, DownloadOutlined, EditOutlined, CheckOutlined } from '@ant-design/icons'
+import { getInspectionStatusData } from '@/utils/providerInspection'
+import { inspectionStatusItem, inspectionForms, inspectionItem, selectInspectionItem} from '@/utils/dbType'
+import { getTimeNumber } from '@/utils/pubFunProvider'
+import { getUser } from '@/utils/providerSelectData'
+import { getItAssetsTabbleData } from '@/utils/providerItAssetsData'
+
+type inspectionStatusProps = inspectionStatusItem[]
+
 
 const Inspection = () => {
   const [isDetailsShow, setIsDetailsShow] = useState(false)
   const [deviceNum, setDeviceNum] = useState<number>(0)
   const [isAccordion, setIsAccordion] = useState<boolean>(false)
   const [createInspectionModal, setCreateInspectionModal] = useState<boolean>(false)
-
-  const inspectionDataStatus = [{
-    key: 1,
-    label: 'Discovered a problem',
-  }, {
-    key: 2,
-    label: 'Everything is OK'
-  }]
+  const [selectAssetsData, setSelectAssetsData] = useState<selectInspectionItem>({
+    id: getTimeNumber()[1],
+    value: '',
+    key: ''
+  })
+  const [inspectionDataStatus, setInspectionDataStatus] = useState<inspectionStatusProps>([])
+  const [inspectionDataForm, setInspectionDataForm] = useState<inspectionForms>({
+    inspection_time: '',
+    inspection_number: 0,
+    inspection_phone: '',
+    inspection_name: '',
+    inspection_email: '',
+    inspection_status: null,
+    inspetion_deviceData: [],
+  })
+  const [inspectionItemForm, setInspectionItemForm] = useState<inspectionItem>({
+    inspection_device: null,
+    inspection_description: ''
+  })
 
   const columns = [{
     title: 'Device Name',
@@ -48,6 +67,34 @@ const Inspection = () => {
 
   const createInspectionModalHandler = () => {
     setCreateInspectionModal(true)
+    getInspectionStatusData().then((res) => {
+      setInspectionDataStatus(res as inspectionStatusProps)
+    })
+    setInspectionDataForm({
+     ...inspectionDataForm,
+      inspection_time: getTimeNumber()[0]
+    })
+
+    getUser()
+    .then((res) => {
+      setInspectionDataForm({
+        ...inspectionDataForm,
+         inspection_time: getTimeNumber()[0],
+         inspection_email: res!.user?.email || '',
+         inspection_name: res!.user?.user_metadata.username || '',
+       })
+    })    
+  }
+
+  const selectInspectionStatusData = (e: any) => {
+    setInspectionDataForm({
+     ...inspectionDataForm,
+      inspection_status: e
+    })
+
+    if(e === 'Discovered problem') {
+      
+    }
   }
 
   return (
@@ -118,7 +165,8 @@ const Inspection = () => {
             <Col span={8}>
               <label
                 className='mb-1 flex items-center font-semibold' 
-                htmlFor="InspectionTime">
+                htmlFor="InspectionTime"
+                >
                   Inspection Time
               </label>
               <Input value={'2024-11-27'} readOnly />
@@ -126,16 +174,18 @@ const Inspection = () => {
             <Col span={8}>
               <label
                 className='mb-1 flex items-center font-semibold' 
-                htmlFor="Inspector">
-                  Inspector
+                htmlFor="Inspector"
+              >
+                Inspector
               </label>
               <Input value={'2024-11-27'} readOnly />
             </Col>
             <Col span={8}>
               <label
                 className='mb-1 flex items-center font-semibold' 
-                htmlFor="InspectionStatus">
-                  Inspection Status
+                htmlFor="InspectionStatus"
+              >
+                Inspection Status
               </label>
               <Input value={'2024-11-27'} readOnly />
             </Col>
@@ -145,8 +195,10 @@ const Inspection = () => {
             <Col span={12}>
               <label
                 className='mb-1 flex items-center font-semibold'
-                htmlFor="PhoneNumber">
-                Phone Number
+                htmlFor="PhoneNumber"
+              >
+                <span className="mr-1 text-red-600 font-thin">*</span>  
+                Phone
               </label>
               <Input value={'2024-11-27'} readOnly />
             </Col>
@@ -154,7 +206,9 @@ const Inspection = () => {
             <Col span={12}>
               <label
                 className='mb-1 flex items-center font-semibold'
-                htmlFor="email">
+                htmlFor="email"
+              >
+                <span className="mr-1 text-red-600 font-thin">*</span>
                 Email
               </label>
               <Input value={'2024-11-27'} readOnly />
@@ -195,76 +249,102 @@ const Inspection = () => {
             <Col span={8}>
               <label
                 className='mb-1 flex items-center font-semibold'
-                htmlFor="InspectionTime">
-                  Inspection Time
+                htmlFor="InspectionTime"
+              >
+                <span className="mr-1 text-red-600 font-thin">*</span>  
+                Inspection Time
               </label>
-              <Input value={'2024-11-27'} readOnly />
+              <Input value={inspectionDataForm.inspection_time} readOnly />
             </Col>
             <Col span={8}>
               <label
                 className='mb-1 flex items-center font-semibold'
-                htmlFor="InspectionStatus">
-                  Have you discovered any problems?
+                htmlFor="Inspector"
+              >
+                <span className="mr-1 text-red-600 font-thin">*</span>  
+                Inspector
+              </label>
+              <Input value={inspectionDataForm.inspection_name} readOnly />
+            </Col>
+            <Col span={8}>
+              <label
+                className='mb-1 flex items-center font-semibold'
+                htmlFor="Email"
+              >
+                <span className="mr-1 text-red-600 font-thin">*</span>  
+                Email
+              </label>
+              <Input value={inspectionDataForm.inspection_email} readOnly />
+            </Col>
+          </Row>
+
+          <Row gutter={20}>
+            <Col span={8}>
+              <label
+                className='mb-1 flex items-center font-semibold'
+                htmlFor="InspectionStatus"
+              >
+                <span className="mr-1 text-red-600 font-thin">*</span>  
+                Have you discovered any problems?
               </label>
               <Select 
                 options={inspectionDataStatus}
                 style={{ width: '100%' }}
+                value={inspectionDataForm.inspection_status}
+                placeholder="Please select"
+                onChange={selectInspectionStatusData}
               >         
               </Select>
             </Col>
             <Col span={8}>
               <label
                 className='mb-1 flex items-center font-semibold'
-                htmlFor="InspectionNumber">
-                  Problem Number
+                htmlFor="InspectionNumber"
+              >
+                <span className="mr-1 text-red-600 font-thin">*</span>  
+                Problem Number
               </label>
-              <Input value={'2024-11-27'}/>
+              <Input value={inspectionDataForm.inspection_number}/>
+            </Col>
+            <Col span={8}>
+              <label
+                className='mb-1 flex items-center font-semibold'
+                htmlFor="Phone"
+              >
+                <span className="mr-1 text-red-600 font-thin">*</span>  
+                Phone
+              </label>
+              <Input placeholder="Phone Number" value={inspectionDataForm.inspection_phone}  />
             </Col>
           </Row>
 
-          <Row gutter={20}>
-            <Col span={8}>
-              <label
-                className='mb-1 flex items-center font-semibold'
-                htmlFor="Inspector">
-                  Inspector
-              </label>
-              <Input value={'2024-11-27'}/>
-            </Col>
-            <Col span={8}>
-              <label
-                className='mb-1 flex items-center font-semibold'
-                htmlFor="Email">
-                  Email
-              </label>
-              <Input value={'2024-11-27'}/>
-            </Col>
-            <Col span={8}>
-              <label
-                className='mb-1 flex items-center font-semibold'
-                htmlFor="Phone">
-                  Phone
-              </label>
-              <Input value={'2024-11-27'}/>
-            </Col>
-          </Row>
-
-          <Row gutter={20} className="mt-3">
-            <Col span={24}>
-              <Table bordered columns={addColumns}></Table>
-            </Col>
-          </Row>
-          <Row gutter={20}>
-            <Col span={4}>
-              <Select style={{width: '100%'}}></Select>
-            </Col>
-            <Col span={18}>
-              <Input.TextArea autoSize></Input.TextArea>
-            </Col>
-            <Col span={2}>
-              <Button type="primary" icon={<CheckOutlined/>}></Button>
-            </Col>
-          </Row>
+          {inspectionDataForm.inspection_status === 'Discovered problem' && (
+            <>
+              <Row gutter={20} className="mt-3">
+                <Col span={24}>
+                  <Table bordered columns={addColumns}></Table>
+                </Col>
+                </Row>
+                <Row gutter={20}>
+                <Col span={4}>
+                  <Select 
+                    style={{width: '100%'}}
+                    value={inspectionItemForm.inspection_device}
+                    // options={selectAssetsData}
+                    placeholder="Select Device"
+                  >  
+                  </Select>
+                </Col>
+                <Col span={18}>
+                  <Input.TextArea autoSize></Input.TextArea>
+                </Col>
+                <Col span={2}>
+                  <Button type="primary" icon={<CheckOutlined/>}></Button>
+                </Col>
+              </Row>
+            </>
+          )}
+          
         </Space>
         <Divider/>
       </Modal>

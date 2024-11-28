@@ -79,3 +79,30 @@ export interface updateProfilesItem {
   company: string
   email: string
 }
+
+export interface inspectionStatusItem {
+  id: string,
+  value: string,
+  key: string
+}
+
+export interface inspectionForms {
+  inspection_time: string,
+  inspection_number: number,
+  inspection_phone: string,
+  inspection_name: string,
+  inspection_email: string,
+  inspection_status: string | null,
+  inspetion_deviceData: inspectionItem[]
+}
+
+export interface inspectionItem {
+  inspection_device: string | null,
+  inspection_description: string
+}
+
+export interface selectInspectionItem {
+  id: string
+  value: string,
+  key: string
+}

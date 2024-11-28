@@ -93,6 +93,7 @@ const WorkItAssetsTable: React.FC = () => {
       useMessage(2, 'Please enter the user name','error')
     }else {
       setAddItAssetsShow(false)
+
       insertItAssets(assetsDataForm)
       .then(() => {
         getMyItAssetsData()
