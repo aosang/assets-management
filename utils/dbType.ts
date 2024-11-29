@@ -97,6 +97,7 @@ export interface inspectionForms {
 }
 
 export interface inspectionItem {
+  inspection_id: string,
   inspection_device: string | null,
   inspection_description: string
 }

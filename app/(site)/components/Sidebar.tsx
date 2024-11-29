@@ -1,10 +1,8 @@
 "use client"
 import { Layout } from 'antd';
 import React, { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
 import SideBarItem from './sideBarItem'
 import DropDownMenu from './dropDownMenu'
-import { getProfiles, updateProfiles } from '@/utils/providerSelectData';
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -52,51 +50,33 @@ const footerStyle: React.CSSProperties = {
 
 
 const AppLayout = ({children, userId, update}) => {  
-  const [userInfo, setUserInfo] = useState<any>('')
-  const router = useRouter()
-
-  const getMyInfomation = async () => {
-    updateProfiles(userId, update)
-    getProfiles(userId)
-   .then(res => {
-      if (res) return setUserInfo(res)
-      router.replace('/')
-    })
-  }
-
-  useEffect(() => {
-    getMyInfomation()
-  }, [])
-
   return (
     <div>
-      {userInfo && (
-        <Layout style={{ minHeight: '100vh'}}>
-          <Sider width="14%" style={siderStyle}>
-            <div className='
-            h-16
-           text-white 
-            text-lg
-            leading-64 
-            whitespace-nowrap
-            border-b
-            border-gray-600'
-          >
-            Assets Management
-          </div>
-            <SideBarItem />
-          </Sider>
-          <Layout>
-            <Header style={headerStyle}>
-              <DropDownMenu userInfo={userInfo} />
-            </Header>
-            <Content style={contentStyle}>
-              {children}
-            </Content>
-            <Footer style={footerStyle}>Assets-Management with StevenWang ©2024</Footer>
-          </Layout>
+      <Layout style={{ minHeight: '100vh'}}>
+        <Sider width="14%" style={siderStyle}>
+          <div className='
+          h-16
+          text-white 
+          text-lg
+          leading-64 
+          whitespace-nowrap
+          border-b
+          border-gray-600'
+        >
+          Assets Management
+        </div>
+          <SideBarItem />
+        </Sider>
+        <Layout>
+          <Header style={headerStyle}>
+            <DropDownMenu userId={userId} update={update} />
+          </Header>
+          <Content style={contentStyle}>
+            {children}
+          </Content>
+          <Footer style={footerStyle}>Assets-Management with StevenWang ©2024</Footer>
         </Layout>
-      )}
+      </Layout>
     </div>
   )
 }

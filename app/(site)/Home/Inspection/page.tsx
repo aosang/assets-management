@@ -1,27 +1,23 @@
 'use client'
-import { useState } from "react"
-import { Collapse, Space, Card, Row, Col, Button, Modal, Input, Divider, Table, Badge, Select } from "antd"
-import { SearchOutlined, DownloadOutlined, EditOutlined, CheckOutlined } from '@ant-design/icons'
-import { getInspectionStatusData } from '@/utils/providerInspection'
+import { useState, useEffect } from "react"
+import { Collapse, Space, Card, Row, Col, Button, Modal, Input, Divider, Table, Badge, Select, Empty } from "antd"
+import { SearchOutlined, DownloadOutlined, EditOutlined, CheckOutlined, DeleteOutlined } from '@ant-design/icons'
+import { getInspectionStatusData, addInspectionProblemDeviceData, getInspectionDeviceData, getProblemDeviceTableData } from '@/utils/providerInspection'
 import { inspectionStatusItem, inspectionForms, inspectionItem, selectInspectionItem} from '@/utils/dbType'
-import { getTimeNumber } from '@/utils/pubFunProvider'
+import { getTimeNumber, getDeviceData } from '@/utils/pubFunProvider'
 import { getUser } from '@/utils/providerSelectData'
-import { getItAssetsTabbleData } from '@/utils/providerItAssetsData'
 
 type inspectionStatusProps = inspectionStatusItem[]
-
 
 const Inspection = () => {
   const [isDetailsShow, setIsDetailsShow] = useState(false)
   const [deviceNum, setDeviceNum] = useState<number>(0)
   const [isAccordion, setIsAccordion] = useState<boolean>(false)
   const [createInspectionModal, setCreateInspectionModal] = useState<boolean>(false)
-  const [selectAssetsData, setSelectAssetsData] = useState<selectInspectionItem>({
-    id: getTimeNumber()[1],
-    value: '',
-    key: ''
-  })
+  const [selectAssetsData, setSelectAssetsData] = useState<selectInspectionItem[]>([])
   const [inspectionDataStatus, setInspectionDataStatus] = useState<inspectionStatusProps>([])
+  const [problemDeviceData, setProblemDeviceData] = useState<inspectionItem[]>([])
+  const [inspectionListData, setInspectionListData] = useState<inspectionForms[]>([])
   const [inspectionDataForm, setInspectionDataForm] = useState<inspectionForms>({
     inspection_time: '',
     inspection_number: 0,
@@ -32,6 +28,7 @@ const Inspection = () => {
     inspetion_deviceData: [],
   })
   const [inspectionItemForm, setInspectionItemForm] = useState<inspectionItem>({
+    inspection_id: '',
     inspection_device: null,
     inspection_description: ''
   })
@@ -57,12 +54,22 @@ const Inspection = () => {
 
   const addColumns = [{
     title: 'Device Name',
-    dataIndex: 'deviceName',
-    key: 'deviceName',
+    dataIndex: 'inspection_device',
+    key: 'inspection_device',
   },{
     title: 'Problem Description',
-    dataIndex: 'problemDescription',
-    key: 'problemDescription',
+    dataIndex: 'inspection_description',
+    key: 'inspection_description',
+  }, {
+    title: 'Other',
+    dataIndex: 'other',
+    key: 'other',
+    width: 80,
+    render: () => {
+      return (
+        <Button variant="filled" color="danger" icon={<DeleteOutlined/>}></Button>
+      )
+    }
   }]
 
   const createInspectionModalHandler = () => {
@@ -93,62 +100,121 @@ const Inspection = () => {
     })
 
     if(e === 'Discovered problem') {
-      
+      getDeviceData()
+      .then(res => {
+        setSelectAssetsData(res as selectInspectionItem[])
+      })
     }
   }
 
+  const selectInspectionDeviceName = (e:any) => {
+    setInspectionItemForm({
+     ...inspectionItemForm,
+      inspection_id: getTimeNumber()[1],
+      inspection_device: e
+    })
+  }
+
+  const addProblemDeviceDescription = (e:any) =>  {
+    setInspectionItemForm({
+    ...inspectionItemForm,
+      inspection_id: getTimeNumber()[1],
+      inspection_description: e.target.value
+    })
+  }
+
+  const confirmProblemDeviceName = () => {
+    addInspectionProblemDeviceData(inspectionItemForm)
+    .then(() => {
+      getInspectionDeviceData().then ((res) => {
+        setProblemDeviceData(res as inspectionItem[])
+      })
+    })
+  }
+
+  const closeInspectionModal = () => {
+    setInspectionDataForm({
+     ...inspectionDataForm,
+      inspection_status: null,
+      inspetion_deviceData: [],
+      inspection_phone: '',
+      inspection_number: 0,
+    })
+  }
+
+  useEffect(() => {
+    getProblemDeviceTableData()
+    .then(res => {
+      setInspectionListData(res as inspectionForms[])
+    })
+  }, [])
+  
   return (
     <div className="w-full p-3 box-border">
       <Space direction="vertical" size={16} className="w-full">
         <Card title="Inspection Record" style={{background: '#f0f2f5'}}>
-          <Button 
-            type="primary" 
-            className="mb-4"
-            onClick={createInspectionModalHandler}
-          >
-            Create
-          </Button>
-          <Row>
-            <Col span={6}>
-              <Card>
-                <Row className="mb-2">
-                  <Col span={12}><span className="text-sm">Time: 2024-11-26</span></Col>
-                  <Col span={12}><span className="text-sm">Inspector: aosang</span></Col>
-                </Row>
+          {inspectionListData.length > 0 && (
+            <Button 
+              type="primary" 
+              className="mb-4"
+              onClick={createInspectionModalHandler}
+            >
+              Create
+            </Button>
+          )}
 
-                <Row className="mb-2">
-                  <Col span={12}><span className="text-sm">Status: none</span></Col>
-                  <Col span={12}><span className="text-sm">phone: 13212312345</span></Col>
-                </Row>
+          <>
+            {inspectionListData.length > 0? (
+              <Row>
+                <Col span={6}>
+                  <Card>
+                    <Row className="mb-2">
+                      <Col span={12}><span className="text-sm">Time: 2024-11-26</span></Col>
+                      <Col span={12}><span className="text-sm">Inspector: aosang</span></Col>
+                    </Row>
 
-                <Row className="mb-2">
-                  <Col span={24}><span className="text-sm">Email: xiaole2071@gmail.com</span></Col>
-                </Row>
+                    <Row className="mb-2">
+                      <Col span={12}><span className="text-sm">Status: none</span></Col>
+                      <Col span={12}><span className="text-sm">phone: 13212312345</span></Col>
+                    </Row>
 
-                <div className="mt-4">
-                  <Button 
-                    color="primary"
-                    size="small"
-                    icon={<SearchOutlined />}
-                    variant="filled"
-                    className="mr-3"
-                    onClick={() => setIsDetailsShow(true)}
-                    >
-                      Details
-                  </Button>
-                  
-                  <Button 
-                    color="danger"
-                    variant="filled"
-                    size="small"
-                    icon={<DownloadOutlined />}
-                  >
-                    Dowload
-                  </Button>
-                </div>
-              </Card>
-            </Col>
-          </Row>
+                    <Row className="mb-2">
+                      <Col span={24}><span className="text-sm">Email: xiaole2071@gmail.com</span></Col>
+                    </Row>
+
+                    <div className="mt-4">
+                      <Button 
+                        color="primary"
+                        size="small"
+                        icon={<SearchOutlined />}
+                        variant="filled"
+                        className="mr-3"
+                        onClick={() => setIsDetailsShow(true)}
+                        >
+                          Details
+                      </Button>
+                      
+                      <Button 
+                        color="danger"
+                        variant="filled"
+                        size="small"
+                        icon={<DownloadOutlined />}
+                      >
+                        Dowload
+                      </Button>
+                    </div>
+                  </Card>
+                </Col>
+              </Row>
+            ) : (
+              <Empty description="Please Create the Inspection Record">
+                <Button type="primary" onClick={createInspectionModalHandler}>Create Now</Button>
+              </Empty>
+            )}
+          </>
+          
+
+
         </Card>
       </Space>
 
@@ -242,6 +308,7 @@ const Inspection = () => {
         title="Create Inspection"
         onCancel={() => setCreateInspectionModal(false)}
         maskClosable={false}
+        afterClose={closeInspectionModal}
       >
         <Divider/>
         <Space direction="vertical" size={16} className="w-full">
@@ -322,7 +389,13 @@ const Inspection = () => {
             <>
               <Row gutter={20} className="mt-3">
                 <Col span={24}>
-                  <Table bordered columns={addColumns}></Table>
+                  <Table 
+                    bordered 
+                    columns={addColumns} 
+                    dataSource={problemDeviceData}
+                    size='middle'
+                  >
+                  </Table>
                 </Col>
                 </Row>
                 <Row gutter={20}>
@@ -330,21 +403,28 @@ const Inspection = () => {
                   <Select 
                     style={{width: '100%'}}
                     value={inspectionItemForm.inspection_device}
-                    // options={selectAssetsData}
+                    options={selectAssetsData}
                     placeholder="Select Device"
+                    onChange={selectInspectionDeviceName}
                   >  
                   </Select>
                 </Col>
                 <Col span={18}>
-                  <Input.TextArea autoSize></Input.TextArea>
+                  <Input.TextArea 
+                    autoSize 
+                    placeholder="Please provide a brief description of the issue"
+                    showCount
+                    maxLength={120}
+                    onChange={addProblemDeviceDescription}
+                  >  
+                  </Input.TextArea>
                 </Col>
                 <Col span={2}>
-                  <Button type="primary" icon={<CheckOutlined/>}></Button>
+                  <Button type="primary" icon={<CheckOutlined/>} onClick={confirmProblemDeviceName}></Button>
                 </Col>
               </Row>
             </>
           )}
-          
         </Space>
         <Divider/>
       </Modal>

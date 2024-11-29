@@ -235,7 +235,7 @@ const Auth: React.FC = () => {
                         <div className='flex'>
                           <a 
                             className='text-xs ml-auto underline cursor-pointer -mt-1' 
-                            onClick={() => router.push('/resetPassword')}
+                            onClick={() => router.push('/ResetPassword')}
                           >
                             Forget password?
                           </a>

@@ -372,7 +372,6 @@ const WorkItAssetsTable: React.FC = () => {
 
   return (
     <div>
-      
       <Modal
         title="Tips"
         open={isModalDelete}

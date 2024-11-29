@@ -5,7 +5,8 @@ import { useRouter } from 'next/navigation'
 import type { MenuProps } from 'antd'
 import Image from 'next/image'
 import useMessage from '@/utils/message'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { getProfiles, updateProfiles } from '@/utils/providerSelectData'
 
 const items: MenuProps['items'] = [{
   key: '1',
@@ -18,15 +19,13 @@ const profile: React.CSSProperties = {
   alignItems: 'center'
 }
 
-interface userInfoProps  {
-  userInfo: any
-}
 
-const DropDownMenu: React.FC<userInfoProps> = ({ userInfo }) => {
+
+const DropDownMenu = ({ userId,  update}) => {
   const router = useRouter()
-  
-  const [ username ] = useState(userInfo[0].username)
-  const [ avatarUrl ] = useState(userInfo[0].avatar_url)
+  const [userInfo, setUserInfo] = useState('')
+  const [ username, setUsername ] = useState('')
+  const [ avatarUrl, setAvatarUrl ] = useState('')
 
   const handleMenuClick: MenuProps['onClick'] = async ({ key }) => { 
     if(key === '1') {
@@ -37,26 +36,48 @@ const DropDownMenu: React.FC<userInfoProps> = ({ userInfo }) => {
     }
   }
 
+  const getMyInfomation = async () => {
+    updateProfiles(userId, update)
+    getProfiles(userId)
+   .then(res => {
+      if (res) {
+        setUserInfo(res as any)
+        setUsername(res[0].username)
+        setAvatarUrl(res[0].avatar_url)
+      }else {
+        router.replace('/')
+      }
+    })
+  }
+
+  useEffect(() => {
+    getMyInfomation()
+  }, [])
+
   return (
     <div style={profile}>
-      <Image 
-        src={avatarUrl? avatarUrl : '/avatar.jpg' } 
-        width={32} 
-        height={32} 
-        alt='avatar'
-        style={{borderRadius: '50%', marginRight: '10px'}}  
-      />
-      <Dropdown menu={{
-        items,
-        onClick: handleMenuClick
-      }}>
-        <a>
-          <Space>
-            {username}
-            <DownOutlined />
-          </Space>
-        </a>
-      </Dropdown>
+      {userInfo && (
+        <>
+          <Image 
+            src={avatarUrl? avatarUrl : '/avatar.jpg' } 
+            width={32} 
+            height={32} 
+            alt='avatar'
+            style={{borderRadius: '50%', marginRight: '10px'}}  
+          />
+          <Dropdown menu={{
+            items,
+            onClick: handleMenuClick
+          }}>
+            <a>
+              <Space>
+                {username}
+                <DownOutlined />
+              </Space>
+            </a>
+          </Dropdown>
+        </>
+      )}
     </div>
   )
 }

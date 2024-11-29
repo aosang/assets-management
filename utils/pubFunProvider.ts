@@ -1,4 +1,6 @@
-// import { supabase } from '@/utils/clients'
+import { supabase } from '@/utils/clients'
+import useMessage from "@/utils/message"
+
 // 邮箱正则
 let emailReg: RegExp = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 export const emailRegFunc = (email: string) => {
@@ -25,4 +27,15 @@ export const getTimeNumber = () => {
   let timeFilter = y + '-' + m + '-' + d + ' ' + h + ':' + mm + ':' + s
   let timeNumber = y + '' + m + '' + d + '' + h + '' + mm + '' +  s + number
   return [timeFilter, timeNumber]
+}
+
+export const getDeviceData = async () => {
+  const { data, error } = await supabase.from('public_device').select('*')
+  try {
+    if (data) return data || []
+    useMessage(2, error?.message, 'error')
+  }
+  catch (error) {
+    throw error
+  }
 }
