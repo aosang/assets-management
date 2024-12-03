@@ -87,19 +87,21 @@ export interface inspectionStatusItem {
 }
 
 export interface inspectionForms {
+  inspection_id: string,
   inspection_time: string,
   inspection_number: number,
   inspection_phone: string,
   inspection_name: string,
   inspection_email: string,
   inspection_status: string | null,
-  inspetion_deviceData: inspectionItem[]
+  inspection_deviceData: inspectionItem[]
 }
 
 export interface inspectionItem {
   inspection_id: string,
   inspection_device: string | null,
-  inspection_description: string
+  inspection_description: string,
+  key: string
 }
 
 export interface selectInspectionItem {

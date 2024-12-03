@@ -3,7 +3,6 @@ import useMessage from "./message"
 import { getTimeNumber } from "./pubFunProvider"
 import { updateProfilesItem } from '@/utils/dbType'
 
-
 // get session
 export const getSession = async () => {
   const {data: session, error} = await supabase.auth.getSession()
