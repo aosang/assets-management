@@ -94,7 +94,7 @@ export interface inspectionForms {
   inspection_name: string,
   inspection_email: string,
   inspection_status: string | null,
-  inspection_deviceData: inspectionItem[]
+  inspection_deviceData?: inspectionItem[]
 }
 
 export interface inspectionItem {

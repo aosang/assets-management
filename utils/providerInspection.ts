@@ -19,6 +19,7 @@ export const getInspectionDeviceData = async (id?: string) => {
   .from('inspection_table')
   .select('*')
   .match({id: id})
+  .order('inspection_time', {ascending: false})
   try {
     if (data) return data || []
     useMessage(2, error?.message, 'error')
@@ -58,38 +59,17 @@ export const insertInspectionDeviceData = async ({
   }
 }
 
+// delete
+export const deleteInspectionDevice = async (id: any) => {
+  const { error } = await supabase
+  .from('inspection_table')
+  .delete()
+  .eq('inspection_id', id)
 
-export const getProblemDeviceTableData  = async () => {
-  const { data, error } = await supabase.from('problem_device').select('*')
   try {
-    if (data) return data || []
-    useMessage(2, error?.message, 'error')
+    if (error) return useMessage(2, error?.message, 'error')
+    useMessage(2, 'Inspection record delete sucessful!','success')
   }catch(error) {
-    throw error
-  }
-}
- 
-export const addInspectionProblemDeviceData = async ({
-  inspection_id,
-  inspection_device,
-  inspection_description
-}) => {
-  const { data, error } = await supabase
-  .from('problem_device')
-  .insert({
-    inspection_id,
-    inspection_device,
-    inspection_description,
-  })
-  .select('*')
-
-  try {
-    if(data) {
-      useMessage(2, 'Create sucessful!','success')
-      return data
-    }
-    useMessage(2, error!.message, 'error')
-  }catch (error) {
     throw error
   }
 }

@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react"
 import { Collapse, Space, Card, Row, Col, Button, Modal, Input, Divider, Table, Badge, Select, Empty } from "antd"
 import { SearchOutlined, DownloadOutlined, EditOutlined, CheckOutlined, DeleteOutlined } from '@ant-design/icons'
-import { getInspectionStatusData, addInspectionProblemDeviceData, getProblemDeviceTableData, insertInspectionDeviceData, getInspectionDeviceData } from '@/utils/providerInspection'
+import { getInspectionStatusData, insertInspectionDeviceData, getInspectionDeviceData, deleteInspectionDevice } from '@/utils/providerInspection'
 import { inspectionStatusItem, inspectionForms, inspectionItem, selectInspectionItem } from '@/utils/dbType'
 import { getTimeNumber, getDeviceData } from '@/utils/pubFunProvider'
 import { getUser } from '@/utils/providerSelectData'
@@ -10,6 +10,8 @@ import { getUser } from '@/utils/providerSelectData'
 type inspectionStatusProps = inspectionStatusItem[]
 
 const Inspection: React.FC = () => {
+  const [isModalDelete, setIsModalDelete] = useState<boolean>(false)
+  const [deleteInspectionId, setDeleteInspectionId] = useState<string>('')
   const [deviceRecordListData, setDeviceRecordListData] = useState<inspectionForms[]>([])
   const [isDetailsShow, setIsDetailsShow] = useState(false)
   const [deviceNum, setDeviceNum] = useState<number>(0)
@@ -17,8 +19,6 @@ const Inspection: React.FC = () => {
   const [createInspectionModal, setCreateInspectionModal] = useState<boolean>(false)
   const [selectAssetsData, setSelectAssetsData] = useState<selectInspectionItem[]>([])
   const [inspectionDataStatus, setInspectionDataStatus] = useState<inspectionStatusProps>([])
-  const [problemDeviceData, setProblemDeviceData] = useState<inspectionItem[]>([])
-  const [inspectionListData, setInspectionListData] = useState<inspectionForms[]>([])
   const [inspectionDataForm, setInspectionDataForm] = useState<inspectionForms>({
     inspection_id: '',
     inspection_time: '',
@@ -33,7 +33,7 @@ const Inspection: React.FC = () => {
     inspection_id: '',
     inspection_device: null,
     inspection_description: '',
-    key: '',
+    key: getTimeNumber()[1],
   })
 
   const columns = [{
@@ -56,12 +56,11 @@ const Inspection: React.FC = () => {
     }
   }]
 
-
   const onRowData = {
     onClick: (record: inspectionItem) => {
       setInspectionDataForm({
       ...inspectionDataForm,
-        inspection_deviceData: inspectionDataForm.inspection_deviceData.filter(item => {
+        inspection_deviceData: inspectionDataForm.inspection_deviceData!.filter(item => {
           return item.inspection_id!== record.inspection_id
         })
       })
@@ -120,30 +119,25 @@ const Inspection: React.FC = () => {
   }
 
   const confirmProblemDeviceName = () => {
-    // addInspectionProblemDeviceData(inspectionItemForm)
-    // .then(() => {
-    //   getProblemDeviceTableData().then((res) => {
-    //     setProblemDeviceData(res as inspectionItem[])
-    //   })
-    // })
+    setInspectionDataForm({
+      ...inspectionDataForm,
+      inspection_deviceData: [...inspectionDataForm.inspection_deviceData!, inspectionItemForm]
+    })
 
     setInspectionItemForm({
     ...inspectionItemForm,
-      key: getTimeNumber()[1],
-    })
-
-    console.log(inspectionItemForm);
-    
-
-    setInspectionDataForm({
-      ...inspectionDataForm,
-      inspection_deviceData: [...inspectionDataForm.inspection_deviceData, inspectionItemForm]
+      key: '',
+      inspection_description: '',
+      inspection_device: null
     })
   }
 
   const insertInspectionRecordData = () => {
     setCreateInspectionModal(false)
     insertInspectionDeviceData(inspectionDataForm)
+    .then(() => {
+      getInspectionRecordListData()
+    })
   }
 
   const closeInspectionModal = () => {
@@ -160,11 +154,23 @@ const Inspection: React.FC = () => {
     getUser().then(res => {
       getInspectionDeviceData(res?.user!.id as string)
       .then(res => {
-        setDeviceRecordListData(res as any)
+        setDeviceRecordListData(res as inspectionForms[])
       })
     })
   }
 
+  const onDeleteInspection = (id: string) => {
+    setIsModalDelete(true)
+    setDeleteInspectionId(id)
+  }
+
+  const confirmDeleteAssetsData = () => {
+    setIsModalDelete(false)
+    deleteInspectionDevice(deleteInspectionId)
+    .then(() => {
+      getInspectionRecordListData()
+    })
+  }
 
   useEffect(() => {
     getInspectionRecordListData()
@@ -211,10 +217,10 @@ const Inspection: React.FC = () => {
           <>
             {deviceRecordListData.length > 0? (
               <>
-                {deviceRecordListData.map(item =>{
-                  return (
-                    <Row key={item.inspection_id}>
-                      <Col span={6}>
+                <Row gutter={20}> 
+                  {deviceRecordListData.map(item => {
+                    return (
+                      <Col span={6} key={item.inspection_id} className="mb-5">
                         <Card>
                           <Row className="mb-2">
                             <Col span={24}><span className="text-sm">Time: {item.inspection_time}</span></Col>
@@ -243,20 +249,29 @@ const Inspection: React.FC = () => {
                                 Details
                             </Button>
                             
-                            <Button 
-                              color="danger"
-                              variant="filled"
+                            <Button
+                              className="bg-green-100 text-green-500 border-green-100 mr-3"
                               size="small"
                               icon={<DownloadOutlined />}
                             >
-                              Dowload
+                              Download
+                            </Button>
+
+                            <Button
+                              color="danger"
+                              size="small"
+                              variant="filled"
+                              icon={<DeleteOutlined />}
+                              onClick={() => onDeleteInspection(item.inspection_id)}
+                            >
+                              Delete
                             </Button>
                           </div>
                         </Card>
                       </Col>
-                    </Row>
-                  )
-                })}
+                    )
+                  })}
+                </Row>
               </>
             ) : (
               <Empty description="Please Create the Inspection Record">
@@ -479,6 +494,7 @@ const Inspection: React.FC = () => {
                     maxLength={120}
                     onChange={addProblemDeviceDescription}
                     allowClear
+                    value={inspectionItemForm.inspection_description}
                   >
                   </Input.TextArea>
                 </Col>
@@ -494,6 +510,15 @@ const Inspection: React.FC = () => {
           )}
         </Space>
         <Divider />
+      </Modal>
+
+      <Modal
+        title="Tips"
+        open={isModalDelete}
+        onCancel={() => setIsModalDelete(false)}
+        onOk={confirmDeleteAssetsData}
+      >
+        <p className="text-sm text-black">Are you sure you want to delete this data?</p>
       </Modal>
     </div>
   )
