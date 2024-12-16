@@ -154,7 +154,9 @@ const Inspection: React.FC = () => {
     getUser().then(res => {
       getInspectionDeviceData(res?.user!.id as string)
       .then(res => {
-        setDeviceRecordListData(res as inspectionForms[])
+        if(res) {
+          setDeviceRecordListData(res as inspectionForms[])
+        }
       })
     })
   }

@@ -37,7 +37,6 @@ const DropDownMenu = ({ userId,  update}) => {
   }
 
   const getMyInfomation = async () => {
-    updateProfiles(userId, update)
     getProfiles(userId)
    .then(res => {
       if (res) {

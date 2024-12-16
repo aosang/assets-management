@@ -96,7 +96,7 @@ const Profile = () => {
     }else {
       updateProfiles(userId, myProfileInfo)
       .then(res => {
-        useMessage(2, 'Update useinfo sucessful!','success')
+        useMessage(2, 'Update userinfo sucessful!','success')
         window.location.reload()
       })
     }
