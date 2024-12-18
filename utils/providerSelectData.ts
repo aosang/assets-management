@@ -89,7 +89,7 @@ export const getWorkBrand = async (keys: string) => {
 
 // get workOrder status
 export const getWorkOrderStatus = async () => {
-  const {data, error} = await supabase.from('status').select('*')
+  const {data, error} = await supabase.from('product_status').select('*')
   try {
     if(data) return data
     useMessage(2, error!.message, 'error')
