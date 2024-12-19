@@ -59,7 +59,6 @@ export const updateProfiles = async (userId: string, updateForm: updateProfilesI
   }
 }
 
-
 // get workOrder type
 export const getWorkOrderType = async () => {
   const {data, error} = await supabase.from('product_type').select('*')

@@ -73,6 +73,10 @@ const WorkOrder: React.FC = ({ }) => {
       .then(() => {
         setIsModalDelete(false)
         getWorkOrderData()
+        setFilterStatusValue(null)
+        setFilterTypeValue(null)
+        setStartTime(null)
+        setEndTime(null)
       })
   }
 
@@ -274,10 +278,10 @@ const WorkOrder: React.FC = ({ }) => {
   }
 
   const getTimeFilterData = (dateString: any) => {
-    let startTime = dateString ? dateString[0].$d : ''
-    let endTime = dateString ? dateString[1].$d : ''
-    startTime = dayjs(startTime).format('YYYY-MM-DD')
-    endTime = dayjs(endTime).format('YYYY-MM-DD')
+    let startTime = dateString? dateString[0].$d : ''
+    let endTime = dateString? dateString[1].$d : ''
+    startTime = startTime? dayjs(startTime).format('YYYY-MM-DD') : ''
+    endTime = endTime? dayjs(endTime).format('YYYY-MM-DD'): ''
     setStartTime(startTime)
     setEndTime(endTime)
   }
@@ -303,21 +307,10 @@ const WorkOrder: React.FC = ({ }) => {
         <Card title="WorkOrder">
           <Row gutter={10}>
             <Col>
-              <Button
-                type='primary'
-                onClick={modalAddHandler}
-              >
-                Create
-              </Button>
+              <Button type='primary' onClick={modalAddHandler}>Create</Button>
             </Col>
             <Col>
-              <Button
-                type='primary'
-                danger
-                onClick={onDeleteModal}
-              >
-                Delete
-              </Button>
+              <Button type='primary' danger onClick={onDeleteModal}>Delete</Button>
             </Col>
             <Col className='flex my-0 mr-0 ml-auto'>
               <Select
@@ -362,7 +355,7 @@ const WorkOrder: React.FC = ({ }) => {
           {/* add */}
           <Modal
             title="Create Work Order"
-            width={960}
+            width={1260}
             open={isModalAddOpen}
             onOk={confirmModalForm}
             onCancel={cancelModalForm}
@@ -472,8 +465,8 @@ const WorkOrder: React.FC = ({ }) => {
                       options={typeDataBrand.map(item => {
                         return {
                           label:
-                            <div className='flex'>
-                              {selectOpen && <img src={item.logo_url} alt='avatar' className='mr-2 w-6' />}<span className='w-7 mt-0.5'>{item.value}</span>
+                            <div className='flex items-center'>
+                              {selectOpen && <img src={item.logo_url} alt='avatar' className='mr-2 w-7' />}<span className='w-7 mt-0.5'>{item.value}</span>
                             </div>,
                           value: item.value
                         }

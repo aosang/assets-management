@@ -12,7 +12,7 @@ export const getFilterWorkType = async () => {
 }
 
 export const getFilterWorkStatus = async () => {
-  const {data, error} = await supabase.from('status').select('*')
+  const {data, error} = await supabase.from('product_status').select('*')
   try {
     if (data) return data
     useMessage(2, error!.message, 'error')
@@ -75,7 +75,7 @@ export const searchTypeData = async (
       throw error
     }
 
-  }else if(type &&!status && startTime) {
+  }else if(type && !status && startTime) {
     const {data, error} = await supabase
     .from('work_order')
     .select('*')
@@ -90,7 +90,7 @@ export const searchTypeData = async (
       throw error
     }
 
-  }else if(!type &&status && startTime) {
+  }else if(!type && status && startTime) {
     const {data, error} = await supabase
     .from('work_order')
     .select('*')
@@ -104,11 +104,24 @@ export const searchTypeData = async (
     } catch (error) {
       throw error
     }
-  }else if(type &&status && startTime) {
+  }else if(type && status && startTime) {
+    const {data, error} = await supabase
+    .from('work_order')
+    .select('*')
+    .eq('created_type', type)
+    .eq('created_status', status)
+    .gte('created_time', startTime)
+    .lte('created_time', endTime)
 
+    try {
+      if (data) return data
+      useMessage(2, error!.message, 'error')
+    } catch (error) {
+      throw error
+    }
   }else {
-    const {data, error} = await supabase.
-    from('work_order')
+    const {data, error} = await supabase
+    .from('work_order')
     .select('*')
     try {
       if (data) return data
