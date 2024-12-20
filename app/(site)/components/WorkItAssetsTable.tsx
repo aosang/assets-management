@@ -249,6 +249,10 @@ const WorkItAssetsTable: React.FC = () => {
     deleteItAssets(deleteAssetsDataId)
     .then (() => {
       getMyItAssetsData()
+      setFilterStatusValue(null)
+      setFilterTypeValue(null)
+      setFilterStartTime('')
+      setFilterEndTime('')
     })
   }
 
@@ -262,10 +266,10 @@ const WorkItAssetsTable: React.FC = () => {
   }
 
   const getTimeFilterData = (dateString: any) => {
-    let startTime = dateString ? dateString[0].$d : ''
-    let endTime = dateString ? dateString[1].$d : ''
-    startTime = dayjs(startTime).format('YYYY-MM-DD')
-    endTime = dayjs(endTime).format('YYYY-MM-DD')
+    let startTime = dateString? dateString[0].$d : ''
+    let endTime = dateString? dateString[1].$d : ''
+    startTime = startTime?  dayjs(startTime).format('YYYY-MM-DD') : ''
+    endTime = endTime? dayjs(endTime).format('YYYY-MM-DD') : ''
     setFilterStartTime(startTime)
     setFilterEndTime(endTime)
   }
