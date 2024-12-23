@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react"
 import { Collapse, Space, Card, Row, Col, Button, Modal, Input, Divider, Table, Badge, Select, Empty } from "antd"
 import { SearchOutlined, DownloadOutlined, EditOutlined, CheckOutlined, DeleteOutlined } from '@ant-design/icons'
-import { getInspectionStatusData, insertInspectionDeviceData, getInspectionDeviceData, deleteInspectionDevice } from '@/utils/providerInspection'
+import { getInspectionStatusData, insertInspectionDeviceData, getInspectionDeviceData, deleteInspectionDevice} from '@/utils/providerInspection'
 import { inspectionStatusItem, inspectionForms, inspectionItem, selectInspectionItem } from '@/utils/dbType'
 import { getTimeNumber, getDeviceData } from '@/utils/pubFunProvider'
 import { getUser } from '@/utils/providerSelectData'
@@ -95,7 +95,7 @@ const Inspection: React.FC = () => {
     })
 
     if (e === 'Discovered problem') {
-      getDeviceData()
+      getDeviceData(e)
       .then(res => {
         setSelectAssetsData(res as selectInspectionItem[])
       })
@@ -479,21 +479,23 @@ const Inspection: React.FC = () => {
               <Row gutter={20}>
                 <Col span={4}>
                   <Select
+                    showSearch
                     style={{ width: '100%' }}
                     value={inspectionItemForm.inspection_device}
                     options={selectAssetsData}
+                    // onSearch={val => getDeviceData(val)}
                     placeholder="Select Device"
                     onChange={selectInspectionDeviceName}
                     allowClear
-                  >
-                  </Select>
+                  />
+                  
                 </Col>
                 <Col span={18}>
                   <Input.TextArea
                     autoSize
                     placeholder="Please provide a brief description of the issue"
                     showCount
-                    maxLength={120}
+                    maxLength={150}
                     onChange={addProblemDeviceDescription}
                     allowClear
                     value={inspectionItemForm.inspection_description}

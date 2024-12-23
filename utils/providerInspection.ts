@@ -3,6 +3,7 @@ import useMessage from "@/utils/message"
 import { getTimeNumber } from "./pubFunProvider"
 import { inspectionForms } from '@/utils/dbType'
 
+
 export const getInspectionStatusData = async () => {
   const { data, error } = await supabase.from('inspection_status').select('*')
   try {
@@ -29,14 +30,14 @@ export const getInspectionDeviceData = async (id?: string) => {
 }
 
 export const insertInspectionDeviceData = async ({
-  inspection_id,
-  inspection_time,
-  inspection_number,
-  inspection_phone,
-  inspection_name,
-  inspection_email,
-  inspection_status,
-  inspection_deviceData
+    inspection_id,
+    inspection_time,
+    inspection_number,
+    inspection_phone,
+    inspection_name,
+    inspection_email,
+    inspection_status,
+    inspection_deviceData
 }: inspectionForms) => {
   const {data, error} = await supabase.from('inspection_table').insert({
     inspection_id: getTimeNumber()[1],
@@ -47,7 +48,8 @@ export const insertInspectionDeviceData = async ({
     inspection_email,
     inspection_status,
     inspection_deviceData
-  }).select('*')
+  })
+  .select('*')
   try {
     if (data) {
       useMessage(2, 'Inspection record create sucessful!','success')
