@@ -57,6 +57,7 @@ export const insertItAssets = async ({
   product_username,
   product_price,
   product_remark,
+  value
 }) => {
   const { data, error } = await supabase.from('it_assets')
   .insert({
@@ -70,6 +71,7 @@ export const insertItAssets = async ({
     product_username,
     product_price,
     product_remark,
+    value
   })
   .select('*')
 

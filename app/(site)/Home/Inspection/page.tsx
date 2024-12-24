@@ -1,11 +1,11 @@
 'use client'
 import { useState, useEffect } from "react"
 import { Collapse, Space, Card, Row, Col, Button, Modal, Input, Divider, Table, Badge, Select, Empty } from "antd"
-import { SearchOutlined, DownloadOutlined, EditOutlined, CheckOutlined, DeleteOutlined } from '@ant-design/icons'
-import { getInspectionStatusData, insertInspectionDeviceData, getInspectionDeviceData, deleteInspectionDevice} from '@/utils/providerInspection'
+import { SearchOutlined, DownloadOutlined, CheckOutlined, DeleteOutlined, CheckCircleFilled } from '@ant-design/icons'
+import { getInspectionStatusData, insertInspectionDeviceData, getInspectionDeviceData, deleteInspectionDevice, getInspectionDetailsDeviceData} from '@/utils/providerInspection'
 import { inspectionStatusItem, inspectionForms, inspectionItem, selectInspectionItem } from '@/utils/dbType'
 import { getTimeNumber, getDeviceData } from '@/utils/pubFunProvider'
-import { getUser } from '@/utils/providerSelectData'
+import { getProfiles, getUser } from '@/utils/providerSelectData'
 
 type inspectionStatusProps = inspectionStatusItem[]
 
@@ -14,8 +14,7 @@ const Inspection: React.FC = () => {
   const [deleteInspectionId, setDeleteInspectionId] = useState<string>('')
   const [deviceRecordListData, setDeviceRecordListData] = useState<inspectionForms[]>([])
   const [isDetailsShow, setIsDetailsShow] = useState(false)
-  const [deviceNum, setDeviceNum] = useState<number>(0)
-  const [isAccordion, setIsAccordion] = useState<boolean>(false)
+  const [isAccordion] = useState<boolean>(false)
   const [createInspectionModal, setCreateInspectionModal] = useState<boolean>(false)
   const [selectAssetsData, setSelectAssetsData] = useState<selectInspectionItem[]>([])
   const [inspectionDataStatus, setInspectionDataStatus] = useState<inspectionStatusProps>([])
@@ -44,16 +43,6 @@ const Inspection: React.FC = () => {
     title: 'Problem Description',
     dataIndex: 'inspection_description',
     key: 'inspection_description',
-  }, {
-    title: 'Other',
-    dataIndex: 'other',
-    key: 'other',
-    width: 80,
-    render: () => {
-      return (
-        <Button variant="filled" color="primary" icon={<EditOutlined />}></Button>
-      )
-    }
   }]
 
   const onRowData = {
@@ -79,11 +68,14 @@ const Inspection: React.FC = () => {
 
     getUser()
       .then((res) => {
-        setInspectionDataForm({
-          ...inspectionDataForm,
-          inspection_time: getTimeNumber()[0],
-          inspection_email: res!.user?.email || '',
-          inspection_name: res!.user?.user_metadata.username || '',
+        getProfiles(res?.user!.id as string)
+        .then(res => {
+          setInspectionDataForm({
+            ...inspectionDataForm,
+            inspection_time: getTimeNumber()[0],
+            inspection_email: res![0].email || '',
+            inspection_name: res![0].username || ''
+          })
         })
       })
   }
@@ -174,6 +166,34 @@ const Inspection: React.FC = () => {
     })
   }
 
+  const getInspectionDetailsData = (inspectionId: string) => {
+    setIsDetailsShow(true)
+    getInspectionDetailsDeviceData(inspectionId)
+    .then(res => {
+      setInspectionDataForm({
+        ...inspectionDataForm,
+        inspection_time: res![0].inspection_time,
+        inspection_name: res![0].inspection_name,
+        inspection_phone: res![0].inspection_phone,
+        inspection_number: res![0].inspection_number,
+        inspection_status: res![0].inspection_status,
+        inspection_email: res![0].inspection_email,
+        inspection_deviceData: res![0].inspection_deviceData,
+      })
+    })
+  }
+
+  // close details and clear cache data
+  const clearAllDeivceDataForm = () => {
+    setInspectionDataForm({
+     ...inspectionDataForm,
+      inspection_status: null,
+      inspection_deviceData: [],
+      inspection_phone: '',
+      inspection_number: 0,
+    })
+  }
+
   useEffect(() => {
     getInspectionRecordListData()
   }, [])
@@ -223,7 +243,7 @@ const Inspection: React.FC = () => {
                   {deviceRecordListData.map(item => {
                     return (
                       <Col span={6} key={item.inspection_id} className="mb-5">
-                        <Card>
+                        <Card className="relative">
                           <Row className="mb-2">
                             <Col span={24}><span className="text-sm">Time: {item.inspection_time}</span></Col>
                           </Row>
@@ -238,6 +258,10 @@ const Inspection: React.FC = () => {
                           <Row className="mb-2">
                             <Col span={24}><span className="text-sm">Email: {item.inspection_email}</span></Col>
                           </Row>
+
+                          <div className="w-8 h-8 bg-green-500 rounded-full absolute top-5 right-5">
+                            <CheckOutlined className="text-center text-white block leading-8 font-semibold" />
+                          </div>
       
                           <div className="mt-4">
                             <Button 
@@ -246,7 +270,7 @@ const Inspection: React.FC = () => {
                               icon={<SearchOutlined />}
                               variant="filled"
                               className="mr-3"
-                              onClick={() => setIsDetailsShow(true)}
+                              onClick={() => getInspectionDetailsData(item.inspection_id)}
                               >
                                 Details
                             </Button>
@@ -283,13 +307,15 @@ const Inspection: React.FC = () => {
           </>
         </Card>
       </Space>
-
+      
+      {/* details */}
       <Modal
         open={isDetailsShow}
         onCancel={() => setIsDetailsShow(false)}
         title="Inspection Details"
         maskClosable={false}
         width={1260}
+        afterClose={clearAllDeivceDataForm}
       >
         <Divider />
         <Space direction="vertical" size="middle" style={{ width: '100%' }}>
@@ -301,7 +327,7 @@ const Inspection: React.FC = () => {
               >
                 Inspection Time
               </label>
-              <Input value={'2024-11-27'} readOnly />
+              <Input value={inspectionDataForm.inspection_time} readOnly />
             </Col>
             <Col span={8}>
               <label
@@ -310,7 +336,7 @@ const Inspection: React.FC = () => {
               >
                 Inspector
               </label>
-              <Input value={'2024-11-27'} readOnly />
+              <Input value={inspectionDataForm.inspection_name} readOnly />
             </Col>
             <Col span={8}>
               <label
@@ -319,7 +345,7 @@ const Inspection: React.FC = () => {
               >
                 Inspection Status
               </label>
-              <Input value={'2024-11-27'} readOnly />
+              <Input value={inspectionDataForm.inspection_status as string} readOnly />
             </Col>
           </Row>
 
@@ -331,7 +357,7 @@ const Inspection: React.FC = () => {
               >
                 Phone
               </label>
-              <Input value={'2024-11-27'} readOnly />
+              <Input value={inspectionDataForm.inspection_phone} readOnly />
             </Col>
 
             <Col span={12}>
@@ -341,31 +367,52 @@ const Inspection: React.FC = () => {
               >
                 Email
               </label>
-              <Input value={'2024-11-27'} readOnly />
+              <Input value={inspectionDataForm.inspection_email} readOnly />
             </Col>
           </Row>
         </Space>
-        <Collapse
-          accordion={isAccordion}
-          className="mt-5"
-          size="small" items=
-          {
-            [{
-              key: '1',
-              label: (
-                <div className="flex">
-                  <span className="mr-3">Problematic Equipment</span>
-                  <Badge count={1} />
-                </div>
-              ),
-              children:
-                <Table columns={columns}></Table>,
-            }]
-          }>
-        </Collapse>
+        {
+          inspectionDataForm.inspection_number === 0? (
+            <Card className="mt-6">
+              <div className="flex justify-center items-center h-16">
+                <CheckCircleFilled style={{color: '#22c55e', fontSize: '28px'}} />
+                <p className="ml-2 text-base">All the device is OK</p>
+              </div>
+            </Card>
+          ): (
+            <Collapse
+              defaultActiveKey={['1']}
+              accordion={isAccordion}
+              className="mt-5"
+              size="small" 
+              items= {
+                [{
+                  key: '1',
+                  label: (
+                    <div className="flex">
+                      <span className="mr-3">Problematic Equipment</span>
+                      <Badge count={inspectionDataForm.inspection_number} />
+                    </div>
+                  ),
+                  children:
+                    <Table 
+                      columns={columns} 
+                      dataSource={inspectionDataForm.inspection_deviceData}
+                      size="small"
+                      pagination={false}
+                      bordered
+                    >
+                    </Table>
+                }]
+              }>
+            </Collapse>
+          )
+        }
+      
         <Divider />
       </Modal>
-
+      
+      {/* add */}
       <Modal
         width={1260}
         open={createInspectionModal}
@@ -483,7 +530,6 @@ const Inspection: React.FC = () => {
                     style={{ width: '100%' }}
                     value={inspectionItemForm.inspection_device}
                     options={selectAssetsData}
-                    // onSearch={val => getDeviceData(val)}
                     placeholder="Select Device"
                     onChange={selectInspectionDeviceName}
                     allowClear

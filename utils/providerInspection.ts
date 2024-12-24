@@ -29,6 +29,19 @@ export const getInspectionDeviceData = async (id?: string) => {
   }
 }
 
+export const getInspectionDetailsDeviceData = async (inspectionId?: string) => {
+  const {data, error} = await supabase
+  .from('inspection_table')
+  .select('*')
+  .match({inspection_id: inspectionId})
+  try {
+    if (data) return data || []
+    useMessage(2, error?.message, 'error')
+  }catch(error) {
+    throw error
+  }
+}
+
 export const insertInspectionDeviceData = async ({
     inspection_id,
     inspection_time,

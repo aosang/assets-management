@@ -60,8 +60,88 @@ const WorkItAssetsTable: React.FC = () => {
     product_status: null,
     product_username: '',
     product_price: 0,
-    product_remark: ''
+    product_remark: '',
+    value: ''
   })
+
+  const [columns, setColumns] = useState([
+    {
+      title: 'Type',
+      dataIndex: 'product_type',
+      key: 'product_type',
+    }, {
+      title: 'Brand',
+      dataIndex: 'product_brand',
+      key: 'product_brand',
+    },  {
+      title: 'Product',
+      dataIndex: 'product_name',
+      key: 'product_name'
+    }, {
+      title: 'Status',
+      dataIndex: 'product_status',
+      key: 'product_status',
+      render: (text: string) => {
+        return (
+          <div>
+            {text === 'Putaway' && <Tag color='success'>{text}</Tag>}
+            {text === 'Checkout' && <Tag color='processing'>{text}</Tag>}
+            {text === 'Under maintenance' && <Tag color='warning'>{text}</Tag>}
+            {text === 'Decommission' && <Tag color='error'>{text}</Tag>}
+          </div>
+        )
+      }
+    }, {
+      title: 'User',
+      dataIndex: 'product_username',
+      key: 'product_username',
+      render: (text: string) => {
+        return (
+          <div>
+            {text? text : '-'}
+          </div>
+        )
+      }
+    }, {
+      title: 'Created time',
+      dataIndex: 'product_time',
+      key: 'product_time',
+    },  {
+      title: 'Updated time',
+      dataIndex: 'product_update',
+      key: 'product_update',
+    }, {
+      title: 'Remark',
+      dataIndex: 'product_remark',
+      key: 'product_remark'
+    }, {
+      title: 'Other',
+      render: (record: productItem) => {
+        return (
+          <div>
+            <Button
+              className='mr-2'
+              type='primary'
+              size='small'
+              onClick={() => onRowData.onClick(record)}
+              style={{fontSize: '13px'}}
+            >
+              Edit
+            </Button>
+  
+            <Button
+              size='small'
+              onClick={() => createQrCodePage.onClick(record)}
+              style={{fontSize: '13px'}}
+              className='bg-green-400'
+            >
+              QR code
+            </Button>
+          </div>
+        )
+      }
+    }
+  ])
 
   // go to qrcode
   const createQrCodePage = {
@@ -127,8 +207,16 @@ const WorkItAssetsTable: React.FC = () => {
         product_update: getTimeNumber()[0],
         product_username: record.product_username,
         product_price: record.product_price,
-        product_remark: record.product_remark
+        product_remark: record.product_remark,
+        value: record.value
       })
+      if(record.product_status === 'Checkout') {
+        setAssetsStatusShow(true)
+        setAssetsStatusWidth(8)
+      } else {
+        setAssetsStatusShow(false)
+        setAssetsStatusWidth(12)
+      }
     }
   }
 
@@ -192,6 +280,11 @@ const WorkItAssetsTable: React.FC = () => {
     } else {
       setAssetsStatusShow(false)
       setAssetsStatusWidth(12)
+      setAssetsDataForm({
+       ...assetsDataForm,
+        product_status: keys,
+        product_username: ''
+      })
     }
   }
   
@@ -223,7 +316,8 @@ const WorkItAssetsTable: React.FC = () => {
       product_update: '',
       product_username: '',
       product_price: 0,
-      product_remark: ''
+      product_remark: '',
+      value:''
     })
   }
 
@@ -291,88 +385,8 @@ const WorkItAssetsTable: React.FC = () => {
     .then(res => {
       setAssetsStatus(res as assetsStatusProps)
     })
-
     getMyItAssetsData()
   }, [])
-
-  const columns = [{
-    title: 'Type',
-    dataIndex: 'product_type',
-    key: 'product_type',
-  }, {
-    title: 'Brand',
-    dataIndex: 'product_brand',
-    key: 'product_brand',
-  },  {
-    title: 'Product',
-    dataIndex: 'product_name',
-    key: 'product_name'
-  }, {
-    title: 'Status',
-    dataIndex: 'product_status',
-    key: 'product_status',
-    render: (text) => {
-      return (
-        <div>
-          {text === 'Putaway' && <Tag color='success'>{text}</Tag>}
-          {text === 'Checkout' && <Tag color='processing'>{text}</Tag>}
-          {text === 'Under maintenance' && <Tag color='warning'>{text}</Tag>}
-          {text === 'Decommission' && <Tag color='error'>{text}</Tag>}
-        </div>
-      )
-    }
-  }, {
-    title: 'User',
-    dataIndex: 'product_username',
-    key: 'product_username'
-  }, {
-    title: 'Price',
-    dataIndex: 'product_price',
-    key: 'product_price',
-    render: (text) => {
-      return (
-        <>{'USD' + text}</>
-      )
-    }
-  }, {
-    title: 'Created time',
-    dataIndex: 'product_time',
-    key: 'product_time',
-  },  {
-    title: 'Updated time',
-    dataIndex: 'product_update',
-    key: 'product_update',
-  }, {
-    title: 'Remark',
-    dataIndex: 'product_remark',
-    key: 'product_remark'
-  }, {
-    title: 'Other',
-    render: (record: productItem) => {
-      return (
-        <div>
-          <Button
-            className='mr-2'
-            type='primary'
-            size='small'
-            onClick={() => onRowData.onClick(record)}
-            style={{fontSize: '13px'}}
-          >
-            Edit
-          </Button>
-
-          <Button
-            size='small'
-            onClick={() => createQrCodePage.onClick(record)}
-            style={{fontSize: '13px'}}
-            className='bg-green-400'
-          >
-            QR code
-          </Button>
-        </div>
-      )
-    }
-  }]
 
   return (
     <div>
@@ -411,7 +425,8 @@ const WorkItAssetsTable: React.FC = () => {
                 onChange={e => {
                   setAssetsDataForm({
                    ...assetsDataForm,
-                    product_name: e.target.value
+                    product_name: e.target.value,
+                    value: e.target.value
                   })
                 }}
               />
@@ -615,7 +630,8 @@ const WorkItAssetsTable: React.FC = () => {
                 onChange={e => {
                   setAssetsDataForm({
                     ...assetsDataForm,
-                    product_name: e.target.value
+                    product_name: e.target.value,
+                    value: e.target.value
                   })
                 }}
               />

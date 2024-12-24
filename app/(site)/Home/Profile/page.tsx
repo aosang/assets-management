@@ -67,7 +67,7 @@ const Profile = () => {
       setMyProfileInfo({
         ...myProfileInfo,
         email: res![0].email,
-        created_at: dayjs(res![0].create_time).format('YYYY-MM-DD HH:mm:ss'),
+        created_at: dayjs(res![0].created_at).format('MMM D, YYYY h:mm a'),
         username: res![0].username,
         company: res![0].company,
         avatar_url: res![0].avatar_url

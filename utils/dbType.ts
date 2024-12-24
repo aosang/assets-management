@@ -72,6 +72,7 @@ export interface productItem {
   product_username: string
   product_price: number
   product_remark: string
+  value: string
 }
 
 export interface updateProfilesItem {

@@ -31,10 +31,11 @@ export const getTimeNumber = () => {
   return [timeFilter, timeNumber]
 }
 
+
 export const getDeviceData = async (query?: string) => {
   if(query === '' || query === undefined) {
     
-    const { data, error } = await supabase.from('public_device')
+    const { data, error } = await supabase.from('it_assets')
     .select('*')
     .ilike('value', `%${query}%`)
     try {
@@ -45,7 +46,7 @@ export const getDeviceData = async (query?: string) => {
       throw error
     }
   }else {
-    const { data, error } = await supabase.from('public_device').select('*')
+    const { data, error } = await supabase.from('it_assets').select('*')
     try {
       if (data) return data || []
       useMessage(2, error?.message, 'error')
