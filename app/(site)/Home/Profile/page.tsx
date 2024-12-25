@@ -21,7 +21,7 @@ type myProfileInfoProps = {
 const Profile = () => {
   const [imageUrl, setImageUrl] = useState<string>('')
   const [userId, setUserId] = useState<string>('')
-
+  const [removePath, setRemovePath] = useState('')
   const [myProfileInfo, setMyProfileInfo] = useState<myProfileInfoProps>({
     email: '',
     created_at: '',
@@ -41,17 +41,23 @@ const Profile = () => {
   const uploadAvatarImage = async (e: any) => {
     let file = e.file
     let fileExt = file.name.split('.').pop()
-    let filePath = `${getTimeNumber()[1]}.${fileExt}`
+    let filePath = (`${getTimeNumber()[1]}.${fileExt}`)
+    setRemovePath(filePath)
+    
+    // console.log(filePath);
+    
 
     const { data, error } = await supabase.storage
     .from('avatars')
     .upload(filePath, file)
+    
     if (error) {
       useMessage(2, error.message, 'error')
     } else {
       const { data: { publicUrl } } = supabase.storage
       .from('avatars')
-      .getPublicUrl(filePath)
+      .getPublicUrl(filePath)      
+      
 
       setImageUrl(publicUrl)
       setMyProfileInfo({...myProfileInfo, avatar_url: publicUrl})
@@ -102,8 +108,25 @@ const Profile = () => {
     }
   }
 
-  const deleteAvatarsImages = (e: any) => {
+  const deleteAvatarsImages = async (e: any) => {
     e.stopPropagation()
+    
+    const { data, error } = await supabase.storage
+    .from('avatars')
+    .remove([removePath])
+    
+    // if(data) {
+    //   console.log(data)
+      
+    // }
+    
+    // if (error) {
+    //   useMessage(2, error.message, 'error')
+    // } else {
+    //   // setImageUrl('')
+    //   // setFilePath('')  
+    //   // useMessage(2, 'Delete avatar image successful!','success')
+    // }
   }
 
   useEffect(() => {

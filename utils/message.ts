@@ -1,5 +1,5 @@
-import { message } from 'antd';
-import { NoticeType } from 'antd/es/message/interface';
+import { message } from 'antd'
+import { NoticeType } from 'antd/es/message/interface'
 
 
 const showMessage = (time:number, text:string, type:NoticeType) => {

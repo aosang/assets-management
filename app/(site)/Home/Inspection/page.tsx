@@ -1,11 +1,12 @@
 'use client'
 import { useState, useEffect } from "react"
-import { Collapse, Space, Card, Row, Col, Button, Modal, Input, Divider, Table, Badge, Select, Empty } from "antd"
+import { Collapse, Space, Card, Row, Col, Button, Modal, Input, Divider, Table, Badge, Select, Empty, Result } from "antd"
 import { SearchOutlined, DownloadOutlined, CheckOutlined, DeleteOutlined, CheckCircleFilled } from '@ant-design/icons'
 import { getInspectionStatusData, insertInspectionDeviceData, getInspectionDeviceData, deleteInspectionDevice, getInspectionDetailsDeviceData} from '@/utils/providerInspection'
 import { inspectionStatusItem, inspectionForms, inspectionItem, selectInspectionItem } from '@/utils/dbType'
 import { getTimeNumber, getDeviceData } from '@/utils/pubFunProvider'
 import { getProfiles, getUser } from '@/utils/providerSelectData'
+import useMessage from '@/utils/message'
 
 type inspectionStatusProps = inspectionStatusItem[]
 
@@ -18,6 +19,7 @@ const Inspection: React.FC = () => {
   const [createInspectionModal, setCreateInspectionModal] = useState<boolean>(false)
   const [selectAssetsData, setSelectAssetsData] = useState<selectInspectionItem[]>([])
   const [inspectionDataStatus, setInspectionDataStatus] = useState<inspectionStatusProps>([])
+  const [problemNumberIsDisable, setProblemNumberIsDisable] = useState<boolean>(false)
   const [inspectionDataForm, setInspectionDataForm] = useState<inspectionForms>({
     inspection_id: '',
     inspection_time: '',
@@ -48,7 +50,7 @@ const Inspection: React.FC = () => {
   const onRowData = {
     onClick: (record: inspectionItem) => {
       setInspectionDataForm({
-      ...inspectionDataForm,
+        ...inspectionDataForm,
         inspection_deviceData: inspectionDataForm.inspection_deviceData!.filter(item => {
           return item.inspection_id!== record.inspection_id
         })
@@ -87,10 +89,13 @@ const Inspection: React.FC = () => {
     })
 
     if (e === 'Discovered problem') {
+      setProblemNumberIsDisable(false)
       getDeviceData(e)
       .then(res => {
         setSelectAssetsData(res as selectInspectionItem[])
       })
+    }else {
+      setProblemNumberIsDisable(true)
     }
   }
 
@@ -111,25 +116,53 @@ const Inspection: React.FC = () => {
   }
 
   const confirmProblemDeviceName = () => {
-    setInspectionDataForm({
-      ...inspectionDataForm,
-      inspection_deviceData: [...inspectionDataForm.inspection_deviceData!, inspectionItemForm]
-    })
-
-    setInspectionItemForm({
-    ...inspectionItemForm,
-      key: '',
-      inspection_description: '',
-      inspection_device: null
-    })
+    const {inspection_device, inspection_description} = inspectionItemForm
+    if(!inspection_device) {
+      useMessage(2, 'Please enter the problem device', 'error')
+    }else if(!inspection_description) {
+      useMessage(2, 'Please enter the problem description', 'error')
+    }else {
+      setInspectionDataForm({
+        ...inspectionDataForm,
+        inspection_deviceData: [...inspectionDataForm.inspection_deviceData!, inspectionItemForm]
+      })
+  
+      setInspectionItemForm({
+      ...inspectionItemForm,
+        key: '',
+        inspection_description: '',
+        inspection_device: null
+      })
+    }
   }
 
   const insertInspectionRecordData = () => {
-    setCreateInspectionModal(false)
-    insertInspectionDeviceData(inspectionDataForm)
-    .then(() => {
-      getInspectionRecordListData()
-    })
+    const {inspection_status, inspection_phone, inspection_number, inspection_deviceData} = inspectionDataForm
+    if(!inspection_status) {
+      useMessage(2, 'Please select the status', 'error')
+    }else if(!inspection_phone) {
+      useMessage(2, 'Please enter phone number', 'error')
+    }else{
+      if(inspection_status === 'Discovered problem') {
+        if(inspection_number === 0) {
+          useMessage(2, 'Please enter the number of problem devices', 'error')
+        }else if (inspection_number !== inspection_deviceData?.length) {
+          useMessage(2, 'The number of problem devices is not equal to the number of problem devices', 'error')
+        }else {
+          setCreateInspectionModal(false)
+          insertInspectionDeviceData(inspectionDataForm)
+          .then(() => {
+            getInspectionRecordListData()
+          })
+        }
+      }else {
+        setCreateInspectionModal(false)
+        insertInspectionDeviceData(inspectionDataForm)
+        .then(() => {
+          getInspectionRecordListData()
+        })
+      }
+    }
   }
 
   const closeInspectionModal = () => {
@@ -254,15 +287,22 @@ const Inspection: React.FC = () => {
                             <Col span={12}><span className="text-sm">Inspector: {item.inspection_name}</span></Col>                       
                             <Col span={12}><span className="text-sm">phone: {item.inspection_phone}</span></Col>
                           </Row>
-      
                           <Row className="mb-2">
                             <Col span={24}><span className="text-sm">Email: {item.inspection_email}</span></Col>
                           </Row>
 
-                          <div className="w-8 h-8 bg-green-500 rounded-full absolute top-5 right-5">
-                            <CheckOutlined className="text-center text-white block leading-8 font-semibold" />
-                          </div>
-      
+                          {
+                            Number(item.inspection_number) === 0? (
+                              <div className="w-7 h-7 bg-green-500 rounded-full absolute top-5 right-5">
+                                <CheckOutlined className="text-center text-white block leading-7 font-bold" />
+                              </div>
+                            ):(
+                              <div className="w-7 h-7 bg-red-400 rounded-full absolute top-5 right-5">
+                                <span className="text-center text-white block leading-7">1</span>
+                              </div>
+                            )
+                          }
+                          
                           <div className="mt-4">
                             <Button 
                               color="primary"
@@ -316,6 +356,7 @@ const Inspection: React.FC = () => {
         maskClosable={false}
         width={1260}
         afterClose={clearAllDeivceDataForm}
+        footer={null}
       >
         <Divider />
         <Space direction="vertical" size="middle" style={{ width: '100%' }}>
@@ -372,12 +413,13 @@ const Inspection: React.FC = () => {
           </Row>
         </Space>
         {
-          inspectionDataForm.inspection_number === 0? (
+          Number(inspectionDataForm.inspection_number) === 0? (
             <Card className="mt-6">
-              <div className="flex justify-center items-center h-16">
-                <CheckCircleFilled style={{color: '#22c55e', fontSize: '28px'}} />
-                <p className="ml-2 text-base">All the device is OK</p>
-              </div>
+              <Result 
+                status={'success'}
+                title="All the device is ok"
+                subTitle="No abnormalities were found during this inspection."
+              />
             </Card>
           ): (
             <Collapse
@@ -408,7 +450,6 @@ const Inspection: React.FC = () => {
             </Collapse>
           )
         }
-      
         <Divider />
       </Modal>
       
@@ -484,6 +525,7 @@ const Inspection: React.FC = () => {
                 Problem Number
               </label>
               <Input
+                disabled={problemNumberIsDisable}
                 type="number"
                 value={inspectionDataForm.inspection_number}
                 onChange={(e) => setInspectionDataForm({
@@ -509,6 +551,16 @@ const Inspection: React.FC = () => {
               />
             </Col>
           </Row>
+
+          {inspectionDataForm.inspection_status === 'All the device is ok' && (
+            <Card className="mt-6">
+              <Result 
+                status={'success'}
+                title="All the device is ok"
+                subTitle="No abnormalities were found during this inspection."
+              />
+            </Card>
+          )}
 
           {inspectionDataForm.inspection_status === 'Discovered problem' && (
             <>
