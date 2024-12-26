@@ -58,7 +58,7 @@ const DropDownMenu = ({ userId,  update}) => {
       {userInfo && (
         <>
           <Image 
-            src={avatarUrl? avatarUrl : '/avatar.jpg' } 
+            src={avatarUrl? avatarUrl : 'https://www.wangle.run/company_icon/public_image/pub_avatar.jpg' } 
             width={32} 
             height={32} 
             alt='avatar'

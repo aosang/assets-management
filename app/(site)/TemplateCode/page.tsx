@@ -1,7 +1,7 @@
 "use client";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react"
 import { flexible } from './phone.js'
-import { useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation"
 import { QRCodeSVG } from 'qrcode.react'
 import { getCodeAssetsData } from '@/utils/providerItAssetsData'
 import { Button } from "antd"
@@ -44,18 +44,18 @@ const TemplateCode: React.FC = () => {
       allowTaint: false,
       useCORS: true,
     })
-    .then(canvas => {
-      let dataUrl = canvas.toDataURL("image/jpeg");
-      let img = new Image()
-      img.src = dataUrl
-      const link = document.createElement('a')
-      link.href = dataUrl
-      link.download = 'deviceCode' + getTimeNumber()[1] + '.jpg'
-      link.click()
-    })
-    .catch(err => {
-      console.log(err)
-    })
+      .then(canvas => {
+        let dataUrl = canvas.toDataURL("image/jpeg");
+        let img = new Image()
+        img.src = dataUrl
+        const link = document.createElement('a')
+        link.href = dataUrl
+        link.download = 'deviceCode' + getTimeNumber()[1] + '.jpg'
+        link.click()
+      })
+      .catch(err => {
+        console.log(err)
+      })
   }
 
   useEffect(() => {
@@ -106,7 +106,7 @@ const TemplateCode: React.FC = () => {
           }
           <div className={tempcss.qrcodeWhite}></div>
         </div>
-        
+
         <div className={tempcss.qrcodeSaveImage}>
           <Button
             style={{ width: '2rem', height: '0.32rem', fontSize: '0.15rem' }}
@@ -123,4 +123,10 @@ const TemplateCode: React.FC = () => {
   )
 }
 
-export default TemplateCode;
+const WrappedTemplateCode: React.FC = () => (
+  <Suspense fallback={<div>Loading...</div>}>
+    <TemplateCode />
+  </Suspense>
+)
+
+export default WrappedTemplateCode

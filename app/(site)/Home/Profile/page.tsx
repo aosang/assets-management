@@ -44,9 +44,6 @@ const Profile = () => {
     let filePath = (`${getTimeNumber()[1]}.${fileExt}`)
     setRemovePath(filePath)
     
-    // console.log(filePath);
-    
-
     const { data, error } = await supabase.storage
     .from('avatars')
     .upload(filePath, file)
@@ -58,7 +55,6 @@ const Profile = () => {
       .from('avatars')
       .getPublicUrl(filePath)      
       
-
       setImageUrl(publicUrl)
       setMyProfileInfo({...myProfileInfo, avatar_url: publicUrl})
     }
@@ -115,18 +111,13 @@ const Profile = () => {
     .from('avatars')
     .remove([removePath])
     
-    // if(data) {
-    //   console.log(data)
-      
-    // }
-    
-    // if (error) {
-    //   useMessage(2, error.message, 'error')
-    // } else {
-    //   // setImageUrl('')
-    //   // setFilePath('')  
-    //   // useMessage(2, 'Delete avatar image successful!','success')
-    // }
+    if (error) {
+      useMessage(2, error.message, 'error')
+    } else {
+      setImageUrl('')
+      setRemovePath('')
+      useMessage(2, 'Delete avatar image successful!','success')
+    }
   }
 
   useEffect(() => {
