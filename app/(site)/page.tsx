@@ -66,10 +66,12 @@ const Auth: React.FC = () => {
             password,
             options: {
               data: { username, company },
-              emailRedirectTo: 'https://www.wangle.run/assetsManager/Home'
+              // emailRedirectTo: 'https://www.wangle.run/assetsManager/Home'
+              emailRedirectTo: 'http://localhost:3000/Home'
             }
           })
           if (error) return useMessage(2, error.message, 'error')
+          
         }
       }
     } else {

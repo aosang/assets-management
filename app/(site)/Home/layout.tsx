@@ -1,6 +1,6 @@
 'use client'
 import SideBar from '../components/Sidebar'
-import { getSession } from '@/utils/providerSelectData'
+import { getSession, updateProfiles } from '@/utils/providerSelectData'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { updateProfilesItem } from '@/utils/dbType'
@@ -17,22 +17,24 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   })
 
   const getCheckSession = () => {
+    let userIds:any = ''
     getSession()
       .then(res => {
         const { session } = res!
         setMySession(session)
+        
         if (!session) {
           router.replace('/')
         } else {
           setUserId(session!.user?.id)
           window.localStorage.setItem('myId', session!.user.id)
 
-          setUpdateForm({
-            ...updateForm,
-            username: session!.user.user_metadata.username,
-            company: session!.user.user_metadata.company,
-            email: session!.user.email || '',
-          })
+          // setUpdateForm({
+          //   username: session!.user.user_metadata.username,
+          //   company: session!.user.user_metadata.company,
+          //   email: session!.user.email || '',
+          // })
+
         }
       })
   }
@@ -45,7 +47,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <>
       {mySession && (
         <div>
-          <SideBar userId={userId} update={updateForm}>
+          <SideBar userId={userId} update={mySession}>
             {children}
           </SideBar>
         </div>
