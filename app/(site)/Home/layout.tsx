@@ -28,13 +28,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         } else {
           setUserId(session!.user?.id)
           window.localStorage.setItem('myId', session!.user.id)
-
-          // setUpdateForm({
-          //   username: session!.user.user_metadata.username,
-          //   company: session!.user.user_metadata.company,
-          //   email: session!.user.email || '',
-          // })
-
         }
       })
   }
