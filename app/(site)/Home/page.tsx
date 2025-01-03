@@ -56,9 +56,9 @@ const assetsText: React.CSSProperties = {
 }
 
 const Home = () => {
-  
   return (
     <div style={{ width: '100%', padding: '12px', boxSizing: 'border-box' }}>
+      <h2></h2>
       <Space direction="vertical" size={12} style={{ width: '100%' }}>
         <Card title="WorkOrder Info">
           <Row gutter={20}>

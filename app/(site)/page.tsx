@@ -135,7 +135,10 @@ const Auth: React.FC = () => {
           {isVerify ? <Verify emailAddress={formState.email} /> : (
             <div className={authScss.background}>
               <div className={authScss.signUpForm}>
-                <h3>Assets Management</h3>
+                <div className='w-48 my-6 mx-auto'>
+                  <img className='w-full' src="https://www.wangle.run/Company_icon/public_image/system_logo.png" alt="system-logo" />
+                </div>
+                {/* <h3>Assets Management</h3> */}
                 <span className={authScss.line}></span>
                 {formVisiable? (
                   <>

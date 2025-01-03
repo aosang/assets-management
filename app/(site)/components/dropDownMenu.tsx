@@ -8,6 +8,7 @@ import useMessage from '@/utils/message'
 import { useState, useEffect } from 'react'
 import { getProfiles, updateProfiles } from '@/utils/providerSelectData'
 import { updateProfilesItem } from '@/utils/dbType'
+import { getTimeNumber } from '@/utils/pubFunProvider'
 
 const items: MenuProps['items'] = [{
   key: '1',
@@ -21,6 +22,7 @@ const profile: React.CSSProperties = {
 }
 
 const DropDownMenu = ({ userId,  update}) => {
+  const [currentTime, setCurrentTime] = useState<string>('')
   const router = useRouter()
   const [userInfo, setUserInfo] = useState('')
   const [ username, setUsername ] = useState('')
@@ -56,34 +58,43 @@ const DropDownMenu = ({ userId,  update}) => {
   }
 
   useEffect(() => {
-    getMyInfomation()    
+    getMyInfomation()
+    
+    // let currentTime = getTimeNumber()[2]
+    // setInterval(() => {
+    //   setCurrentTime(currentTime)
+    // }, 1000)
   }, [])
 
   return (
-    <div style={profile}>
-      {userInfo && (
-        <>
-          <Image 
-            src={avatarUrl? avatarUrl : 'https://www.wangle.run/company_icon/public_image/pub_avatar.jpg' } 
-            width={32} 
-            height={32} 
-            alt='avatar'
-            style={{borderRadius: '50%', marginRight: '10px'}}  
-          />
-          <Dropdown menu={{
-            items,
-            onClick: handleMenuClick
-          }}>
-            <a>
-              <Space>
-                {username}
-                <DownOutlined />
-              </Space>
-            </a>
-          </Dropdown>
-        </>
-      )}
-    </div>
+    <>
+      <div>{currentTime}</div>
+      <div style={profile}>
+        {userInfo && (
+          <>
+            <Image 
+              src={avatarUrl? avatarUrl : 'https://www.wangle.run/company_icon/public_image/pub_avatar.jpg' } 
+              width={32} 
+              height={32} 
+              alt='avatar'
+              style={{borderRadius: '50%', marginRight: '10px'}}  
+            />
+            <Dropdown menu={{
+              items,
+              onClick: handleMenuClick
+            }}>
+              <a>
+                <Space>
+                  {username}
+                  <DownOutlined />
+                </Space>
+              </a>
+            </Dropdown>
+          </>
+        )}
+      </div>
+    </>
+    
   )
 }
 

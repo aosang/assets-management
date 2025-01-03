@@ -61,9 +61,11 @@ const AppLayout = ({children, userId, update}) => {
           leading-64 
           whitespace-nowrap
           border-b
-          border-gray-600'
+          border-gray-500'
         >
-          Assets Management
+          <div className='w-44 mx-auto p-4'>
+            <img className='w-full' src="https://www.wangle.run/company_icon/public_image/system_logo_white.png" alt="system-logo" />
+          </div>
         </div>
           <SideBarItem />
         </Sider>

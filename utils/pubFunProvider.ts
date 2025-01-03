@@ -28,7 +28,9 @@ export const getTimeNumber = () => {
   let timeFilter = y + '-' + m + '-' + d + ' ' + h + ':' + mm + ':' + s
   timeFilter = dayjs(timeFilter).format('MMM D, YYYY h:mm a')
   let timeNumber = y + '' + m + '' + d + '' + h + '' + mm + '' + s + number
-  return [timeFilter, timeNumber]
+
+  let currentTime = dayjs(timeFilter).format('MMM D, YYYY h:mm:ss a')
+  return [timeFilter, timeNumber, currentTime]
 }
 
 
