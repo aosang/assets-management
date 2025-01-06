@@ -19,7 +19,7 @@ const imageStyle: React.CSSProperties = {
   position: 'absolute',
   top: '50%',
   left: '50%',
-  margin: '-120px 0 0 -120px'
+  margin: '-45px 0 0 -226px'
 }
 
 type isShowMask = boolean
@@ -51,9 +51,9 @@ const MaskLoad = () => {
         <div style={maskStyle}>
           <Image
             priority 
-            src="/load-blue.gif" 
+            src="/load-blue.png" 
             alt="loadingGif" 
-            width={240} height={240}
+            width={452} height={90}
             style={imageStyle}
             unoptimized
           />

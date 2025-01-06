@@ -10,6 +10,7 @@ import authScss from './auth.module.scss'
 import useMessage from '@/utils/message'
 import Verify from './components/Verify'
 import MaskLoad from './components/MaskLoad'
+import Head from 'next/head'
 
 const Auth: React.FC = () => {
   const router = useRouter()
@@ -125,6 +126,7 @@ const Auth: React.FC = () => {
 
   useEffect(() => {
     getSession()
+    document.title = 'IT-Assets'
   })
 
   return (
@@ -132,6 +134,9 @@ const Auth: React.FC = () => {
       <MaskLoad />
       {!mySession && 
         <div>
+          <Head>
+            <title>It-Assets</title>
+          </Head>
           {isVerify ? <Verify emailAddress={formState.email} /> : (
             <div className={authScss.background}>
               <div className={authScss.signUpForm}>
