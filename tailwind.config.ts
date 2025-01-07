@@ -19,8 +19,23 @@ const config: Config = {
         '520': '520px',
         '350': '350px'
       },
-      height: {'0.5': '1px'}
-    },
+      height: {
+        '0.5': '1px'
+      },
+      animation: {
+        'rotate-slow': 'rotate 5s linear infinite',  // 定义一个旋转动画
+      },
+      keyframes: {
+        rotate: {
+          '0%': {
+            transform: 'rotate(0deg)',  // 起始角度
+          },
+          '100%': {
+            transform: 'rotate(360deg)',  // 结束角度
+          }
+        }
+      }
+    }
   },
   plugins: [],
 };

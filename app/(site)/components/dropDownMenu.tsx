@@ -60,9 +60,9 @@ const DropDownMenu = ({ userId,  update}) => {
   useEffect(() => {
     getMyInfomation()
     
-    // let currentTime = getTimeNumber()[2]
     // setInterval(() => {
-    //   setCurrentTime(currentTime)
+    //   let TimeData =  getTimeNumber()[2]
+    //   setCurrentTime(TimeData)
     // }, 1000)
   }, [])
 
