@@ -1,6 +1,6 @@
 "use client"
 import { useState, useEffect } from "react"
-import { Card, Tabs, Row, Col, Button, Select, List, Alert } from "antd"
+import { Card, Button, Select, List, Avatar, Divider } from "antd"
 import { getWorkOrderType } from "@/utils/providerSelectData"
 import { typeDataName } from "@/utils/dbType"
 import Head from "next/head"
@@ -32,7 +32,7 @@ const Librarys = () => {
   useEffect(() => {
     document.title = 'Librarys'
     getLibrarysType()
-  })
+  }, [])
 
   return (
     <>
@@ -66,6 +66,34 @@ const Librarys = () => {
               </Select>
             </div>
           </div>
+
+          <Divider/> 
+
+          <List 
+            itemLayout="horizontal"
+            dataSource={[
+              'Racing car sprays burning fuel into crowd.',
+              'Japanese princess to wed commoner.',
+              'Australian walks 100km after outback crash.',
+              'Man charged over missing wedding girl.',
+              'Los Angeles battles huge wildfires.',
+            ]}
+            renderItem={item => (
+              <List.Item actions={[
+                <a className="text-blue-500">edit</a>,
+                <a className="text-red-500">delete</a>,
+              ]}>
+                <List.Item.Meta
+                  avatar={<Avatar src='https://www.wangle.run/company_icon/public_image/pub_avatar.jpg' />}
+                  title='Ant Design Title 1'
+                  description='Ant Design, a design language for background applications, is refined by Ant UED Team'
+                />
+                <div className="flex justify-end">
+                  
+                </div>
+              </List.Item>
+            )}
+          />
         </Card>
 
         {/* <Toolbar
