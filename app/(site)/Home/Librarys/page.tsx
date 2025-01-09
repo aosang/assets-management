@@ -4,24 +4,17 @@ import { Card, Button, Select, List, Avatar, Divider } from "antd"
 import { getWorkOrderType } from "@/utils/providerSelectData"
 import { typeDataName } from "@/utils/dbType"
 import Head from "next/head"
-
 import { ImBooks } from "react-icons/im"
+import dynamic from "next/dynamic"
 import { PlusOutlined } from "@ant-design/icons"
 
-import '@wangeditor/editor/dist/css/style.css'
-import { Editor, Toolbar } from '@wangeditor/editor-for-react'
-// import { IDomEditor, IEditorConfig, IToolbarConfig, i18nChangeLanguage } from '@wangeditor/editor'
-// i18nChangeLanguage('en')
+const ReactWEditor = dynamic(() => import('../../components/Editor'), { 
+  ssr: false,
+  loading: () => <p>Loading...</p> 
+})
 
 const Librarys = () => {
   const [LibrarysType, setLibrarysType] = useState<typeDataName[]>([])
-  // const [editor, setEditor] = useState<IDomEditor | null>(null)
-  // const [html, setHtml] = useState('<p>hello</p>')
-  // const toolbarConfig: Partial<IToolbarConfig> = {}
-  // const editorConfig: Partial<IEditorConfig> = {
-  //   // TS 语法
-  //   placeholder: '请输入内容...',
-  // }
 
   const getLibrarysType = () => {
     getWorkOrderType().then(res => {
@@ -29,9 +22,10 @@ const Librarys = () => {
     })
   }
 
+  // 在组件挂载后再设置语
   useEffect(() => {
-    document.title = 'Librarys'
     getLibrarysType()
+    document.title = 'Librarys'
   }, [])
 
   return (
@@ -67,9 +61,9 @@ const Librarys = () => {
             </div>
           </div>
 
-          <Divider/> 
+          <Divider />
 
-          <List 
+          <List
             itemLayout="horizontal"
             dataSource={[
               'Racing car sprays burning fuel into crowd.',
@@ -89,32 +83,16 @@ const Librarys = () => {
                   description='Ant Design, a design language for background applications, is refined by Ant UED Team'
                 />
                 <div className="flex justify-end">
-                  
+
                 </div>
               </List.Item>
             )}
           />
+          <ReactWEditor />  
         </Card>
-
-        {/* <Toolbar
-        editor={editor}
-        defaultConfig={toolbarConfig}
-        mode="default"
-        style={{ borderBottom: '1px solid #ccc' }}
-      /> */}
-
-        {/* <Editor
-        defaultConfig={editorConfig}
-        value={html}
-        onCreated={setEditor}
-        onChange={(editor) => setHtml(editor.getHtml())}
-        mode="default"
-        style={{ height: '500px', overflowY: 'hidden' }}
-      /> */}
       </div>
     </>
   )
 }
-
 
 export default Librarys

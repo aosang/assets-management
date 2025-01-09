@@ -164,7 +164,7 @@ const Auth: React.FC = () => {
                           <div className='flex items-center'>
                             <label htmlFor="Email" className='mr-1'>Password</label>
                             <Tooltip 
-                              placement='right' 
+                              placement='right'
                               title='Password must be 8-20 characters long and contain at least one uppercase letter, one lowercase letter, and one number'
                             >
                               <InfoCircleOutlined className='text-sm -mt-1 text-blue-700' />
