@@ -29,7 +29,6 @@ const EditorPage = () => {
       'justifyLeft',
       'justifyCenter',
       'justifyRight',
-      'insertTable',
       'numberedList'
     ],
   }

@@ -8,9 +8,9 @@ import { ImBooks } from "react-icons/im"
 import dynamic from "next/dynamic"
 import { PlusOutlined } from "@ant-design/icons"
 
-const ReactWEditor = dynamic(() => import('../../components/Editor'), { 
+const ReactWEditor = dynamic(() => import('../../components/Editor'), {
   ssr: false,
-  loading: () => <p>Loading...</p> 
+  loading: () => <p>Loading...</p>
 })
 
 const Librarys = () => {
@@ -22,7 +22,6 @@ const Librarys = () => {
     })
   }
 
-  // 在组件挂载后再设置语
   useEffect(() => {
     getLibrarysType()
     document.title = 'Librarys'
@@ -88,7 +87,7 @@ const Librarys = () => {
               </List.Item>
             )}
           />
-          <ReactWEditor />  
+          <ReactWEditor />
         </Card>
       </div>
     </>
