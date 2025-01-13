@@ -10,11 +10,12 @@ import { PlusOutlined } from "@ant-design/icons"
 
 const ReactWEditor = dynamic(() => import('../../components/Editor'), {
   ssr: false,
-  loading: () => <p>Loading...</p>
+  loading: () => <p className="text-lg text-blue-950">Loading...</p>
 })
 
 const Librarys = () => {
   const [LibrarysType, setLibrarysType] = useState<typeDataName[]>([])
+  const [editorModal, setEditorModal] = useState<boolean>(false)
 
   const getLibrarysType = () => {
     getWorkOrderType().then(res => {
@@ -47,47 +48,56 @@ const Librarys = () => {
             <ImBooks style={{ color: '#4483f5', opacity: 0.65 }} className="text-4xl" />
             <span className="text-base ml-6" style={{ color: '#00091a' }}>IT Equipment Knowledge Base</span>
           </div>
-          <div className="flex mt-4 items-center">
-            <Button type="primary">Create</Button>
-            <div className="mt-0 mb-0 mr-0 ml-auto">
-              <Select
-                className="w-36"
-                placeholder="Type"
-                allowClear
-                options={LibrarysType}
-              >
-              </Select>
-            </div>
-          </div>
-
-          <Divider />
-
-          <List
-            itemLayout="horizontal"
-            dataSource={[
-              'Racing car sprays burning fuel into crowd.',
-              'Japanese princess to wed commoner.',
-              'Australian walks 100km after outback crash.',
-              'Man charged over missing wedding girl.',
-              'Los Angeles battles huge wildfires.',
-            ]}
-            renderItem={item => (
-              <List.Item actions={[
-                <a className="text-blue-500">edit</a>,
-                <a className="text-red-500">delete</a>,
-              ]}>
-                <List.Item.Meta
-                  avatar={<Avatar src='https://www.wangle.run/company_icon/public_image/pub_avatar.jpg' />}
-                  title='Ant Design Title 1'
-                  description='Ant Design, a design language for background applications, is refined by Ant UED Team'
-                />
-                <div className="flex justify-end">
-
+          {!editorModal &&
+            <>
+              <div className="flex mt-4 items-center">
+                <Button type="primary" onClick={() => { setEditorModal(true) }}>Create</Button>
+                <div className="mt-0 mb-0 mr-0 ml-auto">
+                  <Select
+                    className="w-36"
+                    placeholder="Type"
+                    allowClear
+                    options={LibrarysType}
+                  >
+                  </Select>
                 </div>
-              </List.Item>
-            )}
-          />
-          <ReactWEditor />
+              </div>
+
+              <Divider />
+
+              <List
+                itemLayout="horizontal"
+                dataSource={[
+                  'Racing car sprays burning fuel into crowd.',
+                  'Japanese princess to wed commoner.',
+                  'Australian walks 100km after outback crash.',
+                  'Man charged over missing wedding girl.',
+                  'Los Angeles battles huge wildfires.',
+                ]}
+                renderItem={item => (
+                  <List.Item actions={[
+                    <a className="text-blue-500">edit</a>,
+                    <a className="text-red-500">delete</a>,
+                  ]}>
+                    <List.Item.Meta
+                      avatar={<Avatar src='https://www.wangle.run/company_icon/public_image/pub_avatar.jpg' />}
+                      title='Ant Design Title 1'
+                      description='Ant Design, a design language for background applications, is refined by Ant UED Team'
+                    />
+                    <div className="flex justify-end">
+
+                    </div>
+                  </List.Item>
+                )}
+              />
+            </>
+          }
+          {editorModal && 
+            <div className="mt-4">
+              <ReactWEditor />
+            </div>
+            
+          }
         </Card>
       </div>
     </>

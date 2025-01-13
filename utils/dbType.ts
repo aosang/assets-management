@@ -110,3 +110,12 @@ export interface selectInspectionItem {
   value: string,
   key: string
 }
+
+export interface knowledgeTypeItem {
+  id: string,
+  title: string,
+  author: string,
+  type: string,
+  time: string,
+  content: string
+}
