@@ -1,4 +1,5 @@
 "use client"
+import { useEffect } from 'react'
 import { Card, Space, Col, Row } from 'antd'
 import { AiOutlineBars, AiOutlineCheck, AiOutlineFileSync, AiOutlinePause } from 'react-icons/ai'
 import { FiMonitor, FiPrinter } from 'react-icons/fi'
@@ -56,9 +57,11 @@ const assetsText: React.CSSProperties = {
 }
 
 const Home = () => {
+  
+
   return (
     <div style={{ width: '100%', padding: '12px', boxSizing: 'border-box' }}>
-      <h2></h2>
+      {/* <div>{user} 123</div> */}
       <Space direction="vertical" size={12} style={{ width: '100%' }}>
         <Card title="WorkOrder Info">
           <Row gutter={20}>

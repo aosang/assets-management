@@ -3,6 +3,7 @@ import { Editor, Toolbar, } from "@wangeditor/editor-for-react"
 import { Row, Col, Input, Select } from "antd"
 import { supabase } from "@/utils/clients"
 import { getTimeNumber } from "@/utils/pubFunProvider"
+import { knowledgeTypeItem } from "@/utils/dbType"
 
 import { IDomEditor, IEditorConfig, IToolbarConfig, i18nChangeLanguage } from '@wangeditor/editor'
 i18nChangeLanguage('en')
@@ -12,12 +13,20 @@ import '@wangeditor/editor/dist/css/style.css'
 const EditorPage = () => {
   const [editor, setEditor] = useState<IDomEditor | null>(null)
   const [html, setHtml] = useState('')
+  const [knowledgeItem, setKnowledgeItem] = useState<knowledgeTypeItem>({
+    id: '',
+    title: '',
+    author: '',
+    type: null,
+    time: getTimeNumber()[0],
+    content: ''
+  })
 
   const editorConfig = {
     placeholder: "Write something...",
     MENU_CONF: {
       uploadImage: {
-        async customUpload(files: any, insertFn) {
+        async customUpload(files: any, insertFn: (url: string) => void) {
           let file = files.name
           let fileExt = file.split('.').pop()
           let filePath = (`${getTimeNumber()[1]}.${fileExt}`)
@@ -67,7 +76,7 @@ const EditorPage = () => {
       const {data: {publicUrl}}  = supabase.storage.from('knowledge_image').getPublicUrl(file)
 
       // 返回图片 URL 给 WangEditor
-      return publicUrl;
+      return publicUrl
       // console.log(publicUrl);
       
     } catch (error) {
@@ -86,6 +95,12 @@ const EditorPage = () => {
   }, [editor])
 
   useEffect(() => {
+    // getSession().then(res => {
+    //   console.log(res)
+    // })
+  }, [])
+
+  useEffect(() => {
 
   }, [html])
 
@@ -97,7 +112,7 @@ const EditorPage = () => {
             <span className='mr-1 text-red-600 font-thin'>*</span>
             Title
           </label>
-          <Input />
+          <Input value={knowledgeItem.title} placeholder="Enter knowledge title" />
         </Col>
       </Row>
       <Row gutter={16} className="mt-3">
@@ -106,14 +121,14 @@ const EditorPage = () => {
             <span className='mr-1 text-red-600 font-thin'>*</span>
             Time
           </label>
-          <Input />
+          <Input value={knowledgeItem.time} readOnly />
         </Col>
         <Col span={8}>
           <label className="flex items-center font-semibold">
             <span className='mr-1 text-red-600 font-thin'>*</span>
             Author
           </label>
-          <Input />
+          <Input value={knowledgeItem.author} />
         </Col>
         <Col span={8}>
           <label className="flex items-center font-semibold">
@@ -132,6 +147,7 @@ const EditorPage = () => {
           mode="default"
         />
         <Editor
+        className="h-80"
           defaultConfig={editorConfig}
           value={html}
           mode="default"
