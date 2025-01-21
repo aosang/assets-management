@@ -7,6 +7,7 @@ import { MdOutlineComputer } from "react-icons/md"
 import { HiOutlineServer } from "react-icons/hi"
 import { BsToggles } from "react-icons/bs"
 import { LuMouse } from "react-icons/lu"
+import { useUserStore } from '@/store/userStore'
 
 const workCardInfo: React.CSSProperties = {
   display: 'flex',
@@ -57,11 +58,14 @@ const assetsText: React.CSSProperties = {
 }
 
 const Home = () => {
-  
+  const { setUser } = useUserStore()
+
+  useEffect(() => {
+    
+  }, [])
 
   return (
     <div style={{ width: '100%', padding: '12px', boxSizing: 'border-box' }}>
-      {/* <div>{user} 123</div> */}
       <Space direction="vertical" size={12} style={{ width: '100%' }}>
         <Card title="WorkOrder Info">
           <Row gutter={20}>

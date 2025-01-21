@@ -6,8 +6,9 @@ import type { MenuProps } from 'antd'
 import Image from 'next/image'
 import useMessage from '@/utils/message'
 import { useState, useEffect } from 'react'
-import { getProfiles, updateProfiles } from '@/utils/providerSelectData'
+import { getProfiles } from '@/utils/providerSelectData'
 import { updateProfilesItem } from '@/utils/dbType'
+import { useUserStore } from '@/store/userStore'
 import dayjs from 'dayjs'
 
 const items: MenuProps['items'] = [{
@@ -21,17 +22,11 @@ const profile: React.CSSProperties = {
   alignItems: 'center'
 }
 
-const DropDownMenu = ({ userId,  update}) => {
+const DropDownMenu = () => {
   const [currentTime, setCurrentTime] = useState(dayjs())
   const router = useRouter()
-  const [userInfo, setUserInfo] = useState('')
   const [ username, setUsername ] = useState('')
   const [ avatarUrl, setAvatarUrl ] = useState('')
-  const [updateForm,] = useState<updateProfilesItem>({
-    username: update.user.user_metadata.username,
-    company: update.user.user_metadata.company  ,
-    email: update.user.email || '',
-  })
   
   const handleMenuClick: MenuProps['onClick'] = async ({ key }) => { 
     if(key === '1') {
@@ -43,17 +38,10 @@ const DropDownMenu = ({ userId,  update}) => {
   }
 
   const getMyInfomation = () => {
-    updateProfiles(userId, updateForm).then (res => {
-      getProfiles(userId)
-      .then(res => {
-        if (res) {
-          setUserInfo(res as any)
-          setUsername(res[0].username)
-          setAvatarUrl(res[0].avatar_url)
-        }else {
-          router.replace('/')
-        }
-      })
+    let userId = window.localStorage.getItem('myId') || ''
+    getProfiles(userId).then(res => {
+      setUsername(res![0].username)
+      setAvatarUrl(res![0].avatar_url)
     })
   }
 
@@ -70,7 +58,9 @@ const DropDownMenu = ({ userId,  update}) => {
   return (
     <>
       <div style={profile}>
-        {userInfo && (
+
+
+        {username && (
           <>
             <span className='mt-0 mb-0 ml-0 mr-auto text-sm font-semibold text-blue-950'>
               <ClockCircleOutlined className='mr-1' /> {currentTime.format('ddd, MMM D, YYYY h:mm:ss A')}

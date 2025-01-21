@@ -7,6 +7,7 @@ import { IoEyeSharp } from "react-icons/io5"
 import { getTimeNumber } from "@/utils/pubFunProvider"
 import { supabase } from "@/utils/clients"
 import { getProfiles, updateProfiles } from "@/utils/providerSelectData"
+import { useUserStore } from '@/store/userStore'
 import useMessage from '@/utils/message'
 import dayjs from "dayjs"
 
@@ -19,6 +20,7 @@ type myProfileInfoProps = {
 }
 
 const Profile = () => {
+  const { setUser } = useUserStore()
   const [imageUrl, setImageUrl] = useState<string>('')
   const [userId, setUserId] = useState<string>('')
   const [removePath, setRemovePath] = useState('')
@@ -63,16 +65,15 @@ const Profile = () => {
   // get user infomation
   const getUserInfo = () => {
     let userid = window.localStorage.getItem('myId')? window.localStorage.getItem('myId') : ''
-    getProfiles(userid)
-    .then(res => {
-      setUserId(res![0].id)
+    setUserId(userid as string)
+    getProfiles(userid).then(res => {
       setMyProfileInfo({
         ...myProfileInfo,
-        email: res![0].email,
-        created_at: dayjs(res![0].created_at).format('MMM D, YYYY h:mm a'),
         username: res![0].username,
         company: res![0].company,
-        avatar_url: res![0].avatar_url
+        email: res![0].email,
+        avatar_url: res![0].avatar_url,
+        created_at: res![0].created_at
       })
     })
   }
@@ -98,6 +99,8 @@ const Profile = () => {
     }else {
       updateProfiles(userId, myProfileInfo)
       .then(res => {
+        window.localStorage.removeItem('userRegister')
+        window.localStorage.setItem('userRegister', JSON.stringify(myProfileInfo))
         useMessage(2, 'Update userinfo sucessful!','success')
         window.location.reload()
       })

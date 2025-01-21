@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react"
 import { Editor, Toolbar, } from "@wangeditor/editor-for-react"
-import { Row, Col, Input, Select } from "antd"
+import { Row, Col, Input, Select, FloatButton  } from "antd"
 import { supabase } from "@/utils/clients"
 import { getTimeNumber } from "@/utils/pubFunProvider"
-import { knowledgeTypeItem } from "@/utils/dbType"
+import { knowledgeTypeItem, typeDataName} from "@/utils/dbType"
+import { getWorkOrderType } from "@/utils/providerSelectData"
+import { CheckOutlined, CloseOutlined } from "@ant-design/icons"
 
 import { IDomEditor, IEditorConfig, IToolbarConfig, i18nChangeLanguage } from '@wangeditor/editor'
 i18nChangeLanguage('en')
@@ -13,6 +15,7 @@ import '@wangeditor/editor/dist/css/style.css'
 const EditorPage = () => {
   const [editor, setEditor] = useState<IDomEditor | null>(null)
   const [html, setHtml] = useState('')
+  const [knowledgeType, setKnowledgeType] = useState<typeDataName[]>([])
   const [knowledgeItem, setKnowledgeItem] = useState<knowledgeTypeItem>({
     id: '',
     title: '',
@@ -32,7 +35,6 @@ const EditorPage = () => {
           let filePath = (`${getTimeNumber()[1]}.${fileExt}`)
 
           const imageUrl = await handleImageUpload(filePath, files)
-          
           insertFn(imageUrl)
         }
       }
@@ -80,13 +82,25 @@ const EditorPage = () => {
       // console.log(publicUrl);
       
     } catch (error) {
-      console.error('Error uploading image:', error);
-      return '';
+      console.error('Error uploading image:', error)
+      return ''
     }
   }
 
+  const getWorkType = () => {
+    getWorkOrderType().then(res => { 
+      setKnowledgeType(res as [])
+    })
+  }
+
+  const changeTitleValue = (e: any) => {
+    setKnowledgeItem({
+      ...knowledgeItem,
+      title: e.target.value
+    })
+  }
+
   useEffect(() => {
-    // console.log(editor?.getAllMenuKeys())
     return () => {
       if (editor == null) return
       editor.destroy()
@@ -95,48 +109,72 @@ const EditorPage = () => {
   }, [editor])
 
   useEffect(() => {
-    // getSession().then(res => {
-    //   console.log(res)
-    // })
+    let userRegister = window.localStorage.getItem('userRegister') || ''
+    let userRegisterInfo = JSON.parse(userRegister)
+    setKnowledgeItem({
+      ...knowledgeItem,
+      author: userRegisterInfo.username
+    })
   }, [])
 
   useEffect(() => {
-
+    getWorkType()
   }, [html])
 
   return (
     <>
+
+      <FloatButton
+        shape="circle"
+        type="default"
+        style={{ insetInlineEnd: 80, bottom: 200 }}
+        icon={< CloseOutlined />}
+      />
+      <FloatButton
+        shape="circle"
+        type="primary"
+        style={{ insetInlineEnd: 24, bottom: 200 }}
+        icon={<CheckOutlined />}
+      />
       <Row gutter={16} className="mt-5">
         <Col span={24}>
           <label className="flex items-center font-semibold">
-            <span className='mr-1 text-red-600 font-thin'>*</span>
+            <span className='mr-1 mb-1 text-red-600 font-thin'>*</span>
             Title
           </label>
-          <Input value={knowledgeItem.title} placeholder="Enter knowledge title" />
+          <Input 
+            value={knowledgeItem.title} 
+            placeholder="Enter knowledge title"
+            onChange={changeTitleValue}
+            maxLength={60}
+            showCount
+          />
         </Col>
       </Row>
       <Row gutter={16} className="mt-3">
         <Col span={8}>
           <label className="flex items-center font-semibold">
-            <span className='mr-1 text-red-600 font-thin'>*</span>
+            <span className='mr-1 mb-1 text-red-600 font-thin'>*</span>
             Time
           </label>
           <Input value={knowledgeItem.time} readOnly />
         </Col>
         <Col span={8}>
           <label className="flex items-center font-semibold">
-            <span className='mr-1 text-red-600 font-thin'>*</span>
+            <span className='mr-1 mb-1 text-red-600 font-thin'>*</span>
             Author
           </label>
-          <Input value={knowledgeItem.author} />
+          <Input value={knowledgeItem.author} readOnly />
         </Col>
         <Col span={8}>
           <label className="flex items-center font-semibold">
-            <span className='mr-1 text-red-600 font-thin'>*</span>
+            <span className='mr-1 mb-1 text-red-600 font-thin'>*</span>
             Type
           </label>
           <Select className="w-full"
-            options={[{ label: 'Type1', value: 'type1' }, { label: 'Type2', value: 'type2' }]}
+            options={knowledgeType}
+            placeholder="Knowledge type"
+            allowClear
           />
         </Col>
       </Row>
@@ -147,7 +185,7 @@ const EditorPage = () => {
           mode="default"
         />
         <Editor
-        className="h-80"
+          style={{height: '400px'}}
           defaultConfig={editorConfig}
           value={html}
           mode="default"

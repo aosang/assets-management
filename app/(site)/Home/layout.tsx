@@ -17,7 +17,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   })
 
   const getCheckSession = () => {
-    let userIds:any = ''
     getSession()
       .then(res => {
         const { session } = res!
@@ -27,6 +26,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           router.replace('/')
         } else {
           setUserId(session!.user?.id)
+          let userRegister = window.localStorage.getItem('userRegister') || ''
+          updateProfiles(session!.user?.id, JSON.parse(userRegister))
+          
           window.localStorage.setItem('myId', session!.user.id)
         }
       })
