@@ -5,23 +5,25 @@ import { supabase } from "@/utils/clients"
 import { getTimeNumber } from "@/utils/pubFunProvider"
 import { knowledgeTypeItem, typeDataName} from "@/utils/dbType"
 import { getWorkOrderType } from "@/utils/providerSelectData"
+import { insertLibraryData } from "@/utils/provideLibraryData"
 import { CheckOutlined, CloseOutlined } from "@ant-design/icons"
+import useMessage from "@/utils/message"
 
 import { IDomEditor, IEditorConfig, IToolbarConfig, i18nChangeLanguage } from '@wangeditor/editor'
 i18nChangeLanguage('en')
 import '@wangeditor/editor/dist/css/style.css'
 
 
-const EditorPage = () => {
+const EditorPage = ({isEdit, setIsEdit}: {isEdit: boolean, setIsEdit: (isEdit: boolean) => void}) => {
   const [editor, setEditor] = useState<IDomEditor | null>(null)
   const [html, setHtml] = useState('')
   const [knowledgeType, setKnowledgeType] = useState<typeDataName[]>([])
   const [knowledgeItem, setKnowledgeItem] = useState<knowledgeTypeItem>({
-    id: '',
+    id: getTimeNumber()[1],
     title: '',
     author: '',
     type: null,
-    time: getTimeNumber()[0],
+    created_time: getTimeNumber()[0],
     content: ''
   })
 
@@ -100,6 +102,38 @@ const EditorPage = () => {
     })
   }
 
+  const changeTypeLibrary = (value: string) => {
+    setKnowledgeItem({
+      ...knowledgeItem,
+      type: value
+    })
+  }
+
+  const changeLibraryContent = (editor: any) => {
+    const newHtml = editor.getHtml()
+    setHtml(newHtml)
+    setKnowledgeItem(prevState => ({
+      ...prevState,
+      content: newHtml
+    }))
+  }
+
+  const addKnowledgeLibrarys = () => {
+    const {title, type, content} = knowledgeItem
+    if(title === '' || type === null ) { 
+      useMessage(2, 'Please fill in the title and type', 'error')
+    } else if(content === '<p><br></p>') {
+      useMessage(2, 'Please fill in the content', 'error')
+    }else {
+      
+      // insertLibraryData(knowledgeItem).then(res => {
+      //   setIsEdit(false)
+      //   useMessage(2, 'Knowledge library create sucessful!', 'success')
+      // })
+    }
+  }
+
+
   useEffect(() => {
     return () => {
       if (editor == null) return
@@ -111,30 +145,33 @@ const EditorPage = () => {
   useEffect(() => {
     let userRegister = window.localStorage.getItem('userRegister') || ''
     let userRegisterInfo = JSON.parse(userRegister)
-    setKnowledgeItem({
-      ...knowledgeItem,
-      author: userRegisterInfo.username
-    })
+    setKnowledgeItem(prevState => ({
+      ...prevState,
+      author: userRegisterInfo.username,
+    }))
   }, [])
 
   useEffect(() => {
     getWorkType()
-  }, [html])
+  }, [])
 
   return (
     <>
-
       <FloatButton
         shape="circle"
         type="default"
         style={{ insetInlineEnd: 80, bottom: 200 }}
         icon={< CloseOutlined />}
+        onClick={() => {
+          setIsEdit(false)
+        }}
       />
       <FloatButton
         shape="circle"
         type="primary"
         style={{ insetInlineEnd: 24, bottom: 200 }}
         icon={<CheckOutlined />}
+        onClick={addKnowledgeLibrarys}
       />
       <Row gutter={16} className="mt-5">
         <Col span={24}>
@@ -146,8 +183,7 @@ const EditorPage = () => {
             value={knowledgeItem.title} 
             placeholder="Enter knowledge title"
             onChange={changeTitleValue}
-            maxLength={60}
-            showCount
+            
           />
         </Col>
       </Row>
@@ -157,7 +193,7 @@ const EditorPage = () => {
             <span className='mr-1 mb-1 text-red-600 font-thin'>*</span>
             Time
           </label>
-          <Input value={knowledgeItem.time} readOnly />
+          <Input value={knowledgeItem.created_time} readOnly />
         </Col>
         <Col span={8}>
           <label className="flex items-center font-semibold">
@@ -171,10 +207,12 @@ const EditorPage = () => {
             <span className='mr-1 mb-1 text-red-600 font-thin'>*</span>
             Type
           </label>
-          <Select className="w-full"
+          <Select 
+            className="w-full"
             options={knowledgeType}
             placeholder="Knowledge type"
             allowClear
+            onChange={changeTypeLibrary}
           />
         </Col>
       </Row>
@@ -190,7 +228,7 @@ const EditorPage = () => {
           value={html}
           mode="default"
           onCreated={editor => setEditor(editor)}
-          onChange={editor => setHtml(editor.getHtml())}
+          onChange={changeLibraryContent}
         />
       </div>
 

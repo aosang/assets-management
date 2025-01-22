@@ -298,6 +298,7 @@ const WorkOrder: React.FC = ({ }) => {
   }
 
   useEffect(() => {
+    document.title = 'WorkOrder'
     getWorkOrderData()
   }, [])
 

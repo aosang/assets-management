@@ -2,11 +2,12 @@
 import { useState, useEffect } from "react"
 import { Card, Button, Select, List, Avatar, Divider } from "antd"
 import { getWorkOrderType } from "@/utils/providerSelectData"
-import { typeDataName } from "@/utils/dbType"
+import { typeDataName, knowledgeTypeItem } from "@/utils/dbType"
 import Head from "next/head"
 import { ImBooks } from "react-icons/im"
 import dynamic from "next/dynamic"
 import { PlusOutlined } from "@ant-design/icons"
+import { getLibraryTableData } from "@/utils/provideLibraryData"
 
 const ReactWEditor = dynamic(() => import('../../components/Editor'), {
   ssr: false,
@@ -14,6 +15,7 @@ const ReactWEditor = dynamic(() => import('../../components/Editor'), {
 })
 
 const Librarys = () => {
+  const [libraryList, setLibraryList] = useState<knowledgeTypeItem[]>([])
   const [LibrarysType, setLibrarysType] = useState<typeDataName[]>([])
   const [editorModal, setEditorModal] = useState<boolean>(false)
 
@@ -23,8 +25,15 @@ const Librarys = () => {
     })
   }
 
+  const getLibraryListData = () => {
+    getLibraryTableData().then(res => {
+      setLibraryList(res as [])
+    })
+  }
+
   useEffect(() => {
     getLibrarysType()
+    getLibraryListData()
     document.title = 'Librarys'
   }, [])
 
@@ -67,13 +76,7 @@ const Librarys = () => {
 
               <List
                 itemLayout="horizontal"
-                dataSource={[
-                  'Racing car sprays burning fuel into crowd.',
-                  'Japanese princess to wed commoner.',
-                  'Australian walks 100km after outback crash.',
-                  'Man charged over missing wedding girl.',
-                  'Los Angeles battles huge wildfires.',
-                ]}
+                dataSource={libraryList}
                 renderItem={item => (
                   <List.Item actions={[
                     <a className="text-blue-500">edit</a>,
@@ -81,12 +84,10 @@ const Librarys = () => {
                   ]}>
                     <List.Item.Meta
                       avatar={<Avatar src='https://www.wangle.run/company_icon/public_image/pub_avatar.jpg' />}
-                      title='Ant Design Title 1'
+                      title={item.title}
                       description='Ant Design, a design language for background applications, is refined by Ant UED Team'
                     />
-                    <div className="flex justify-end">
-
-                    </div>
+                    <div className="flex justify-end"></div>
                   </List.Item>
                 )}
               />
@@ -94,7 +95,7 @@ const Librarys = () => {
           }
           {editorModal && 
             <div className="mt-4">
-              <ReactWEditor />
+              <ReactWEditor isEdit={editorModal} setIsEdit={setEditorModal} />
             </div>
           }
         </Card>

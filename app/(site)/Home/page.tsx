@@ -61,7 +61,7 @@ const Home = () => {
   const { setUser } = useUserStore()
 
   useEffect(() => {
-    
+    document.title = 'Home'
   }, [])
 
   return (

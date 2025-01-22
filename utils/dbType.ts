@@ -116,6 +116,6 @@ export interface knowledgeTypeItem {
   title: string,
   author: string,
   type: string | null,
-  time: string,
+  created_time: string,
   content: string
 }

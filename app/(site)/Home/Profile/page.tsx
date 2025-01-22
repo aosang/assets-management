@@ -124,6 +124,7 @@ const Profile = () => {
   }
 
   useEffect(() => {
+    document.title = 'Profile'
     getUserInfo()
   }, [])
 
