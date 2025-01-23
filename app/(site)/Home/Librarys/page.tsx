@@ -11,7 +11,7 @@ import { getLibraryTableData } from "@/utils/provideLibraryData"
 
 const ReactWEditor = dynamic(() => import('../../components/Editor'), {
   ssr: false,
-  loading: () => <p className="text-lg text-blue-950">Loading...</p>
+  loading: () => <p className="text-base text-blue-950">Loading...</p>
 })
 
 const Librarys = () => {

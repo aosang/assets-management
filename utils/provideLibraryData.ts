@@ -13,14 +13,15 @@ export const getLibraryTableData = async () => {
   }
 }
 
-export const insertLibraryData = async ({title, author, type, created_time, content }: knowledgeTypeItem) => {
+export const insertLibraryData = async ({title, author, type, created_time, content, description }: knowledgeTypeItem) => {
   const {data, error} = await supabase.from('library_table')
   .insert({
     title,
     author,
     type,
     created_time,
-    content
+    content,
+    description
   })
   .select('*')
   try {

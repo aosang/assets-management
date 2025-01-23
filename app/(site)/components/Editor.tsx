@@ -24,7 +24,8 @@ const EditorPage = ({isEdit, setIsEdit}: {isEdit: boolean, setIsEdit: (isEdit: b
     author: '',
     type: null,
     created_time: getTimeNumber()[0],
-    content: ''
+    content: '',
+    description: ''
   })
 
   const editorConfig = {
@@ -102,6 +103,13 @@ const EditorPage = ({isEdit, setIsEdit}: {isEdit: boolean, setIsEdit: (isEdit: b
     })
   }
 
+  const changeDescriptionValue = (e: any) => {
+    setKnowledgeItem({
+      ...knowledgeItem,
+      description: e.target.value
+    })
+  }
+
   const changeTypeLibrary = (value: string) => {
     setKnowledgeItem({
       ...knowledgeItem,
@@ -119,17 +127,16 @@ const EditorPage = ({isEdit, setIsEdit}: {isEdit: boolean, setIsEdit: (isEdit: b
   }
 
   const addKnowledgeLibrarys = () => {
-    const {title, type, content} = knowledgeItem
-    if(title === '' || type === null ) { 
+    const {title, type, content, description} = knowledgeItem
+    if(title === '' || type === null || description === '') { 
       useMessage(2, 'Please fill in the title and type', 'error')
     } else if(content === '<p><br></p>') {
       useMessage(2, 'Please fill in the content', 'error')
     }else {
-      
-      // insertLibraryData(knowledgeItem).then(res => {
-      //   setIsEdit(false)
-      //   useMessage(2, 'Knowledge library create sucessful!', 'success')
-      // })
+      insertLibraryData(knowledgeItem).then(res => {
+        setIsEdit(false)
+        useMessage(2, 'Knowledge library create sucessful!', 'success')
+      })
     }
   }
 
@@ -174,16 +181,31 @@ const EditorPage = ({isEdit, setIsEdit}: {isEdit: boolean, setIsEdit: (isEdit: b
         onClick={addKnowledgeLibrarys}
       />
       <Row gutter={16} className="mt-5">
-        <Col span={24}>
+        <Col span={10}>
           <label className="flex items-center font-semibold">
             <span className='mr-1 mb-1 text-red-600 font-thin'>*</span>
             Title
           </label>
-          <Input 
+          <Input
+            showCount
+            maxLength={60}
             value={knowledgeItem.title} 
             placeholder="Enter knowledge title"
             onChange={changeTitleValue}
             
+          />
+        </Col>
+        <Col span={14}>
+          <label className="flex items-center font-semibold">
+            <span className='mr-1 mb-1 text-red-600 font-thin'>*</span>
+            Description
+          </label>
+          <Input
+            showCount
+            maxLength={70}
+            value={knowledgeItem.description} 
+            placeholder="Enter knowledge title"
+            onChange={changeDescriptionValue}
           />
         </Col>
       </Row>
