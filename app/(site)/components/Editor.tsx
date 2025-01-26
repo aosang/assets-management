@@ -129,10 +129,10 @@ const EditorPage = ({isEdit, setIsEdit}: {isEdit: boolean, setIsEdit: (isEdit: b
   const addKnowledgeLibrarys = () => {
     const {title, type, content, description} = knowledgeItem
     if(title === '' || type === null || description === '') { 
-      useMessage(2, 'Please fill in the title and type', 'error')
+      useMessage(2, 'Please fill in the title, type and description', 'error')
     } else if(content === '<p><br></p>') {
       useMessage(2, 'Please fill in the content', 'error')
-    }else {
+    } else {
       insertLibraryData(knowledgeItem).then(res => {
         setIsEdit(false)
         useMessage(2, 'Knowledge library create sucessful!', 'success')

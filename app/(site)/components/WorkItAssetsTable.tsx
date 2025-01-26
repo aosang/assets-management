@@ -146,7 +146,8 @@ const WorkItAssetsTable: React.FC = () => {
   // go to qrcode
   const createQrCodePage = {
     onClick: (record: productItem) => {
-      window.open(`/assetsManager/TemplateCode?id=${record.product_id}`, '_blank')
+      // window.open(`/assetsManager/TemplateCode?id=${record.product_id}`, '_blank')
+      window.open(`/TemplateCode?id=${record.product_id}`, '_blank')
     }
   }
 
