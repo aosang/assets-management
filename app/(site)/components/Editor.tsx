@@ -61,7 +61,7 @@ const EditorPage = ({isEdit, setIsEdit}: {isEdit: boolean, setIsEdit: (isEdit: b
       'justifyLeft',
       'justifyCenter',
       'justifyRight',
-      'numberedList'
+      'headerSelect'
     ],
   }
 
@@ -118,6 +118,7 @@ const EditorPage = ({isEdit, setIsEdit}: {isEdit: boolean, setIsEdit: (isEdit: b
   }
 
   const changeLibraryContent = (editor: any) => {
+    // console.log(editor.getAllMenuKeys());
     const newHtml = editor.getHtml()
     setHtml(newHtml)
     setKnowledgeItem(prevState => ({

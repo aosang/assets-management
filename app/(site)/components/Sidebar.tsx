@@ -71,7 +71,7 @@ const AppLayout = ({children, userId, update}) => {
         </Sider>
         <Layout>
           <Header style={headerStyle}>
-            <DropDownMenu userId={userId} update={update} />
+            <DropDownMenu />
           </Header>
           <Content style={contentStyle}>
             {children}

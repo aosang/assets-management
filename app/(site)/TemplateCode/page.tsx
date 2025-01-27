@@ -7,7 +7,8 @@ import { getCodeAssetsData } from '@/utils/providerItAssetsData'
 import { Button } from "antd"
 import tempcss from './temp.module.scss'
 import html2canvas from "html2canvas"
-import { getTimeNumber } from "@/utils/pubFunProvider";
+import { getTimeNumber } from "@/utils/pubFunProvider"
+
 
 type myDeviceInfo = {
   product_id: string,

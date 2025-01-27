@@ -8,13 +8,14 @@ import { ImBooks } from "react-icons/im"
 import dynamic from "next/dynamic"
 import { PlusOutlined } from "@ant-design/icons"
 import { getLibraryTableData } from "@/utils/provideLibraryData"
-
+import { useRouter } from "next/navigation"
 const ReactWEditor = dynamic(() => import('../../components/Editor'), {
   ssr: false,
   loading: () => <p className="text-base text-blue-950">Loading...</p>
 })
 
 const Librarys = () => {
+  const router = useRouter()
   const [libraryList, setLibraryList] = useState<knowledgeTypeItem[]>([])
   const [LibrarysType, setLibrarysType] = useState<typeDataName[]>([])
   const [editorModal, setEditorModal] = useState<boolean>(false)
@@ -31,9 +32,14 @@ const Librarys = () => {
     })
   }
 
+  const goToLibrarysDetails = (id: string) => {
+    router.push(`/KnowledgeTemplate?KnowledgeId=${id}`)
+  }
+
   useEffect(() => {
     getLibrarysType()
     getLibraryListData()
+    
     document.title = 'Librarys'
   }, [])
 
@@ -84,7 +90,15 @@ const Librarys = () => {
                   ]}>
                     <List.Item.Meta
                       avatar={<Avatar src='https://www.wangle.run/company_icon/public_image/pub_avatar.jpg' />}
-                      title={item.title}
+                      title={
+                        <span className="
+                          text-gray-600 
+                          hover:text-blue-500 cursor-pointer hover:underline"
+                          onClick={() => goToLibrarysDetails(item.id)}
+                        >
+                            {item.title}
+                        </span>
+                      }
                       description='Ant Design, a design language for background applications, is refined by Ant UED Team'
                     />
                     <div className="flex justify-end"></div>
