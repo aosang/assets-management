@@ -1,13 +1,17 @@
 "use client"
 import { useState, useEffect } from "react"
-import { Card, Button, Select, List, Avatar, Divider } from "antd"
+import { Card, Button, Select, List, Divider, Tag, Modal } from "antd"
 import { getWorkOrderType } from "@/utils/providerSelectData"
 import { typeDataName, knowledgeTypeItem } from "@/utils/dbType"
 import Head from "next/head"
-import { ImBooks } from "react-icons/im"
 import dynamic from "next/dynamic"
-import { PlusOutlined } from "@ant-design/icons"
-import { getLibraryTableData } from "@/utils/provideLibraryData"
+import useMessage  from "@/utils/message"
+import { ImBooks } from "react-icons/im"
+import { RiComputerFill, RiServerFill, RiSwitchFill, RiRouterFill, RiPrinterFill } from "react-icons/ri"
+import { PiLaptopFill, PiMonitorPlayFill } from "react-icons/pi"
+import { MdOtherHouses, MdKeyboard } from "react-icons/md"
+import { BiSolidMobile } from "react-icons/bi"
+import { getLibraryTableData, deleteLibraryTableData, getLibrarysDataList } from "@/utils/provideLibraryData"
 import { useRouter } from "next/navigation"
 const ReactWEditor = dynamic(() => import('../../components/Editor'), {
   ssr: false,
@@ -19,6 +23,9 @@ const Librarys = () => {
   const [libraryList, setLibraryList] = useState<knowledgeTypeItem[]>([])
   const [LibrarysType, setLibrarysType] = useState<typeDataName[]>([])
   const [editorModal, setEditorModal] = useState<boolean>(false)
+  const [isDeleteModal, setIsDeleteModal] = useState<boolean>(false)
+  const [deleteId, setDeleteId] = useState<string>('')
+  const [editInfo, setEditInfo] = useState<any>('')
 
   const getLibrarysType = () => {
     getWorkOrderType().then(res => {
@@ -26,14 +33,34 @@ const Librarys = () => {
     })
   }
 
-  const getLibraryListData = () => {
-    getLibraryTableData().then(res => {
+  const getLibraryListData = (type?: string) => {
+    getLibraryTableData(type).then(res => {
       setLibraryList(res as [])
     })
   }
 
   const goToLibrarysDetails = (id: string) => {
     router.push(`/KnowledgeTemplate?KnowledgeId=${id}`)
+  }
+
+  const delteLibrarModal = (id: string) => {
+    setIsDeleteModal(true)
+    setDeleteId(id)
+  }
+  
+  const delteLibrarysList = () => {
+    deleteLibraryTableData(deleteId).then(res => {
+      getLibraryListData()
+      setIsDeleteModal(false)
+      useMessage(2, 'Delete Success!', 'success')
+    })
+  }
+
+  const editLibraryModal = (id: string) => {
+    setEditorModal(true)
+    getLibrarysDataList(id).then(res => {
+      setEditInfo(res)
+    })
   }
 
   useEffect(() => {
@@ -45,6 +72,15 @@ const Librarys = () => {
 
   return (
     <>
+      {/* delete modal */}
+      <Modal
+        title="Delete the library"
+        open={isDeleteModal}
+        onCancel={() => setIsDeleteModal(false)}
+        onOk={delteLibrarysList}
+      >
+        <p>Are you sure you want to delete this Librarys?</p>
+      </Modal>
       <Head>
         <title>Librarys</title>
       </Head>
@@ -69,47 +105,79 @@ const Librarys = () => {
                 <Button type="primary" onClick={() => { setEditorModal(true) }}>Create</Button>
                 <div className="mt-0 mb-0 mr-0 ml-auto">
                   <Select
-                    className="w-36"
-                    placeholder="Type"
+                    className="w-40"
+                    placeholder="Select Type"
                     allowClear
                     options={LibrarysType}
+                    onChange={(value) => {getLibraryListData(value)}}
                   >
                   </Select>
                 </div>
               </div>
-
               <Divider />
-
-              <List
-                itemLayout="horizontal"
-                dataSource={libraryList}
-                renderItem={item => (
-                  <List.Item actions={[
-                    <a className="text-blue-500">edit</a>,
-                    <a className="text-red-500">delete</a>,
-                  ]}>
-                    <List.Item.Meta
-                      avatar={<Avatar src='https://www.wangle.run/company_icon/public_image/pub_avatar.jpg' />}
-                      title={
-                        <span className="
-                          text-gray-600 
-                          hover:text-blue-500 cursor-pointer hover:underline"
-                          onClick={() => goToLibrarysDetails(item.id)}
-                        >
-                            {item.title}
-                        </span>
-                      }
-                      description='Ant Design, a design language for background applications, is refined by Ant UED Team'
-                    />
-                    <div className="flex justify-end"></div>
-                  </List.Item>
-                )}
-              />
+              <div style={{maxHeight: '600px', overflowY: 'auto', scrollbarWidth: 'thin', scrollbarColor: '#80abf8 transparent'}}>
+                <List
+                  itemLayout="horizontal"
+                  dataSource={libraryList}
+                  renderItem={item => (
+                    <List.Item actions={[
+                      <a className="text-blue-500" onClick={() => editLibraryModal(item.id)}>edit</a>,
+                      <a className="text-red-500" onClick={() => delteLibrarModal(item.id)}>delete</a>,
+                    ]}>
+                      <List.Item.Meta
+                        avatar={
+                          <div className="w-9 h-9 bg-blue-600 rounded-full flex justify-center items-center text-base">
+                            {item.type == 'Computer' && <RiComputerFill className="text-white opacity-65" />}
+                            {item.type == 'Server' && <RiServerFill className="text-white opacity-65" />}
+                            {item.type == 'Switch' && <RiSwitchFill className="text-white opacity-65" />}
+                            {item.type == 'Router' && <RiRouterFill className="text-white opacity-65" />}
+                            {item.type == 'Printer' && <RiPrinterFill className="text-white opacity-65" />}
+                            {item.type == 'Laptop' && <PiLaptopFill className="text-white opacity-65" />}
+                            {item.type == 'Mobile' && <BiSolidMobile className="text-white opacity-65" />}
+                            {item.type == 'Monitor' && <PiMonitorPlayFill className="text-white opacity-65" />}
+                            {item.type == 'Keyboard/Mouse' && <MdKeyboard className="text-white opacity-65" />}
+                            {item.type == 'Other' && <MdOtherHouses className="text-white opacity-65" />}
+                          </div>
+                        }
+                        title={
+                          <div className="flex items-center">
+                            <span className="
+                            block
+                            text-gray-600 
+                            hover:text-blue-500 cursor-pointer hover:underline"
+                            onClick={() => goToLibrarysDetails(item.id)}
+                            >
+                              {item.title}
+                            </span>
+                          </div>
+                        }
+                        description={item.description}
+                      />
+                      {item.type == 'Computer' && <Tag color="magenta" className="ml-3">Computer</Tag>}
+                      {item.type == 'Server' && <Tag color="red" className="ml-3">Server</Tag>}
+                      {item.type == 'Switch' && <Tag color="volcano" className="ml-3">Switch</Tag>}
+                      {item.type == 'Router' && <Tag color="purple" className="ml-3">Router</Tag>}
+                      {item.type == 'Printer' && <Tag color="gold" className="ml-3">Printer</Tag>}
+                      {item.type == 'Laptop' && <Tag color="blue" className="ml-3">Laptop</Tag>}
+                      {item.type == 'Mobile' && <Tag color="green" className="ml-3">Mobile</Tag>}
+                      {item.type == 'Monitor' && <Tag color="geekblue" className="ml-3">Monitor</Tag>}
+                      {item.type == 'Keyboard/Mouse' && <Tag color="geekblue" className="ml-3">Keyboard/Mouse</Tag>}
+                      {item.type == 'Other' && <Tag color="cyan" className="ml-3">Other</Tag>}
+                      <div className="flex justify-end"></div>
+                    </List.Item>
+                  )}
+                />
+              </div>
             </>
           }
           {editorModal && 
             <div className="mt-4">
-              <ReactWEditor isEdit={editorModal} setIsEdit={setEditorModal} />
+              <ReactWEditor 
+                isEdit={editorModal} 
+                setIsEdit={setEditorModal} 
+                onSubmit={getLibraryListData}
+                editInfo={editInfo} 
+              />
             </div>
           }
         </Card>

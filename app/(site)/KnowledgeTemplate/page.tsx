@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react'
 import { Divider } from 'antd'
 import { useSearchParams } from "next/navigation"
-import { getLibrarysDataList } from "@/utils/providerLibrarys"
+import { getLibrarysDataList } from "@/utils/provideLibraryData"
 import knwoledgeCss from './knowledge.module.scss'
 
 const KnowledgeTemplate = () => {

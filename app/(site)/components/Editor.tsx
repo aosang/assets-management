@@ -1,23 +1,26 @@
 import { useState, useEffect } from "react"
 import { Editor, Toolbar, } from "@wangeditor/editor-for-react"
-import { Row, Col, Input, Select, FloatButton  } from "antd"
+import { Row, Col, Input, Select, FloatButton, Divider, Button  } from "antd"
 import { supabase } from "@/utils/clients"
 import { getTimeNumber } from "@/utils/pubFunProvider"
 import { knowledgeTypeItem, typeDataName} from "@/utils/dbType"
 import { getWorkOrderType } from "@/utils/providerSelectData"
-import { insertLibraryData } from "@/utils/provideLibraryData"
-import { CheckOutlined, CloseOutlined } from "@ant-design/icons"
+import { insertLibraryData} from "@/utils/provideLibraryData"
 import useMessage from "@/utils/message"
-
-import { IDomEditor, IEditorConfig, IToolbarConfig, i18nChangeLanguage } from '@wangeditor/editor'
+import { IDomEditor, IToolbarConfig, i18nChangeLanguage } from '@wangeditor/editor'
 i18nChangeLanguage('en')
 import '@wangeditor/editor/dist/css/style.css'
 
-
-const EditorPage = ({isEdit, setIsEdit}: {isEdit: boolean, setIsEdit: (isEdit: boolean) => void}) => {
+const EditorPage = ({isEdit, setIsEdit, onSubmit, editInfo}: {
+    isEdit: boolean, 
+    editInfo: any,
+    setIsEdit: (isEdit: boolean) => void, 
+    onSubmit: () => void, 
+  }) => {
   const [editor, setEditor] = useState<IDomEditor | null>(null)
   const [html, setHtml] = useState('')
   const [knowledgeType, setKnowledgeType] = useState<typeDataName[]>([])
+  const [editStr, setEditStr] = useState<any>('')
   const [knowledgeItem, setKnowledgeItem] = useState<knowledgeTypeItem>({
     id: getTimeNumber()[1],
     title: '',
@@ -135,12 +138,31 @@ const EditorPage = ({isEdit, setIsEdit}: {isEdit: boolean, setIsEdit: (isEdit: b
       useMessage(2, 'Please fill in the content', 'error')
     } else {
       insertLibraryData(knowledgeItem).then(res => {
+        setKnowledgeItem({
+          ...knowledgeItem,
+          title: '',
+          type: null,
+          content: '',
+          description: ''
+        })
         setIsEdit(false)
         useMessage(2, 'Knowledge library create sucessful!', 'success')
+        onSubmit()
       })
     }
   }
 
+  const closeEditor = () => {
+    setIsEdit(false)
+    setEditStr('')
+    setKnowledgeItem({
+      ...knowledgeItem,
+      title: '',
+      type: null,
+      content: '',
+      description: ''
+    })
+  }
 
   useEffect(() => {
     return () => {
@@ -160,100 +182,103 @@ const EditorPage = ({isEdit, setIsEdit}: {isEdit: boolean, setIsEdit: (isEdit: b
   }, [])
 
   useEffect(() => {
+    setEditStr(editInfo)
     getWorkType()
   }, [])
 
   return (
     <>
-      <FloatButton
-        shape="circle"
-        type="default"
-        style={{ insetInlineEnd: 80, bottom: 200 }}
-        icon={< CloseOutlined />}
-        onClick={() => {
-          setIsEdit(false)
-        }}
-      />
-      <FloatButton
-        shape="circle"
-        type="primary"
-        style={{ insetInlineEnd: 24, bottom: 200 }}
-        icon={<CheckOutlined />}
-        onClick={addKnowledgeLibrarys}
-      />
-      <Row gutter={16} className="mt-5">
-        <Col span={10}>
-          <label className="flex items-center font-semibold">
-            <span className='mr-1 mb-1 text-red-600 font-thin'>*</span>
-            Title
-          </label>
-          <Input
-            showCount
-            maxLength={60}
-            value={knowledgeItem.title} 
-            placeholder="Enter knowledge title"
-            onChange={changeTitleValue}
-            
-          />
-        </Col>
-        <Col span={14}>
-          <label className="flex items-center font-semibold">
-            <span className='mr-1 mb-1 text-red-600 font-thin'>*</span>
-            Description
-          </label>
-          <Input
-            showCount
-            maxLength={70}
-            value={knowledgeItem.description} 
-            placeholder="Enter knowledge title"
-            onChange={changeDescriptionValue}
-          />
-        </Col>
-      </Row>
-      <Row gutter={16} className="mt-3">
-        <Col span={8}>
-          <label className="flex items-center font-semibold">
-            <span className='mr-1 mb-1 text-red-600 font-thin'>*</span>
-            Time
-          </label>
-          <Input value={knowledgeItem.created_time} readOnly />
-        </Col>
-        <Col span={8}>
-          <label className="flex items-center font-semibold">
-            <span className='mr-1 mb-1 text-red-600 font-thin'>*</span>
-            Author
-          </label>
-          <Input value={knowledgeItem.author} readOnly />
-        </Col>
-        <Col span={8}>
-          <label className="flex items-center font-semibold">
-            <span className='mr-1 mb-1 text-red-600 font-thin'>*</span>
-            Type
-          </label>
-          <Select 
-            className="w-full"
-            options={knowledgeType}
-            placeholder="Knowledge type"
-            allowClear
-            onChange={changeTypeLibrary}
-          />
-        </Col>
-      </Row>
-      <div className="mt-3">
-        <Toolbar
-          defaultConfig={toolbarConfig}
-          editor={editor}
-          mode="default"
-        />
-        <Editor
-          style={{height: '400px'}}
-          defaultConfig={editorConfig}
-          value={html}
-          mode="default"
-          onCreated={editor => setEditor(editor)}
-          onChange={changeLibraryContent}
-        />
-      </div>
+      {editStr === ''? (
+        <div>
+          <Row gutter={16} className="mt-5">
+            <Col span={12}>
+              <label className="flex items-center font-semibold">
+                <span className='mr-1 mb-1 text-red-600 font-thin'>*</span>
+                Title
+              </label>
+              <Input
+                showCount
+                maxLength={60}
+                value={knowledgeItem.title} 
+                placeholder="Enter knowledge title"
+                onChange={changeTitleValue}
+              />
+            </Col>
+            <Col span={12}>
+              <label className="flex items-center font-semibold">
+                <span className='mr-1 mb-1 text-red-600 font-thin'>*</span>
+                Description
+              </label>
+              <Input
+                showCount
+                maxLength={70}
+                value={knowledgeItem.description} 
+                placeholder="Enter knowledge title"
+                onChange={changeDescriptionValue}
+              />
+            </Col>
+          </Row>
+          <Row gutter={16} className="mt-3">
+            <Col span={8}>
+              <label className="flex items-center font-semibold">
+                <span className='mr-1 mb-1 text-red-600 font-thin'>*</span>
+                Time
+              </label>
+              <Input value={knowledgeItem.created_time} readOnly />
+            </Col>
+            <Col span={8}>
+              <label className="flex items-center font-semibold">
+                <span className='mr-1 mb-1 text-red-600 font-thin'>*</span>
+                Author
+              </label>
+              <Input value={knowledgeItem.author} readOnly />
+            </Col>
+            <Col span={8}>
+              <label className="flex items-center font-semibold">
+                <span className='mr-1 mb-1 text-red-600 font-thin'>*</span>
+                Type
+              </label>
+              <Select 
+                className="w-full"
+                options={knowledgeType}
+                placeholder="Knowledge type"
+                allowClear
+                onChange={changeTypeLibrary}
+              />
+            </Col>
+          </Row>
+          <div className="mt-3">
+            <Toolbar
+              defaultConfig={toolbarConfig}
+              editor={editor}
+              mode="default"
+            />
+            <Editor
+              style={{height: '400px'}}
+              defaultConfig={editorConfig}
+              value={html}
+              mode="default"
+              onCreated={editor => setEditor(editor)}
+              onChange={changeLibraryContent}
+            />
+          </div>
+        </div>
+      ): (
+        <h1>123</h1>
+      )}
+      <Divider />
+      <Button 
+        type="default" 
+        className="mr-3"
+        onClick={() => {closeEditor()}}
+      >
+          Close
+      </Button>
+      <Button 
+        type="primary" 
+        onClick={addKnowledgeLibrarys}>
+          Confirm
+      </Button>
 
       {/* <div dangerouslySetInnerHTML={{__html: html}}></div> */}
     </>
