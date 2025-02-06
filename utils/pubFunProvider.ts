@@ -35,8 +35,7 @@ export const getTimeNumber = () => {
 
 
 export const getDeviceData = async (query?: string) => {
-  if(query === '' || query === undefined) {
-    
+  if(query === '') {
     const { data, error } = await supabase.from('it_assets')
     .select('*')
     .ilike('value', `%${query}%`)
@@ -57,5 +56,4 @@ export const getDeviceData = async (query?: string) => {
       throw error
     }
   } 
-  
 }

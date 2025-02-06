@@ -18,11 +18,17 @@ const ReactWEditor = dynamic(() => import('../../components/Editor'), {
   loading: () => <p className="text-base text-blue-950">Loading...</p>
 })
 
+const UpdateEditor = dynamic(() => import('../../components/EditorUpdate'), {
+  ssr: false,
+  loading: () => <p className="text-base text-blue-950">Loading...</p>
+})
+
 const Librarys = () => {
   const router = useRouter()
   const [libraryList, setLibraryList] = useState<knowledgeTypeItem[]>([])
   const [LibrarysType, setLibrarysType] = useState<typeDataName[]>([])
   const [editorModal, setEditorModal] = useState<boolean>(false)
+  const [updateEditorModal, setUpdateEditorModal] = useState<boolean>(false)
   const [isDeleteModal, setIsDeleteModal] = useState<boolean>(false)
   const [deleteId, setDeleteId] = useState<string>('')
   const [editInfo, setEditInfo] = useState<any>('')
@@ -57,9 +63,9 @@ const Librarys = () => {
   }
 
   const editLibraryModal = (id: string) => {
-    setEditorModal(true)
     getLibrarysDataList(id).then(res => {
       setEditInfo(res)
+      setUpdateEditorModal(true)
     })
   }
 
@@ -99,7 +105,7 @@ const Librarys = () => {
             <ImBooks style={{ color: '#4483f5', opacity: 0.65 }} className="text-4xl" />
             <span className="text-base ml-6" style={{ color: '#00091a' }}>IT Equipment Knowledge Base</span>
           </div>
-          {!editorModal &&
+          {(!editorModal && !updateEditorModal) &&
             <>
               <div className="flex mt-4 items-center">
                 <Button type="primary" onClick={() => { setEditorModal(true) }}>Create</Button>
@@ -115,7 +121,12 @@ const Librarys = () => {
                 </div>
               </div>
               <Divider />
-              <div style={{maxHeight: '600px', overflowY: 'auto', scrollbarWidth: 'thin', scrollbarColor: '#80abf8 transparent'}}>
+              <div style={{
+                maxHeight: '600px', 
+                overflowY: 'auto', 
+                scrollbarWidth: 'thin', 
+                scrollbarColor: '#80abf8 transparent'}}
+              >
                 <List
                   itemLayout="horizontal"
                   dataSource={libraryList}
@@ -153,6 +164,9 @@ const Librarys = () => {
                         }
                         description={item.description}
                       />
+                      <div className="flex justify-end text-gray-400 text-sm">
+                        <p>{item.created_time}</p>
+                      </div>
                       {item.type == 'Computer' && <Tag color="magenta" className="ml-3">Computer</Tag>}
                       {item.type == 'Server' && <Tag color="red" className="ml-3">Server</Tag>}
                       {item.type == 'Switch' && <Tag color="volcano" className="ml-3">Switch</Tag>}
@@ -163,7 +177,7 @@ const Librarys = () => {
                       {item.type == 'Monitor' && <Tag color="geekblue" className="ml-3">Monitor</Tag>}
                       {item.type == 'Keyboard/Mouse' && <Tag color="geekblue" className="ml-3">Keyboard/Mouse</Tag>}
                       {item.type == 'Other' && <Tag color="cyan" className="ml-3">Other</Tag>}
-                      <div className="flex justify-end"></div>
+                      
                     </List.Item>
                   )}
                 />
@@ -176,7 +190,17 @@ const Librarys = () => {
                 isEdit={editorModal} 
                 setIsEdit={setEditorModal} 
                 onSubmit={getLibraryListData}
-                editInfo={editInfo} 
+              />
+            </div>
+          }
+
+          {updateEditorModal &&
+            <div className="mt-4">
+              <UpdateEditor 
+                isEdit={updateEditorModal} 
+                setIsEdit={setUpdateEditorModal} 
+                onSubmit={getLibraryListData}
+                editInfo={editInfo}
               />
             </div>
           }

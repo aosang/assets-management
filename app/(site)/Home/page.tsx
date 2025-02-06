@@ -7,7 +7,7 @@ import { MdOutlineComputer } from "react-icons/md"
 import { HiOutlineServer } from "react-icons/hi"
 import { BsToggles } from "react-icons/bs"
 import { LuMouse } from "react-icons/lu"
-import { useUserStore } from '@/store/userStore'
+import CountUp from 'react-countup'
 
 const workCardInfo: React.CSSProperties = {
   display: 'flex',
@@ -58,8 +58,6 @@ const assetsText: React.CSSProperties = {
 }
 
 const Home = () => {
-  const { setUser } = useUserStore()
-
   useEffect(() => {
     document.title = 'Home'
   }, [])
@@ -75,7 +73,9 @@ const Home = () => {
                   <AiOutlineBars style={workIconText} size={30} />
                 </div>
                 <div style={workTotal}>
-                  <span style={{ fontSize: '36px', fontWeight: '600' }}>10</span>
+                  <span style={{ fontSize: '36px', fontWeight: '600' }}>
+                    <CountUp end={10} duration={2} delay={0.5} />
+                  </span>
                   <p style={{ fontSize: '15px' }}>Total</p>
                 </div>
               </div>
@@ -86,7 +86,9 @@ const Home = () => {
                   <AiOutlineCheck style={workIconText} size={30} />
                 </div>
                 <div style={workTotal}>
-                  <span style={{ fontSize: '36px', fontWeight: '600' }}>10</span>
+                  <span style={{ fontSize: '36px', fontWeight: '600' }}>
+                    <CountUp end={10} duration={2} delay={0.5} />
+                  </span>
                   <p style={{ fontSize: '15px' }}>Finished</p>
                 </div>
               </div>
@@ -97,7 +99,9 @@ const Home = () => {
                   <AiOutlineFileSync style={workIconText} size={30} />
                 </div>
                 <div style={workTotal}>
-                  <span style={{ fontSize: '36px', fontWeight: '600' }}>10</span>
+                  <span style={{ fontSize: '36px', fontWeight: '600' }}>
+                    <CountUp end={10} duration={2} delay={0.5} />
+                  </span>
                   <p style={{ fontSize: '15px' }}>Processing</p>
                 </div>
               </div>
@@ -108,7 +112,9 @@ const Home = () => {
                   <AiOutlinePause style={workIconText} size={30} />
                 </div>
                 <div style={workTotal}>
-                  <span style={{ fontSize: '36px', fontWeight: '600' }}>10</span>
+                  <span style={{ fontSize: '36px', fontWeight: '600' }}>
+                    <CountUp end={10} duration={2} delay={0.5} />
+                  </span>
                   <p style={{ fontSize: '15px' }}>Pending</p>
                 </div>
               </div>

@@ -23,7 +23,7 @@ export interface tableItems {
 }
 
 export interface workOrderFormProps {
-  created_product: string
+  created_product: null | string
   created_name: string
   created_time: string
   created_update: string

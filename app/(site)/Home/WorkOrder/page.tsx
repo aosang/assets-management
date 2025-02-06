@@ -4,7 +4,8 @@ import {
   typeDataName,
   typeDataBrand,
   statusItem,
-  workOrderFormProps
+  workOrderFormProps,
+  selectInspectionItem
 } from '@/utils/dbType'
 import {
   getWorkOrderType,
@@ -21,7 +22,7 @@ import { getFilterWorkStatus, getFilterWorkType, searchTypeData } from '@/utils/
 import { Card, Space, Button, Row, Col, Modal, Divider, Select, Input, DatePicker } from 'antd'
 import { IoIosSearch } from "react-icons/io"
 import { useState, useEffect } from 'react'
-import { getTimeNumber } from '@/utils/pubFunProvider'
+import { getTimeNumber, getDeviceData } from '@/utils/pubFunProvider'
 import WorkTable from '../../components/WorkTable'
 import useMessage from '@/utils/message'
 import dayjs from 'dayjs'
@@ -53,10 +54,11 @@ const WorkOrder: React.FC = ({ }) => {
   // data
   const [workData, setWorkData] = useState<tableData>([])
   const [typeData, setTypeData] = useState<typeDataProps>([])
+  const [deviceData, setDeviceData] = useState<selectInspectionItem[]>([])
   const [typeDataBrand, setTypeDataBrand] = useState<typeDataBrandProps>([])
   const [typeStatus, setTypeStatus] = useState<statusItemProps>([])
   const [workOrderForm, setWorkOrderForm] = useState<workOrderFormProps>({
-    created_product: '',
+    created_product: null,
     created_time: '',
     created_update: '',
     created_name: '',
@@ -123,6 +125,12 @@ const WorkOrder: React.FC = ({ }) => {
       .then(res => {
         setTypeStatus(res as statusItemProps)
       })
+
+    // get device
+    getDeviceData().then(res => {
+      setDeviceData(res as selectInspectionItem[])
+      // console.log(res)
+    })
   }
 
   const onEditData = (selectData: tableItems, typeNum: number) => {
@@ -176,7 +184,6 @@ const WorkOrder: React.FC = ({ }) => {
     } else if (!created_solved) {
       useMessage(2, 'Describe the solution', 'error')
     } else {
-
       insertUpdateWorkOrder(workOrderForm).then(res => {
         if (res) {
           setIsModalAddOpen(false)
@@ -376,7 +383,14 @@ const WorkOrder: React.FC = ({ }) => {
                     <span className='mr-1 text-red-600 font-thin'>*</span>
                     Product
                   </label>
-                  <Input
+                  <Select 
+                    className='w-full' 
+                    options={deviceData} 
+                    placeholder="Select the product"
+                    showSearch
+                  >
+                  </Select>
+                  {/* <Input
                     style={{ width: '100%' }}
                     placeholder='Product name'
                     value={workOrderForm.created_product}
@@ -384,7 +398,7 @@ const WorkOrder: React.FC = ({ }) => {
                       ...workOrderForm, 
                       created_product: e.target.value 
                     })}
-                  />
+                  /> */}
                 </Col>
               </Row>
               <Row gutter={15}>
@@ -585,12 +599,12 @@ const WorkOrder: React.FC = ({ }) => {
                     <span className='mr-1 text-red-600 font-thin'>*</span>
                     Product
                   </label>
-                  <Input
+                  {/* <Input
                     style={{ width: '100%' }}
                     placeholder='Product name'
                     value={workOrderForm.created_product}
                     onChange={e => setWorkOrderForm({ ...workOrderForm, created_product: e.target.value })}
-                  />
+                  /> */}
                 </Col>
               </Row>
               <Row gutter={20}>

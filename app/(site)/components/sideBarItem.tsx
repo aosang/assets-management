@@ -54,15 +54,24 @@ const items: MenuItem[] = [{
 const SideBarItem: React.FC = () => {
   const router = useRouter()
   const [currentUrl, setCurrentUrl] = useState<string>('')
-  const swithcMenuItem: MenuProps['onClick'] = (e: any) => {
+  const switchMenuItem: MenuProps['onClick'] = (e: any) => {
     if(e.key === 'Home') {
-      router.push(`/${e.key}`)
+      router.replace(`/${e.key}`)
       setCurrentUrl(e.key)
     } else {
-      router.push(`/Home/${e.key}`)
+      router.replace(`/Home/${e.key}`)
       setCurrentUrl(e.key)
     }
   }
+
+  useEffect(() => {
+    const handlePopState = () => {
+      let currentUrlLink = window.location.pathname
+      currentUrlLink =currentUrlLink.replace(/^.*\/([^\/]+)\/?$/, "$1")
+      setCurrentUrl(currentUrlLink)
+    }
+    window.addEventListener('popstate', handlePopState)
+  }, [])
 
   useEffect(() => {
     let currentUrlLink = window.location.pathname
@@ -77,7 +86,7 @@ const SideBarItem: React.FC = () => {
         theme='dark' 
         mode='inline' 
         items={items}
-        onClick={swithcMenuItem}
+        onClick={switchMenuItem}
       />
     </div>   
   )

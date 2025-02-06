@@ -32,6 +32,18 @@ export const insertLibraryData = async ({title, author, type, created_time, cont
   }
 }
 
+export const updateLibraryTableData = async (id: string, form: knowledgeTypeItem) => {
+  const {data, error} = await supabase.from('library_table')
+  .update(form)
+  .eq('id', id)
+  .select('*')
+  try {
+    if(error) return useMessage(2, error!.message, 'error')
+  } catch (error) {
+    throw error
+  }
+}
+
 export const deleteLibraryTableData = async (id: string) => {
   const { error} = await supabase
   .from('library_table')
