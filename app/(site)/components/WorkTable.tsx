@@ -39,10 +39,6 @@ const WorkTable: React.FC<workTableProps> = ({ workInfo, onChangeSelectData, onG
     dataIndex: 'created_name',
     key: 'created_name'
   }, {
-    title: 'Created Time',
-    dataIndex: 'created_time',
-    key: 'created_time',
-  }, {
     title: 'Updated Time',
     dataIndex: 'created_update',
     key: 'created_update',
@@ -76,7 +72,7 @@ const WorkTable: React.FC<workTableProps> = ({ workInfo, onChangeSelectData, onG
               type="primary"
               onClick={() => onRowData.onClick(record)}
             >
-              Edit
+              Detail/Edit
             </Button>
           </div>   
         </>

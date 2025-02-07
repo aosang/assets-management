@@ -33,7 +33,7 @@ type typeDataBrandProps = typeDataBrand[]
 type statusItemProps = statusItem[]
 
 const WorkOrder: React.FC = ({ }) => {
-  const [layoutWidth, setLayoutWidth] = useState<number>(12)
+  const [layoutWidth, setLayoutWidth] = useState<number>(8)
   const [productBrandShow, setProductBrandShow] = useState<boolean>(false)
   const [deleteDataId, setDeleteDataId] = useState<string[]>([])
 
@@ -129,7 +129,6 @@ const WorkOrder: React.FC = ({ }) => {
     // get device
     getDeviceData().then(res => {
       setDeviceData(res as selectInspectionItem[])
-      // console.log(res)
     })
   }
 
@@ -172,7 +171,7 @@ const WorkOrder: React.FC = ({ }) => {
     const { created_brand, created_status, created_product, created_text, created_solved, created_type } = workOrderForm
     // verify form
     if (!created_product) {
-      useMessage(2, 'Enter product name', 'error')
+      useMessage(2, 'Select product name', 'error')
     } else if (!created_type) {
       useMessage(2, 'Select product type', 'error')
     } else if (!created_brand) {
@@ -213,7 +212,7 @@ const WorkOrder: React.FC = ({ }) => {
 
   const onClosedHandler = () => {
     setProductBrandShow(false)
-    setLayoutWidth(12)
+    setLayoutWidth(8)
     setWorkOrderForm({
       ...workOrderForm,
       created_product: '',
@@ -246,7 +245,7 @@ const WorkOrder: React.FC = ({ }) => {
           brandData = brandData.sort((a, b) => {
             return Number(a.brand_id) - Number(b.brand_id)
           })
-          setLayoutWidth(8)
+          setLayoutWidth(6)
           setProductBrandShow(true)
           setTypeDataBrand(brandData)
           setWorkOrderForm({
@@ -262,7 +261,7 @@ const WorkOrder: React.FC = ({ }) => {
         created_brand: null
       })
       setProductBrandShow(false)
-      setLayoutWidth(12)
+      setLayoutWidth(8)
       setTypeDataBrand([])
     }
   }
@@ -374,8 +373,8 @@ const WorkOrder: React.FC = ({ }) => {
           >
             <Divider />
             <Space direction="vertical" size="middle" style={{ width: '100%' }}>
-              <Row gutter={15}>
-                <Col span={24}>
+              <Row gutter={12}>
+                <Col span={8}>
                   <label
                     htmlFor="Product"
                     className='mb-1 flex items-center font-semibold'
@@ -388,6 +387,8 @@ const WorkOrder: React.FC = ({ }) => {
                     options={deviceData} 
                     placeholder="Select the product"
                     showSearch
+                    allowClear
+                    onChange={e => setWorkOrderForm({ ...workOrderForm, created_product: e })}
                   >
                   </Select>
                   {/* <Input
@@ -400,8 +401,6 @@ const WorkOrder: React.FC = ({ }) => {
                     })}
                   /> */}
                 </Col>
-              </Row>
-              <Row gutter={15}>
                 <Col span={8}>
                   <label
                     htmlFor="Create_name"
@@ -418,6 +417,25 @@ const WorkOrder: React.FC = ({ }) => {
                 </Col>
                 <Col span={8}>
                   <label
+                    htmlFor="Status"
+                    className='mb-1 flex items-center font-semibold'
+                  >
+                    <span className='mr-1 text-red-600 font-thin'>*</span>
+                    Status
+                  </label>
+                  <Select
+                    style={{ width: '100%' }}
+                    placeholder='Status'
+                    options={typeStatus}
+                    value={workOrderForm.created_status}
+                    onChange={e => setWorkOrderForm({ ...workOrderForm, created_status: e })}
+                  >
+                  </Select>
+                </Col>
+              </Row>
+              <Row gutter={15}>
+                <Col span={layoutWidth}>
+                  <label
                     htmlFor="Create_name"
                     className='mb-1 flex items-center font-semibold'
                   >
@@ -430,7 +448,7 @@ const WorkOrder: React.FC = ({ }) => {
                     value={workOrderForm.created_time}
                   />
                 </Col>
-                <Col span={8}>
+                <Col span={layoutWidth}>
                   <label
                     htmlFor="Create_name"
                     className='mb-1 flex items-center font-semibold'
@@ -444,8 +462,6 @@ const WorkOrder: React.FC = ({ }) => {
                     value={workOrderForm.created_update}
                   />
                 </Col>
-              </Row>
-              <Row gutter={20}>
                 <Col span={layoutWidth}>
                   {/* product type */}
                   <label
@@ -494,24 +510,6 @@ const WorkOrder: React.FC = ({ }) => {
                     </Select>
                   </Col>
                 )}
-
-                <Col span={layoutWidth}>
-                  <label
-                    htmlFor="Status"
-                    className='mb-1 flex items-center font-semibold'
-                  >
-                    <span className='mr-1 text-red-600 font-thin'>*</span>
-                    Status
-                  </label>
-                  <Select
-                    style={{ width: '100%' }}
-                    placeholder='Status'
-                    options={typeStatus}
-                    value={workOrderForm.created_status}
-                    onChange={e => setWorkOrderForm({ ...workOrderForm, created_status: e })}
-                  >
-                  </Select>
-                </Col>
               </Row>
               <Row>
                 <Col span={24}>
@@ -579,7 +577,7 @@ const WorkOrder: React.FC = ({ }) => {
           {/* edit */}
           <Modal
             title="Edit Work Order"
-            width={960}
+            width={1260}
             open={isModalEditOpen}
             onOk={confirmEditModalForm}
             onCancel={editCancelModalForm}
@@ -590,8 +588,8 @@ const WorkOrder: React.FC = ({ }) => {
           >
             <Divider />
             <Space direction="vertical" size="middle" style={{ width: '100%' }}>
-              <Row gutter={20}>
-                <Col span={24}>
+              <Row gutter={15}>
+                <Col span={8}>
                   <label
                     htmlFor="Product"
                     className='mb-1 flex items-center font-semibold'
@@ -599,6 +597,16 @@ const WorkOrder: React.FC = ({ }) => {
                     <span className='mr-1 text-red-600 font-thin'>*</span>
                     Product
                   </label>
+                  <Select 
+                    className='w-full' 
+                    options={deviceData} 
+                    placeholder="Select the product"
+                    showSearch
+                    allowClear
+                    onChange={e => setWorkOrderForm({ ...workOrderForm, created_product: e })}
+                    value={workOrderForm.created_product}
+                  >
+                  </Select>
                   {/* <Input
                     style={{ width: '100%' }}
                     placeholder='Product name'
@@ -606,8 +614,6 @@ const WorkOrder: React.FC = ({ }) => {
                     onChange={e => setWorkOrderForm({ ...workOrderForm, created_product: e.target.value })}
                   /> */}
                 </Col>
-              </Row>
-              <Row gutter={20}>
                 <Col span={8}>
                   <label
                     htmlFor="Create_name"
@@ -624,6 +630,25 @@ const WorkOrder: React.FC = ({ }) => {
                 </Col>
                 <Col span={8}>
                   <label
+                    htmlFor="Status"
+                    className='mb-1 flex items-center font-semibold'
+                  >
+                    <span className='mr-1 text-red-600 font-thin'>*</span>
+                    Status
+                  </label>
+                  <Select
+                    style={{ width: '100%' }}
+                    placeholder='Status'
+                    options={typeStatus}
+                    value={workOrderForm.created_status}
+                    onChange={e => setWorkOrderForm({ ...workOrderForm, created_status: e })}
+                  >
+                  </Select>
+                </Col>
+              </Row>
+              <Row gutter={15}>
+                <Col span={layoutWidth}>
+                  <label
                     htmlFor="Create_time"
                     className='mb-1 flex items-center font-semibold'
                   >
@@ -636,7 +661,7 @@ const WorkOrder: React.FC = ({ }) => {
                     value={workOrderForm.created_time}
                   />
                 </Col>
-                <Col span={8}>
+                <Col span={layoutWidth}>
                   <label
                     htmlFor="Create_time"
                     className='mb-1 flex items-center font-semibold'
@@ -650,8 +675,6 @@ const WorkOrder: React.FC = ({ }) => {
                     value={workOrderForm.created_update}
                   />
                 </Col>
-              </Row>
-              <Row gutter={20}>
                 <Col span={layoutWidth}>
                   {/* product type */}
                   <label
@@ -700,24 +723,6 @@ const WorkOrder: React.FC = ({ }) => {
                     </Select>
                   </Col>
                 )}
-
-                <Col span={layoutWidth}>
-                  <label
-                    htmlFor="Status"
-                    className='mb-1 flex items-center font-semibold'
-                  >
-                    <span className='mr-1 text-red-600 font-thin'>*</span>
-                    Status
-                  </label>
-                  <Select
-                    style={{ width: '100%' }}
-                    placeholder='Status'
-                    options={typeStatus}
-                    value={workOrderForm.created_status}
-                    onChange={e => setWorkOrderForm({ ...workOrderForm, created_status: e })}
-                  >
-                  </Select>
-                </Col>
               </Row>
               <Row>
                 <Col span={24}>
