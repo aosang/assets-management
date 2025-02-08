@@ -45,18 +45,18 @@ const TemplateCode: React.FC = () => {
       allowTaint: false,
       useCORS: true,
     })
-      .then(canvas => {
-        let dataUrl = canvas.toDataURL("image/jpeg");
-        let img = new Image()
-        img.src = dataUrl
-        const link = document.createElement('a')
-        link.href = dataUrl
-        link.download = 'deviceCode' + getTimeNumber()[1] + '.jpg'
-        link.click()
-      })
-      .catch(err => {
-        console.log(err)
-      })
+    .then(canvas => {
+      let dataUrl = canvas.toDataURL("image/jpeg");
+      let img = new Image()
+      img.src = dataUrl
+      const link = document.createElement('a')
+      link.href = dataUrl
+      link.download = 'deviceCode' + getTimeNumber()[1] + '.jpg'
+      link.click()
+    })
+    .catch(err => {
+      console.log(err)
+    })
   }
 
   useEffect(() => {

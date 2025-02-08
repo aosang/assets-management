@@ -115,6 +115,34 @@ export const getWorkOrder = async (id?: string) => {
   }
 }
 
+// get workOrder count
+export const getWorkOrderCount = async () => {
+  try {
+    const [finishedData, processingData, pendingData] = await Promise.all([
+      supabase.from('work_order').select('*').eq('created_status', 'Finished'),
+      supabase.from('work_order').select('*').eq('created_status', 'Processing'),
+      supabase.from('work_order').select('*').eq('created_status', 'Pending'),
+    ])
+
+    if (finishedData.error) throw finishedData.error
+    if (processingData.error) throw processingData.error
+    if (pendingData.error) throw pendingData.error
+
+    return {
+      finished: finishedData.data?.length || 0,
+      processing: processingData.data?.length || 0,
+      pending: pendingData.data?.length || 0,
+      total: (finishedData.data?.length || 0) + (processingData.data?.length || 0) + (pendingData.data?.length || 0)
+    }
+  } catch (error) {
+    throw error
+  }
+
+}
+
+
+
+
 // insert workOrder
 export const insertUpdateWorkOrder = async ({
     created_product, 

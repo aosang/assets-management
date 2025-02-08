@@ -7,8 +7,6 @@ import Image from 'next/image'
 import useMessage from '@/utils/message'
 import { useState, useEffect } from 'react'
 import { getProfiles } from '@/utils/providerSelectData'
-import { updateProfilesItem } from '@/utils/dbType'
-import { useUserStore } from '@/store/userStore'
 import dayjs from 'dayjs'
 
 const items: MenuProps['items'] = [{
@@ -58,11 +56,9 @@ const DropDownMenu = () => {
   return (
     <>
       <div style={profile}>
-
-
         {username && (
           <>
-            <span className='mt-0 mb-0 ml-0 mr-auto text-sm font-semibold text-blue-950'>
+            <span className='mt-0 mb-0 -ml-3 mr-auto text-sm font-semibold text-blue-950'>
               <ClockCircleOutlined className='mr-1' /> {currentTime.format('ddd, MMM D, YYYY h:mm:ss A')}
             </span>
             <Image 
@@ -87,7 +83,6 @@ const DropDownMenu = () => {
         )}
       </div>
     </>
-    
   )
 }
 

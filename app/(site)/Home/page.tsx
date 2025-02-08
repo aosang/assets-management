@@ -1,5 +1,5 @@
 "use client"
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Card, Space, Col, Row } from 'antd'
 import { AiOutlineBars, AiOutlineCheck, AiOutlineFileSync, AiOutlinePause } from 'react-icons/ai'
 import { FiMonitor, FiPrinter } from 'react-icons/fi'
@@ -8,6 +8,7 @@ import { HiOutlineServer } from "react-icons/hi"
 import { BsToggles } from "react-icons/bs"
 import { LuMouse } from "react-icons/lu"
 import CountUp from 'react-countup'
+import { getWorkOrderCount } from '@/utils/providerSelectData'
 
 const workCardInfo: React.CSSProperties = {
   display: 'flex',
@@ -58,9 +59,25 @@ const assetsText: React.CSSProperties = {
 }
 
 const Home = () => {
+  const [finishedNum, setFinishedNum] = useState<number>(0)
+  const [processingNum, setProcessingNum] = useState<number>(0)
+  const [pendingNum, setPendingNum] = useState<number>(0)
+  const [totalNum, setTotalNum] = useState<number>(0)
+
+  const fetchWorkOrderCount = async () => {
+    const res = await getWorkOrderCount()
+    setFinishedNum(res.finished)
+    setProcessingNum(res.processing)
+    setPendingNum(res.pending)
+    setTotalNum(res.total)
+  }
+  
+
   useEffect(() => {
+    fetchWorkOrderCount()
     document.title = 'Home'
   }, [])
+
 
   return (
     <div style={{ width: '100%', padding: '12px', boxSizing: 'border-box' }}>
@@ -74,7 +91,7 @@ const Home = () => {
                 </div>
                 <div style={workTotal}>
                   <span style={{ fontSize: '36px', fontWeight: '600' }}>
-                    <CountUp end={10} duration={2} delay={0.5} />
+                    <CountUp end={totalNum} duration={2} delay={0.5} />
                   </span>
                   <p style={{ fontSize: '15px' }}>Total</p>
                 </div>
@@ -87,7 +104,7 @@ const Home = () => {
                 </div>
                 <div style={workTotal}>
                   <span style={{ fontSize: '36px', fontWeight: '600' }}>
-                    <CountUp end={10} duration={2} delay={0.5} />
+                    <CountUp end={finishedNum} duration={2} delay={0.5} />
                   </span>
                   <p style={{ fontSize: '15px' }}>Finished</p>
                 </div>
@@ -100,7 +117,7 @@ const Home = () => {
                 </div>
                 <div style={workTotal}>
                   <span style={{ fontSize: '36px', fontWeight: '600' }}>
-                    <CountUp end={10} duration={2} delay={0.5} />
+                    <CountUp end={processingNum} duration={2} delay={0.5} />
                   </span>
                   <p style={{ fontSize: '15px' }}>Processing</p>
                 </div>
@@ -113,7 +130,7 @@ const Home = () => {
                 </div>
                 <div style={workTotal}>
                   <span style={{ fontSize: '36px', fontWeight: '600' }}>
-                    <CountUp end={10} duration={2} delay={0.5} />
+                    <CountUp end={pendingNum} duration={2} delay={0.5} />
                   </span>
                   <p style={{ fontSize: '15px' }}>Pending</p>
                 </div>
