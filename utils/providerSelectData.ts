@@ -137,11 +137,79 @@ export const getWorkOrderCount = async () => {
   } catch (error) {
     throw error
   }
-
 }
 
+// get assets count
+export const getAllAssetsCount = async () => {
+  try {
+    const [
+      computerNum, 
+      laptopNum, 
+      serverNum, 
+      switchNum, 
+      printerNum, 
+      routerNum, 
+      mobileNum, 
+      monitorNum, 
+      keyboardMouseNum, 
+      othersNum
+    ] = await Promise.all([
+      supabase.from('it_assets').select('*').eq('product_type', 'Computer'),
+      supabase.from('it_assets').select('*').eq('product_type', 'Laptop'),
+      supabase.from('it_assets').select('*').eq('product_type', 'Server'),
+      supabase.from('it_assets').select('*').eq('product_type', 'Switch'),
+      supabase.from('it_assets').select('*').eq('product_type', 'Printer'),
+      supabase.from('it_assets').select('*').eq('product_type', 'Router'),
+      supabase.from('it_assets').select('*').eq('product_type', 'Mobile'),
+      supabase.from('it_assets').select('*').eq('product_type', 'Monitor'),
+      supabase.from('it_assets').select('*').eq('product_type', 'Keyboard/Mouse'),
+      supabase.from('it_assets').select('*').eq('product_type', 'Others')
+    ])
+    
+    if (computerNum.error) throw computerNum.error
+    if (laptopNum.error) throw laptopNum.error
+    if (serverNum.error) throw serverNum.error
+    if (switchNum.error) throw switchNum.error
+    if (printerNum.error) throw printerNum.error
+    if (routerNum.error) throw routerNum.error
+    if (mobileNum.error) throw mobileNum.error
+    if (monitorNum.error) throw monitorNum.error
+    if (keyboardMouseNum.error) throw keyboardMouseNum.error
+    if (othersNum.error) throw othersNum.error
 
+    return {
+      computerNum: computerNum.data?.length || 0,
+      laptopNum: laptopNum.data?.length || 0,
+      serverNum: serverNum.data?.length || 0,
+      switchNum: switchNum.data?.length || 0,
+      printerNum: printerNum.data?.length || 0,
+      routerNum: routerNum.data?.length || 0,
+      mobileNum: mobileNum.data?.length || 0,
+      monitorNum: monitorNum.data?.length || 0,
+      keyboardMouseNum: keyboardMouseNum.data?.length || 0,
+      othersNum: othersNum.data?.length || 0,
+      total: (computerNum.data?.length || 0) + (laptopNum.data?.length || 0) + (serverNum.data?.length || 0) + (switchNum.data?.length || 0) + (printerNum.data?.length || 0) + (routerNum.data?.length || 0) + (mobileNum.data?.length || 0) + (monitorNum.data?.length || 0) + (keyboardMouseNum.data?.length || 0) + (othersNum.data?.length || 0)
+    }
+  }catch (error) {
+    throw error
+  }
+}
 
+// get total assets price
+export const getTotalAssetsPrice = async () => {
+  try {
+    const {data, error} = await supabase
+    .from('it_assets')
+    .select('product_price')
+    
+    if(data) return data.reduce((total, item) => total + (item.product_price || 0), 0)
+    if(error) throw error
+    return 0
+  } catch (error) {
+    useMessage(2, 'Get Price Failed!' , 'error')
+    throw error
+  }
+}
 
 // insert workOrder
 export const insertUpdateWorkOrder = async ({

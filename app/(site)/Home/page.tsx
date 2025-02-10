@@ -1,14 +1,16 @@
 "use client"
 import { useEffect, useState } from 'react'
-import { Card, Space, Col, Row } from 'antd'
+import { Card, Space, Col, Row, Tag } from 'antd'
 import { AiOutlineBars, AiOutlineCheck, AiOutlineFileSync, AiOutlinePause } from 'react-icons/ai'
 import { FiMonitor, FiPrinter } from 'react-icons/fi'
-import { MdOutlineComputer } from "react-icons/md"
+import { MdOutlineComputer, MdOutlineScreenshotMonitor, MdOutlineOtherHouses } from "react-icons/md"
 import { HiOutlineServer } from "react-icons/hi"
+import { HiMiniDevicePhoneMobile } from "react-icons/hi2"
 import { BsToggles } from "react-icons/bs"
-import { LuMouse } from "react-icons/lu"
+import { LuMouse, LuRouter } from "react-icons/lu"
 import CountUp from 'react-countup'
-import { getWorkOrderCount } from '@/utils/providerSelectData'
+
+import { getWorkOrderCount, getAllAssetsCount, getTotalAssetsPrice } from '@/utils/providerSelectData'
 
 const workCardInfo: React.CSSProperties = {
   display: 'flex',
@@ -40,7 +42,7 @@ const workTotal: React.CSSProperties = {
 const assetsInfo: React.CSSProperties = {
   display: 'flex',
   width: '100%',
-  height: '120px',
+  height: '90px',
   background: '#fff',
   boxShadow: '0px 0px 2px 2px #ececec',
   borderRadius: '12px',
@@ -54,8 +56,7 @@ const assetsTotal: React.CSSProperties = {
 }
 
 const assetsText: React.CSSProperties = {
-  fontSize: '24px',
-  fontWeight: '600'
+  fontSize: '24px'
 }
 
 const Home = () => {
@@ -64,6 +65,20 @@ const Home = () => {
   const [pendingNum, setPendingNum] = useState<number>(0)
   const [totalNum, setTotalNum] = useState<number>(0)
 
+  const [computerNum, setComputerNum] = useState<number>(0)
+  const [laptopNum, setLaptopNum] = useState<number>(0)
+  const [serverNum, setServerNum] = useState<number>(0)
+  const [switchNum, setSwitchNum] = useState<number>(0)
+  const [printerNum, setPrinterNum] = useState<number>(0)
+  const [routerNum, setRouterNum] = useState<number>(0)
+  const [mobileNum, setMobileNum] = useState<number>(0)
+  const [monitorNum, setMonitorNum] = useState<number>(0)
+  const [keyboardMouseNum, setKeyboardMouseNum] = useState<number>(0)
+  const [othersNum, setOthersNum] = useState<number>(0)
+  const [totalAssetsNum, setTotalAssetsNum] = useState<number>(0)
+
+  const [totalAssetsPrice, setTotalAssetsPrice] = useState<number>(0)
+
   const fetchWorkOrderCount = async () => {
     const res = await getWorkOrderCount()
     setFinishedNum(res.finished)
@@ -71,13 +86,33 @@ const Home = () => {
     setPendingNum(res.pending)
     setTotalNum(res.total)
   }
-  
 
+  const fetchITAssetsCount = async () => {
+    const res = await getAllAssetsCount()
+    setComputerNum(res.computerNum)
+    setLaptopNum(res.laptopNum)
+    setServerNum(res.serverNum)
+    setSwitchNum(res.switchNum)
+    setPrinterNum(res.printerNum)
+    setRouterNum(res.routerNum)
+    setMobileNum(res.mobileNum)
+    setMonitorNum(res.monitorNum)
+    setKeyboardMouseNum(res.keyboardMouseNum)
+    setOthersNum(res.othersNum)
+    setTotalAssetsNum(res.total)
+  }
+
+  const fetchITAssetsPrice = async () => {
+    let res = await getTotalAssetsPrice()
+    setTotalAssetsPrice(res)
+  }
+  
   useEffect(() => {
     fetchWorkOrderCount()
+    fetchITAssetsCount()
+    fetchITAssetsPrice()
     document.title = 'Home'
   }, [])
-
 
   return (
     <div style={{ width: '100%', padding: '12px', boxSizing: 'border-box' }}>
@@ -141,22 +176,23 @@ const Home = () => {
       </Space>
       <Space direction="vertical" size={12} style={{ width: '100%', marginTop: '12px' }}>
         <Card title="Asset information">
-          <Row gutter={20}>
+          <Row gutter={15}>
             <Col span={4} >
               <div style={assetsInfo}>
                 <FiMonitor size={26} />
                 <div style={assetsTotal}>
-                  <span style={assetsText}>10</span>
-                  <p>Computer</p>
+                  <span style={assetsText} className='block text-right'>{computerNum}</span>
+                  <p className='block text-right'>Computer</p>
                 </div>
               </div>
             </Col>
+
             <Col span={4} >
               <div style={assetsInfo}>
                 <MdOutlineComputer size={26} />
                 <div style={assetsTotal}>
-                  <span style={assetsText}>10</span>
-                  <p>Laptop</p>
+                  <span style={assetsText} className='block text-right'>{laptopNum}</span>
+                  <p className='block text-right'>Laptop</p>
                 </div>
               </div>
             </Col>
@@ -164,26 +200,58 @@ const Home = () => {
               <div style={assetsInfo}>
                 <HiOutlineServer size={26} />
                 <div style={assetsTotal}>
-                  <span style={assetsText}>10</span>
-                  <p>Server</p>
+                  <span style={assetsText} className='block text-right'>{serverNum}</span>
+                  <p className='block text-right'>Server</p>
                 </div>
               </div>
             </Col>
+
             <Col span={4} >
               <div style={assetsInfo}>
                 <BsToggles size={26} />
                 <div style={assetsTotal}>
-                  <span style={assetsText}>10</span>
-                  <p>Switch</p>
+                  <span style={assetsText} className='block text-right'>{switchNum}</span>
+                  <p className='block text-right'>Switch</p>
                 </div>
               </div>
+
             </Col>
             <Col span={4}>
               <div style={assetsInfo}>
                 <FiPrinter size={26} />
                 <div style={assetsTotal}>
-                  <span style={assetsText}>10</span>
-                  <p>Print</p>
+                  <span style={assetsText} className='block text-right'>{printerNum}</span>
+                  <p className='block text-right'>Printer</p>
+                </div>
+              </div>
+            </Col>
+
+            <Col span={4}>
+              <div style={assetsInfo}>
+                <LuRouter size={26} />
+                <div style={assetsTotal}>
+                  <span style={assetsText} className='block text-right'>{routerNum}</span>
+                  <p className='block text-right'>Router</p>
+                </div>
+              </div>
+            </Col>
+          </Row>
+          <Row gutter={15} className='mt-4'>
+            <Col span={4}>
+              <div style={assetsInfo}>
+                <HiMiniDevicePhoneMobile size={26} />
+                <div style={assetsTotal}>
+                  <span style={assetsText} className='block text-right'>{mobileNum}</span>
+                  <p className='block text-right'>Mobile</p>
+                </div>
+              </div>
+            </Col>
+            <Col span={4}>
+              <div style={assetsInfo}>
+                <MdOutlineScreenshotMonitor size={26} />
+                <div style={assetsTotal}>
+                  <span style={assetsText} className='block text-right'>{monitorNum}</span>
+                  <p className='block text-right'>Monitor</p>
                 </div>
               </div>
             </Col>
@@ -191,9 +259,47 @@ const Home = () => {
               <div style={assetsInfo}>
                 <LuMouse size={26} />
                 <div style={assetsTotal}>
-                  <span style={assetsText}>10</span>
-                  <p>Others</p>
+                  <span style={assetsText} className='block text-right'>{keyboardMouseNum}</span>
+                  <p className='block text-right'>Keyboard/Mouse</p>
                 </div>
+              </div>
+            </Col>
+            <Col span={4}>
+              <div style={assetsInfo}>
+                <MdOutlineOtherHouses size={26} />
+                <div style={assetsTotal}>
+                  <span style={assetsText} className='block text-right'>{othersNum}</span>
+                  <p className='block text-right'>Others</p>
+                </div>
+              </div>
+            </Col>
+            <Col span={8}>
+              <div 
+                className='
+                  bg-white 
+                  content-center
+                  rounded-xl 
+                  py-0 
+                  px-6 
+                  items-center
+                  shadow-[0_0_2px_2px_#ececec]' 
+                  style={{height: '90px'}}
+                >
+                <Row gutter={15}>
+                  <Col span={12}>
+                    <div className='w-full h-full border-r border-slate-200'>
+                      <p className='text-2xl font-bold text-slate-500 mb-1'>USD {totalAssetsPrice}</p>
+                      <Tag color='green'>Total value of equipment</Tag>
+                    </div>
+                  </Col>
+
+                  <Col span={12}>
+                    <div className='w-full h-full pl-5'>
+                      <p className='text-2xl font-bold text-slate-500 mb-1'>{totalAssetsNum}</p>
+                      <Tag color='blue'>Total number of devices</Tag>
+                    </div>
+                  </Col>
+                </Row>
               </div>
             </Col>
           </Row>
