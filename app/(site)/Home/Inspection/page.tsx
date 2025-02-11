@@ -313,7 +313,7 @@ const Inspection: React.FC = () => {
                                 </div>
                               ):(
                                 <div className="w-7 h-7 bg-red-400 rounded-full absolute top-5 right-5">
-                                  <span className="text-center text-white block leading-7">1</span>
+                                  <span className="text-center text-white block leading-7">{item.inspection_number}</span>
                                 </div>
                               )
                             }

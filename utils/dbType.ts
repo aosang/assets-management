@@ -62,11 +62,11 @@ export interface assetsItem {
 }
 
 export interface productItem {
-  product_id: string,
+  id: string,
+  product_number: number,
   product_name: string
   product_type: null | string
   product_brand: null | string
-  product_status: null | string
   product_time: string,
   product_update: string,
   product_username: string
