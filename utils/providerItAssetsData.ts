@@ -52,7 +52,7 @@ export const insertItAssets = async ({
   product_update,
   product_type,
   product_brand,
-  product_username,
+  product_number,
   product_price,
   product_remark,
   value
@@ -65,7 +65,7 @@ export const insertItAssets = async ({
     product_update,
     product_type,
     product_brand,
-    product_username,
+    product_number,
     product_price,
     product_remark,
     value
@@ -160,7 +160,7 @@ export const editItAssetsData = async (assetsId: string, assetsOrderForm: produc
   const { error } = await supabase
   .from('it_assets')
   .update(assetsOrderForm)
-  .eq('product_id', assetsId)
+  .eq('id', assetsId)
 
   try {
     if(error) return useMessage(2, error!.message, 'error')

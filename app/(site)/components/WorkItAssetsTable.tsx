@@ -16,7 +16,7 @@ import {
   InputNumber,
 } from 'antd'
 import { getWorkOrderType, getWorkBrand } from '@/utils/providerSelectData'
-import { getItAssetsStatusData, insertItAssets, deleteItAssets, searchItAssetsData, getItAssetsTabbleData, editItAssetsData } from '@/utils/providerItAssetsData'
+import { insertItAssets, deleteItAssets, searchItAssetsData, getItAssetsTabbleData, editItAssetsData } from '@/utils/providerItAssetsData'
 import { getTimeNumber } from '@/utils/pubFunProvider'
 import { IoIosSearch } from 'react-icons/io'
 import useMessage from '@/utils/message'
@@ -24,8 +24,6 @@ import useMessage from '@/utils/message'
 type asstesDataProps = productItem[]
 type typeDataProps = typeDataName[]
 type typeDataBrandProps = typeDataBrand[]
-type assetsStatusProps = assetsItem[]
-
 
 const WorkItAssetsTable: React.FC = () => {
   const [assetsData, setAssetsData] = useState<asstesDataProps>([])
@@ -37,8 +35,6 @@ const WorkItAssetsTable: React.FC = () => {
   const [layoutWidth, setLayoutWidth] = useState<number>(8)
   const [productBrandShow, setProductBrandShow] = useState<boolean>(false)
   const [selectOpen, setSelectOpen] = useState<boolean>(false)
-  const [assetsStatusShow, setAssetsStatusShow] = useState<boolean>(false)
-  const [assetsStatusWidth, setAssetsStatusWidth] = useState<number>(12)
 
   const [isModalDelete, setIsModalDelete] = useState<boolean>(false)
   const [isEditModalShow, setIsEditModalShow] = useState<boolean>(false)
@@ -86,6 +82,20 @@ const WorkItAssetsTable: React.FC = () => {
       key: 'product_update',
       width: 230
     }, {
+      title: 'Number',
+      dataIndex: 'product_number',
+      key: 'product_number'
+    }, {
+      title: 'Total Price',
+      dataIndex: 'product_price',
+      render: (record: number) => {
+        return (
+          <div>
+            {'$' + record}
+          </div>
+        )
+      }
+    }, {
       title: 'Remark',
       dataIndex: 'product_remark',
       key: 'product_remark'
@@ -130,10 +140,12 @@ const WorkItAssetsTable: React.FC = () => {
   const onAddItAssets = () => {
     if(assetsDataForm.product_name === '') {
       useMessage(2, 'Please enter the product name','error')
-    }else if(!assetsDataForm.product_type) {
+    }else if(assetsDataForm.product_number <= 0) {
+      useMessage(2, 'Please enter the product number','error')
+    }else if(assetsDataForm.product_price <= 0) {
+      useMessage(2, 'Please enter the product price','error')
+    } else if(!assetsDataForm.product_type) {
       useMessage(2, 'Please select the product type','error')
-    }else if(!assetsDataForm.product_brand) {
-      useMessage(2, 'Please select the product brand','error')
     }else {
       setAddItAssetsShow(false)
       insertItAssets(assetsDataForm)
@@ -171,7 +183,7 @@ const WorkItAssetsTable: React.FC = () => {
         product_brand: record. product_brand,
         product_time: record.product_time,
         product_update: getTimeNumber()[0],
-        product_username: record.product_username,
+        product_number: record.product_number,
         product_price: record.product_price,
         product_remark: record.product_remark,
         value: record.value
@@ -185,9 +197,11 @@ const WorkItAssetsTable: React.FC = () => {
       useMessage(2, 'Please enter the product name','error')
     }else if(!assetsDataForm.product_type) {
       useMessage(2, 'Please select the product type','error')
-    }else if(!assetsDataForm.product_brand) {
-      useMessage(2, 'Please select the product brand','error')
-    }else {
+    }else if(assetsDataForm.product_number <= 0) {
+      useMessage(2, 'Please select the product number','error')
+    }else if(assetsDataForm.product_price <= 0) {
+      useMessage(2, 'Please enter the product price','error')
+    } else {
       editItAssetsData(isEditId, assetsDataForm)
       .then(() => {
         setIsEditModalShow(false)
@@ -224,7 +238,6 @@ const WorkItAssetsTable: React.FC = () => {
     }
   }
 
-  
   const onTriggerSelected = (open: boolean) => {
     setSelectOpen(open)
   }
@@ -239,10 +252,8 @@ const WorkItAssetsTable: React.FC = () => {
   // clear form data
   const clearAssetsDataForm = () => {
     setProductBrandShow(false)
-    setAssetsStatusShow(false)
     setLayoutWidth(8)
-    setAssetsStatusWidth(12)
-
+ 
     setAssetsDataForm({
       id: '',
       product_name: '',
@@ -435,8 +446,10 @@ const WorkItAssetsTable: React.FC = () => {
             </Col>
 
             <Col span={layoutWidth}>
-              <label htmlFor="Price" className='mb-1 flex items-center font-semibold'>
-                Reference Price
+              <label htmlFor="Price" className='mb-1 flex items-center font-semibold'
+              >
+                <span className='mr-1 text-red-600 font-thin'>*</span>
+                Total Price <i className='text-xs text-gray-500 not-italic ml-2'>(Unit Price * Quantity)</i>
               </label>
               <InputNumber
                 min={0}
@@ -486,7 +499,7 @@ const WorkItAssetsTable: React.FC = () => {
             </Col>
           </Row>
 
-          <Row gutter={20}>
+          <Row gutter={15}>
             <Col span={24}>
               <label
                 htmlFor="Problem"
@@ -521,11 +534,11 @@ const WorkItAssetsTable: React.FC = () => {
         onCancel={() => setIsEditModalShow(false)}
         afterClose={clearAssetsDataForm}
         maskClosable={false}
-        width={960}
+        width={1000}
       >
         <Divider/>
         <Space direction="vertical" size="middle" style={{ width: '100%' }}>
-          <Row gutter={20}>
+          <Row gutter={15}>
             {/* product name */}
             <Col span={24}>
               <label htmlFor="Product" className='mb-1 flex items-center font-semibold'>
@@ -546,7 +559,7 @@ const WorkItAssetsTable: React.FC = () => {
               />
             </Col>
           </Row>
-          <Row gutter={20}>
+          <Row gutter={15}>
             <Col span={layoutWidth}>
               {/* product type */}
               <label
@@ -597,75 +610,31 @@ const WorkItAssetsTable: React.FC = () => {
                 </Select>
               </Col>
             )}
-            
-            {/* create time */}
+
             <Col span={layoutWidth}>
-              <label
-                htmlFor="Create_"
-                className='mb-1 flex items-center font-semibold'
-              >
-                <span className='mr-1 text-red-600  font-thin'>*</span>
-                Created time
-              </label>
-              <Input
-                style={{ width: '100%' }}
-                readOnly
-                value={assetsDataForm.product_time}
-              />
-            </Col>
-            <Col span={layoutWidth}>
-              <label
-                htmlFor="Create_"
-                className='mb-1 flex items-center font-semibold'
-              >
-                <span className='mr-1 text-red-600  font-thin'>*</span>
-                Updated time
-              </label>
-              <Input
-                style={{ width: '100%' }}
-                readOnly
-                value={assetsDataForm.product_update}
-              />
-            </Col>
-          </Row>
-          <Row gutter={20}>
-            {/* status */}
-            <Col span={assetsStatusWidth}>
-              <label
-                htmlFor="Status"
-                className='mb-1 flex items-center font-semibold'
-              >
+              <label htmlFor="Price" className='mb-1 flex items-center font-semibold'>
                 <span className='mr-1 text-red-600 font-thin'>*</span>
-                Status
+                Number
               </label>
+              <InputNumber
+                  min={0}
+                  style={{ width: '100%'}}
+                  placeholder='Product price'
+                  addonAfter="USD"
+                  value={assetsDataForm.product_number}
+                  onChange={e => {
+                  setAssetsDataForm({
+                  ...assetsDataForm,
+                    product_number: Number(e)
+                  })
+                }}
+              />
             </Col>
 
-            {/* user */}
-            {assetsStatusShow && (
-              <Col span={assetsStatusWidth}>
-                <label htmlFor="User" className='mb-1 flex items-center font-semibold'>
-                  <span className='mr-1 text-red-600 font-thin'>*</span>
-                  User
-                </label>
-                <Input
-                  style={{ width: '100%' }}
-                  placeholder='Username'
-                  value={assetsDataForm.product_username}
-                  allowClear
-                  onChange={e => {
-                    setAssetsDataForm({
-                     ...assetsDataForm,
-                      product_username: e.target.value
-                    })
-                  }}
-                />
-              </Col>
-            )}
-          
-            {/* price */}
-            <Col span={assetsStatusWidth}>
+            <Col span={layoutWidth}>
               <label htmlFor="Price" className='mb-1 flex items-center font-semibold'>
-                Reference Price
+                <span className='mr-1 text-red-600 font-thin'>*</span>
+                Total Price
               </label>
               <InputNumber
                 min={0}
@@ -679,6 +648,36 @@ const WorkItAssetsTable: React.FC = () => {
                     product_price: Number(e)
                   })
                 }}
+              />
+            </Col>
+          </Row>
+          <Row gutter={15}>
+            <Col span={12}>
+              <label
+                htmlFor="Create_"
+                className='mb-1 flex items-center font-semibold'
+              >
+                <span className='mr-1 text-red-600  font-thin'>*</span>
+                Created time
+              </label>
+              <Input
+                style={{ width: '100%' }}
+                readOnly
+                value={assetsDataForm.product_time}
+              />
+            </Col>
+            <Col span={12}>
+              <label
+                htmlFor="Create_"
+                className='mb-1 flex items-center font-semibold'
+              >
+                <span className='mr-1 text-red-600  font-thin'>*</span>
+                Updated time
+              </label>
+              <Input
+                style={{ width: '100%' }}
+                readOnly
+                value={assetsDataForm.product_update}
               />
             </Col>
           </Row>

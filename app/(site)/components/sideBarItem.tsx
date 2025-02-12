@@ -6,7 +6,7 @@ import { AiTwotoneHome, AiFillProfile  } from "react-icons/ai"
 import { RiComputerFill  } from 'react-icons/ri'
 import { FaUser } from "react-icons/fa"
 import { IoDocumentText, IoLibrary } from "react-icons/io5"
-
+import { MdInventory } from "react-icons/md"
 
 type MenuItem = Required<MenuProps>['items'][number]
 
@@ -25,9 +25,9 @@ const items: MenuItem[] = [{
     marginBottom: '12px'
   }
 }, {
-  key: 'WorkItAssets',
-  label: 'IT Assets',
-  icon: <RiComputerFill style={{fontSize: '16px'}} />,
+  key: 'Inventory',
+  label: 'Inventory',
+  icon: <MdInventory style={{fontSize: '16px'}} />,
   style: {
     marginBottom: '12px'
   }
@@ -46,6 +46,13 @@ const items: MenuItem[] = [{
     marginBottom: '12px'
   }
 }, {
+  key: 'WorkItAssets',
+  label: 'IT Device',
+  icon: <RiComputerFill style={{fontSize: '16px'}} />,
+  style: {
+    marginBottom: '12px'
+  }
+}, {
   key: 'Profile',
   label: 'Profile',
   icon: <FaUser style={{fontSize: '16px'}} />,
@@ -58,7 +65,7 @@ const SideBarItem: React.FC = () => {
     if(e.key === 'Home') {
       router.replace(`/${e.key}`)
       setCurrentUrl(e.key)
-    } else {
+    } else {     
       router.replace(`/Home/${e.key}`)
       setCurrentUrl(e.key)
     }
