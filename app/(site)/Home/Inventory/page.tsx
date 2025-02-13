@@ -1,13 +1,51 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { Card, Tabs } from 'antd'
+import { Card, Tabs, Table } from 'antd'
 import type { TabsProps } from 'antd'
+
+const columns = [{
+    title: 'Type',
+    dataIndex: 'Type',
+    key: 'Type',
+  },{
+    title: 'Brand',
+    dataIndex: 'Brand',
+    key: 'Brand',
+  },{
+    title: 'Product',
+    dataIndex: 'Product',
+    key: 'Product',
+  },{
+    title: 'Total quantity',
+    dataIndex: 'Number',
+    key: 'Number',
+  },{
+    title: 'Remaining stock',
+    dataIndex: 'Remain',
+    key: 'Remain',
+  },{
+    title: 'Status',
+    dataIndex: 'Status',
+    key: 'Status',
+  },{
+    title: 'Remark',
+    dataIndex: 'Remark',
+    key: 'Remark',
+  }]
 
 const items: TabsProps['items'] = [
   {
     key: '1',
     label: 'Inventory',
-    children: <div>Inventory</div>,
+    children: 
+    <div>
+      <Table
+        columns={columns}
+        dataSource={[]}
+        size='small'
+        bordered
+      />
+    </div>,
   },
   {
     key: '2',
