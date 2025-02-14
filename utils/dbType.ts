@@ -120,3 +120,13 @@ export interface knowledgeTypeItem {
   description: string,
   content: string
 }
+
+export interface inventoryItem {
+  inventory_name: string,
+  inventory_type: string,
+  inventory_brand: string,
+  inventory_status: string,
+  inventory_quantity: number,
+  inventory_stock: number,
+  inventory_remark: string
+}

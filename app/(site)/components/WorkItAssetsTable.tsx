@@ -160,8 +160,8 @@ const WorkItAssetsTable: React.FC = () => {
       .then(res => {
         const formatData = (res as asstesDataProps).map(item => ({
           ...item,
-          product_time: dayjs(item.product_time).format('MMM D, YYYY h:mm:ss a'),
-          product_update: dayjs(item.product_update).format('MMM D, YYYY h:mm:ss a'),
+          product_time: dayjs(item.product_time).format('MMM D, YYYY h:mm a'),
+          product_update: dayjs(item.product_update).format('MMM D, YYYY h:mm a'),
         }))
         setAssetsData(formatData)
       })
