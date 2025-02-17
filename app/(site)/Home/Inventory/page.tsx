@@ -2,13 +2,18 @@
 import { useEffect, useState } from 'react'
 import { Card, Tabs, Table, Button, Drawer, Descriptions, Tag } from 'antd'
 import type { TabsProps } from 'antd'
-import { productItem } from '@/utils/dbType'
+import { productItem, inventoryItem } from '@/utils/dbType'
 import { getItAssetsTabbleData } from '@/utils/providerItAssetsData'
 import { getLoanOutTableData } from '@/utils/providerLoanOut'
+import dayjs from 'dayjs'
 
 const Inventory = () => {
   const [inventoryData, setInventoryData] = useState<productItem[]>([])
+  const [loanOutData, setLoanOutData] = useState<inventoryItem[]>([])
   const [isShowDetails, setIsShowDetails] = useState(false)
+  const [loanOutSum, setLoanOutSum] = useState<number>(0)
+  const [totalQuantity, setTotalQuantity] = useState<number>(0)
+  const [stockQuantity, setStockQuantity] = useState<number>(0)
 
   const getInventoryData =  () => {
     getItAssetsTabbleData().then(data => {
@@ -16,14 +21,37 @@ const Inventory = () => {
     })
   }
 
-  const getInventoryDetails = (id: string) => {
+  const getInventoryDetails = async (id: string) => {
     setIsShowDetails(true)
-    getLoanOutTableData(id).then(data => {
-      console.log(data)
+
+    const deviceData = await getItAssetsTabbleData(id)
+    let totalQuantity = deviceData![0].product_number
+    
+    const loanOutData = await getLoanOutTableData(id)
+    
+    let sum = 0
+    loanOutData!.forEach(item => {
+      sum += item.loanout_number
     })
+    let loanOutSum = sum
+
+    let stoke = totalQuantity - loanOutSum
+    setStockQuantity(stoke)
   }
 
-  const columns = [{
+  const switchTabChange = (key: string) => {
+    if(key === '2') {
+      getLoanOutTableData().then(data => {
+        const formatData = data?.map(item => ({
+          ...item,
+          loanout_time: dayjs(item.loanout_time).format('MMM D, YYYY h:mm:ss a')
+        }))
+        setLoanOutData(formatData as inventoryItem[])
+      })
+    }
+  }
+
+  const inventoryColumns = [{
     title: 'No.',
     key: 'no',
     render: (_: any, __: any, index: number) => (
@@ -67,6 +95,50 @@ const Inventory = () => {
     )
   }]
 
+  const loanOutColumns = [{
+    title: 'No.',
+    key: 'no',
+    render: (_: any, __: any, index: number) => (
+      <div>{index + 1}</div>
+    ),
+  }, {
+    title: 'Type',
+    dataIndex: 'loanout_type',
+    key: 'loanout_type',
+  }, {
+    title: 'Brand',
+    dataIndex: 'loanout_brand',
+    key: 'loanout_brand',
+  }, {
+    title: 'Product',
+    dataIndex: 'loanout_name',
+    key: 'loanout_name',
+  }, {
+    title: 'Loan out quantity',
+    dataIndex: 'loanout_number',
+    key: 'loanout_number',
+  }, {
+    title: 'Loan out date',
+    dataIndex: 'loanout_time',
+    key: 'loanout_time',
+  }, {
+    title: 'Loan out by',
+    dataIndex: 'loanout_user',
+    key: 'loanout_user',
+  }, {
+    title: 'Remark',
+    dataIndex: 'loanout_remark',
+    key: 'loanout_remark',
+  }, {
+    title: 'Others',
+    key: 'others',
+    render: (item: any) => (
+      <div>
+        <Button size='small' className='bg-purple-600 text-xs text-white'>Return</Button>
+      </div>
+    )
+  }]
+
   const items: TabsProps['items'] = [
     {
       key: '1',
@@ -74,10 +146,11 @@ const Inventory = () => {
       children:
         <div>
           <Table
-            columns={columns}
+            columns={inventoryColumns}
             dataSource={inventoryData}
             size='small'
             bordered
+            className='[&_.ant-table-thead>tr>th]:!bg-[#f0f5ff]'
           />
           <Drawer
             title="Inventory Details"
@@ -87,10 +160,10 @@ const Inventory = () => {
             <div className='w-full'>
               <Descriptions column={24}>
                 <Descriptions.Item span={12} label="Stock quantity">
-                  <div>100</div>
+                  <div>{stockQuantity}</div>
                 </Descriptions.Item>
                 <Descriptions.Item span={12} label="Status">
-                  <Tag  color='green'>In stock</Tag>
+                  {stockQuantity > 0 ? <Tag color='green'>In stock</Tag> : <Tag color='red'>Out of stock</Tag>}
                 </Descriptions.Item>
               </Descriptions>
             </div>
@@ -100,7 +173,15 @@ const Inventory = () => {
     {
       key: '2',
       label: 'Loan out',
-      children: <div>Loan out</div>,
+      children: <div>
+        <Table
+          columns={loanOutColumns}
+          dataSource={loanOutData}
+          size='small'
+          bordered
+          className='[&_.ant-table-thead>tr>th]:!bg-[#f0f5ff]'
+        />
+      </div>,
     }
   ]
 
@@ -114,6 +195,7 @@ const Inventory = () => {
       <Card title="Inventory Management">
         <Tabs
           items={items}
+          onChange={switchTabChange}
         />
       </Card>
     </div>

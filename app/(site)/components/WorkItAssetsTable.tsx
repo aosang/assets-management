@@ -761,6 +761,7 @@ const WorkItAssetsTable: React.FC = () => {
       </Row>
       <div className='mt-5'>
         <Table
+          className='[&_.ant-table-thead>tr>th]:!bg-[#f0f5ff]'
           rowSelection={{...rowSelection}} 
           size='small'
           bordered
@@ -770,7 +771,7 @@ const WorkItAssetsTable: React.FC = () => {
           pagination={{ 
             position: ['bottomRight'], 
             pageSizeOptions: ['10', '20', '50'], 
-            showSizeChanger: true, 
+            showSizeChanger: true
           }}
         />
       </div>

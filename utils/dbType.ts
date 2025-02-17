@@ -122,11 +122,11 @@ export interface knowledgeTypeItem {
 }
 
 export interface inventoryItem {
-  inventory_name: string,
-  inventory_type: string,
-  inventory_brand: string,
-  inventory_status: string,
-  inventory_quantity: number,
-  inventory_stock: number,
-  inventory_remark: string
+  loanout_name: string,
+  loanout_time: string,
+  loanout_type: string,
+  loanout_brand: string,
+  loanout_number: number,
+  loanout_user: string,
+  loanout_remark: string
 }

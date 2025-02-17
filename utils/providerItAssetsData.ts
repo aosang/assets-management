@@ -2,15 +2,27 @@ import { supabase } from "./clients"
 import useMessage from "@/utils/message"
 import { productItem } from '@/utils/dbType'
 
-export const getItAssetsTabbleData = async () => {
-  const { data, error } = await supabase
-    .from("it_assets")
-    .select('*')
-    .order('product_time', { ascending: false })
-
+export const getItAssetsTabbleData = async (id?: string) => {
   try {
-    if (data) return data || []
-    useMessage(2, error?.message, 'error')
+    if(id) {
+      const [ deviceData ] = await Promise.all([
+        supabase.from("it_assets")
+        .select('*')
+        .eq('id', id)
+        .order('product_time', { ascending: false }),
+      ])
+
+      if(deviceData.error) throw deviceData.error
+      return deviceData.data
+
+    }else {
+      const { data, error } = await supabase
+      .from("it_assets")
+      .select('*')
+      .order('product_time', { ascending: false })
+  
+      return data
+    }
   }
   catch (error) {
     throw error

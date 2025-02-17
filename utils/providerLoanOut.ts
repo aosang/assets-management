@@ -1,17 +1,20 @@
 import { supabase } from "./clients"
-import useMessage from "@/utils/message"
 
-export const getLoanOutTableData = async (id: string) => {
-  const {data, error} = await supabase
-  .from('loanout_table')
-  .select('*')
-  .match({id: id})
+export const getLoanOutTableData = async (id?: string) => {
+  if(id) {
+    const [ loanoutData ] = await Promise.all([
+      supabase.from('loanout_table').select('*').eq('id', id)
+    ])
 
-  try {
-    if (data) return data || []
-    useMessage(2, error?.message, 'error')
-  }
-  catch (error) {
-    throw error
-  }
+    if(loanoutData.error) throw loanoutData.error
+    return loanoutData.data
+  }else {
+    const { data, error } = await supabase
+    .from('loanout_table')
+    .select('*')
+
+    if(error) throw error
+    return data
+  } 
+
 }
