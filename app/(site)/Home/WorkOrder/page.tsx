@@ -362,7 +362,7 @@ const WorkOrder: React.FC = ({ }) => {
           {/* add */}
           <Modal
             title="Create Work Order"
-            width={1260}
+            width={1000}
             open={isModalAddOpen}
             onOk={confirmModalForm}
             onCancel={cancelModalForm}
@@ -391,15 +391,6 @@ const WorkOrder: React.FC = ({ }) => {
                     onChange={e => setWorkOrderForm({ ...workOrderForm, created_product: e })}
                   >
                   </Select>
-                  {/* <Input
-                    style={{ width: '100%' }}
-                    placeholder='Product name'
-                    value={workOrderForm.created_product}
-                    onChange={e => setWorkOrderForm({ 
-                      ...workOrderForm, 
-                      created_product: e.target.value 
-                    })}
-                  /> */}
                 </Col>
                 <Col span={8}>
                   <label
@@ -577,7 +568,7 @@ const WorkOrder: React.FC = ({ }) => {
           {/* edit */}
           <Modal
             title="Edit Work Order"
-            width={1260}
+            width={1000}
             open={isModalEditOpen}
             onOk={confirmEditModalForm}
             onCancel={editCancelModalForm}
@@ -607,12 +598,6 @@ const WorkOrder: React.FC = ({ }) => {
                     value={workOrderForm.created_product}
                   >
                   </Select>
-                  {/* <Input
-                    style={{ width: '100%' }}
-                    placeholder='Product name'
-                    value={workOrderForm.created_product}
-                    onChange={e => setWorkOrderForm({ ...workOrderForm, created_product: e.target.value })}
-                  /> */}
                 </Col>
                 <Col span={8}>
                   <label
