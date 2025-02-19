@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useState} from 'react'
 import dayjs from 'dayjs'
-import{ typeDataName, typeDataBrand, assetsItem, productItem } from '@/utils/dbType'
+import{ typeDataName, typeDataBrand, productItem } from '@/utils/dbType'
 import { 
   Button, 
   Row, 

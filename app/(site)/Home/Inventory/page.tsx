@@ -1,19 +1,23 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { Card, Tabs, Table, Button, Drawer, Descriptions, Tag, Row, Col, Input } from 'antd'
+import { Card, Tabs, Table, Button, Drawer, Descriptions, Tag, Row, Col, Input, InputNumber } from 'antd'
 import type { TabsProps } from 'antd'
 import { productItem, inventoryItem } from '@/utils/dbType'
 import { getItAssetsTabbleData } from '@/utils/providerItAssetsData'
-import { getLoanOutTableData } from '@/utils/providerLoanOut'
+import { getLoanOutTableData, insertLoanOutTableData } from '@/utils/providerLoanOut'
 import dayjs from 'dayjs'
+import useMessage from '@/utils/message'
 
 
 const Inventory = () => {
+  const [loanOutTabKeys, setLoanOutTabKeys] = useState<string>('1')
   const [inventoryData, setInventoryData] = useState<productItem[]>([])
   const [loanOutData, setLoanOutData] = useState<inventoryItem[]>([])
   const [isShowDetails, setIsShowDetails] = useState(false)
+  const [isShowReturn, setIsShowReturn] = useState(false)
   const [stockQuantity, setStockQuantity] = useState<number>(0)
-  const [loanoutForm, setLoanoutForm] = useState({
+  const [loanoutForm, setLoanoutForm] = useState<inventoryItem>({
+    id: '',
     loanout_name: '',
     loanout_type: '',
     loanout_brand: '',
@@ -22,6 +26,7 @@ const Inventory = () => {
     loanout_user: '',
     loanout_remark: '',
   })
+
 
   const getInventoryData =  () => {
     getItAssetsTabbleData().then(data => {
@@ -37,6 +42,7 @@ const Inventory = () => {
 
     setLoanoutForm({
       ...loanoutForm,
+      id: deviceData![0].id,
       loanout_name: deviceData![0].product_name,
       loanout_type: deviceData![0].product_type,
       loanout_brand: deviceData![0].product_brand,
@@ -56,6 +62,7 @@ const Inventory = () => {
   }
 
   const switchTabChange = (key: string) => {
+    setLoanOutTabKeys(key)
     if(key === '2') {
       getLoanOutTableData().then(data => {
         const formatData = data?.map(item => ({
@@ -63,6 +70,60 @@ const Inventory = () => {
           loanout_time: dayjs(item.loanout_time).format('MMM D, YYYY h:mm:ss a')
         }))
         setLoanOutData(formatData as inventoryItem[])
+      })
+    }
+  }
+
+  const clearloanoutDataForm = (type: number) => {
+    type === 1? setIsShowDetails(false) : setIsShowReturn(false)
+    
+    setLoanoutForm({
+      id: '',
+      loanout_name: '',
+      loanout_type: '',
+      loanout_brand: '',
+      loanout_number: 0,
+      return_number: 0,
+      loanout_time: '',
+      loanout_user: '',
+      loanout_remark: '',
+    })
+  }
+
+  const returnLoanoutDevice = (item: any) => {
+    setIsShowReturn(true)
+    setLoanoutForm({
+      ...loanoutForm,
+      loanout_name: item.loanout_name,
+      loanout_type: item.loanout_type,
+      loanout_brand: item.loanout_brand,
+      loanout_number: item.loanout_number,
+      loanout_time: dayjs().format('MMM D, YYYY h:mm:ss a'),
+      loanout_user: item.loanout_user,
+      loanout_remark: item.loanout_remark,
+    })
+  }
+
+  const submitLoanoutDevice = () => {
+    let { loanout_number, loanout_user } = loanoutForm
+    if(loanout_number === 0 || loanout_number > stockQuantity) {
+      useMessage(2, 'Loan out quantity is invalid','error')
+      return
+    }else if (loanout_user === '') {
+      useMessage(2, 'Loan out user is invalid','error')
+      return
+    }else {
+      setIsShowDetails(false)
+      setLoanOutTabKeys('2')
+      insertLoanOutTableData(loanoutForm).then(data => {
+        useMessage(2, 'Loan out device success','success')
+        getLoanOutTableData().then(data => {
+          const formatData = data?.map(item => ({
+           ...item,
+            loanout_time: dayjs(item.loanout_time).format('MMM D, YYYY h:mm:ss a')
+          })) 
+          setLoanOutData(formatData as inventoryItem[])
+        })
       })
     }
   }
@@ -150,7 +211,15 @@ const Inventory = () => {
     key: 'others',
     render: (item: any) => (
       <div>
-        <Button size='small' className='bg-purple-600 text-xs text-white'>Return</Button>
+        <Button
+          onClick={() => returnLoanoutDevice(item)} 
+          size='small' 
+          className='bg-green-500 
+          text-xs 
+          text-white'
+        >
+          Return
+        </Button>
       </div>
     )
   }]
@@ -171,7 +240,7 @@ const Inventory = () => {
           <Drawer
             title="Loan Out"
             open={isShowDetails}
-            onClose={() => setIsShowDetails(false)}
+            onClose={() => clearloanoutDataForm(1)}
             maskClosable={false}
           >
             <div className='w-full'>
@@ -186,45 +255,52 @@ const Inventory = () => {
               <Row gutter={15} className='mt-4'>
                 <Col span={24} className='mb-3'>
                   <label className='flex mb-1' htmlFor="Product Name">
-                    <span className='text-red-500 text-sx mr-1'>*</span>
                     Product Name
                   </label>
                   <Input value={loanoutForm.loanout_name} readOnly />
                 </Col>
                 <Col span={24} className='mb-3'>
                   <label className='flex mb-1' htmlFor="Product Type">
-                    <span className='text-red-500 text-sx mr-1'>*</span>
                     Product Type
                   </label>
                   <Input value={loanoutForm.loanout_type} readOnly />
                 </Col>
                 <Col span={24} className='mb-3'>
                   <label className='flex mb-1' htmlFor="Product Type">
-                    <span className='text-red-500 text-sx mr-1'>*</span>
                     Product Brand
                   </label>
                   <Input placeholder="Product Brand" value={loanoutForm.loanout_brand} />
                 </Col>
                 <Col span={24} className='mb-3'>
                   <label className='flex mb-1' htmlFor="Loan Out Quantity">
-                    <span className='text-red-500 text-sx mr-1'>*</span>
                     Loan Out Time
                   </label>
                   <Input placeholder="Loan Out Time" value={loanoutForm.loanout_time} />
                 </Col>
                 <Col span={24} className='mb-3'>
                   <label className='flex mb-1' htmlFor="Loan Out Quantity">
-                    <span className='text-red-500 text-sx mr-1'>*</span>
+                    <span className='text-red-500 text-sx mNumber mr-1'>*</span>
                     Loan Out Quantity
                   </label>
-                  <Input type='Number' placeholder="Number" value={loanoutForm.loanout_number} addonAfter={ '<=' + stockQuantity} />
+                  <InputNumber
+                    style={{width: '100%'}}
+                    min={0} 
+                    placeholder="Number" 
+                    value={loanoutForm.loanout_number} 
+                    addonAfter={ '<=' + stockQuantity}
+                    onChange={value => setLoanoutForm({...loanoutForm, loanout_number: value?? 0})} 
+                  />
                 </Col>
                 <Col span={24} className='mb-3'>
                   <label className='flex mb-1' htmlFor="Loan Out Quantity">
                     <span className='text-red-500 text-sx mr-1'>*</span>
                     Loan Out User
                   </label>
-                  <Input placeholder="username" />
+                  <Input 
+                    placeholder="username" 
+                    value={loanoutForm.loanout_user}
+                    onChange={e => setLoanoutForm({...loanoutForm, loanout_user: e.target.value})}
+                  />
                 </Col>
                 <Col span={24} className='mt-3'>
                   <Input.TextArea 
@@ -238,9 +314,79 @@ const Inventory = () => {
               </Row>
               <div className='flex mt-6'>
                 <Button className='mr-4' onClick={() => setIsShowDetails(false)}>Cancel</Button>
-                <Button type='primary'>Confirm</Button>
+                <Button type='primary' onClick={submitLoanoutDevice}>Confirm</Button>
               </div>
-              
+            </div>
+          </Drawer>
+
+          {/* return device */}
+          <Drawer 
+            title="Return Device" 
+            open={isShowReturn} 
+            onClose={() => clearloanoutDataForm(2)} 
+            maskClosable={false}
+          >
+            <div className='w-full'>
+              <Row gutter={15}>
+                <Col span={24} className='mb-3'>
+                  <label className='flex mb-1' htmlFor="Product Name">
+                    Product Name
+                  </label>
+                  <Input value={loanoutForm.loanout_name} readOnly />
+                </Col>
+                <Col span={24} className='mb-3'>
+                  <label className='flex mb-1' htmlFor="Product Type">
+                    Product Type
+                  </label>
+                  <Input value={loanoutForm.loanout_type} readOnly />
+                </Col>
+                <Col span={24} className='mb-3'>
+                  <label className='flex mb-1' htmlFor="Product Type">
+                    Product Brand
+                  </label>
+                  <Input placeholder="Product Brand" value={loanoutForm.loanout_brand} />
+                </Col>
+                <Col span={24} className='mb-3'>
+                  <label className='flex mb-1' htmlFor="Loan Out Quantity">
+                    Loan Out Time
+                  </label>
+                  <Input placeholder="Loan Out Time" value={loanoutForm.loanout_time} />
+                </Col>
+                <Col span={24} className='mb-3'>
+                  <label className='flex mb-1' htmlFor="Loan Out Quantity">
+                    <span className='text-red-500 text-sx mNumber mr-1'>*</span>
+                    Loan Out Quantity
+                  </label>
+                  <InputNumber
+                    style={{width: '100%'}}
+                    min={0} 
+                    placeholder="Number" 
+                    value={loanoutForm.loanout_number} 
+                    addonAfter={ '<=' + loanoutForm.loanout_number}
+                    onChange={value => setLoanoutForm({...loanoutForm, loanout_number: value?? 0})} 
+                  />
+                </Col>
+                <Col span={24} className='mb-3'>
+                  <label className='flex mb-1' htmlFor="Loan Out Quantity">
+                    <span className='text-red-500 text-sx mr-1'>*</span>
+                    Loan Out User
+                  </label>
+                  <Input 
+                    placeholder="username" 
+                    value={loanoutForm.loanout_user}
+                    onChange={e => setLoanoutForm({...loanoutForm, loanout_user: e.target.value})}
+                  />
+                </Col>
+                <Col span={24} className='mt-3'>
+                  <Input.TextArea 
+                    placeholder='Remark' 
+                    showCount 
+                    rows={5}
+                    autoSize={{ minRows: 5, maxRows: 5 }}
+                    maxLength={100} 
+                  />
+                </Col>
+              </Row>
             </div>
           </Drawer>
         </div>
@@ -270,6 +416,7 @@ const Inventory = () => {
     <div className='p-3 w-full box-border'>
       <Card title="Inventory Management">
         <Tabs
+          activeKey={loanOutTabKeys}
           items={items}
           onChange={switchTabChange}
         />

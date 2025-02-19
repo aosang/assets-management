@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { Divider, FloatButton } from 'antd'
 import { FilePptOutlined, PictureOutlined, VerticalAlignTopOutlined, ArrowLeftOutlined } from '@ant-design/icons'
 import { useSearchParams, useRouter } from "next/navigation"
@@ -147,5 +147,13 @@ const KnowledgeTemplate = () => {
     </>
   )
 }
+
+const KnowledgeTemplateHtml: React.FC = () => {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <KnowledgeTemplate />
+    </Suspense>
+  )
+}
  
-export default KnowledgeTemplate
+export default KnowledgeTemplateHtml

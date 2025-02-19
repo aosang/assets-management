@@ -16,5 +16,30 @@ export const getLoanOutTableData = async (id?: string) => {
     if(error) throw error
     return data
   } 
+}
 
+export const insertLoanOutTableData = async ({
+  id,
+  loanout_name,
+  loanout_type,
+  loanout_brand,
+  loanout_number,
+  loanout_time,
+  loanout_user,
+  loanout_remark
+}) => {
+  const { data: loanoutData, error } = await supabase
+  .from('loanout_table')
+  .insert({
+    id,
+    loanout_name,
+    loanout_type,
+    loanout_brand,
+    loanout_number,
+    loanout_time,
+    loanout_user,
+    loanout_remark
+  })
+  if(error) throw error
+  return loanoutData
 }
