@@ -154,16 +154,16 @@ export const getAllAssetsCount = async () => {
       keyboardMouseNum, 
       othersNum
     ] = await Promise.all([
-      supabase.from('it_assets').select('*').eq('product_type', 'Computer'),
-      supabase.from('it_assets').select('*').eq('product_type', 'Laptop'),
-      supabase.from('it_assets').select('*').eq('product_type', 'Server'),
-      supabase.from('it_assets').select('*').eq('product_type', 'Switch'),
-      supabase.from('it_assets').select('*').eq('product_type', 'Printer'),
-      supabase.from('it_assets').select('*').eq('product_type', 'Router'),
-      supabase.from('it_assets').select('*').eq('product_type', 'Mobile'),
-      supabase.from('it_assets').select('*').eq('product_type', 'Monitor'),
-      supabase.from('it_assets').select('*').eq('product_type', 'Keyboard/Mouse'),
-      supabase.from('it_assets').select('*').eq('product_type', 'Others')
+      supabase.from('it_assets').select('product_number').eq('product_type', 'Computer'),
+      supabase.from('it_assets').select('product_number').eq('product_type', 'Laptop'),
+      supabase.from('it_assets').select('product_number').eq('product_type', 'Server'),
+      supabase.from('it_assets').select('product_number').eq('product_type', 'Switch'),
+      supabase.from('it_assets').select('product_number').eq('product_type', 'Printer'),
+      supabase.from('it_assets').select('product_number').eq('product_type', 'Router'),
+      supabase.from('it_assets').select('product_number').eq('product_type', 'Mobile'),
+      supabase.from('it_assets').select('product_number').eq('product_type', 'Monitor'),
+      supabase.from('it_assets').select('product_number').eq('product_type', 'Keyboard/Mouse'),
+      supabase.from('it_assets').select('product_number').eq('product_type', 'Others')
     ])
     
     if (computerNum.error) throw computerNum.error
@@ -178,17 +178,17 @@ export const getAllAssetsCount = async () => {
     if (othersNum.error) throw othersNum.error
 
     return {
-      computerNum: computerNum.data?.length || 0,
-      laptopNum: laptopNum.data?.length || 0,
-      serverNum: serverNum.data?.length || 0,
-      switchNum: switchNum.data?.length || 0,
-      printerNum: printerNum.data?.length || 0,
-      routerNum: routerNum.data?.length || 0,
-      mobileNum: mobileNum.data?.length || 0,
-      monitorNum: monitorNum.data?.length || 0,
-      keyboardMouseNum: keyboardMouseNum.data?.length || 0,
-      othersNum: othersNum.data?.length || 0,
-      total: (computerNum.data?.length || 0) + (laptopNum.data?.length || 0) + (serverNum.data?.length || 0) + (switchNum.data?.length || 0) + (printerNum.data?.length || 0) + (routerNum.data?.length || 0) + (mobileNum.data?.length || 0) + (monitorNum.data?.length || 0) + (keyboardMouseNum.data?.length || 0) + (othersNum.data?.length || 0)
+      computerNum: computerNum.data[0]?.product_number || 0,
+      laptopNum: laptopNum.data[0]?.product_number || 0,
+      serverNum: serverNum.data[0]?.product_number || 0,
+      switchNum: switchNum.data[0]?.product_number || 0,
+      printerNum: printerNum.data[0]?.product_number || 0,
+      routerNum: routerNum.data[0]?.product_number || 0,
+      mobileNum: mobileNum.data[0]?.product_number || 0,
+      monitorNum: monitorNum.data[0]?.product_number || 0,
+      keyboardMouseNum: keyboardMouseNum.data[0]?.product_number || 0,
+      othersNum: othersNum.data[0]?.product_number || 0,
+      total: (computerNum.data[0]?.product_number || 0) + (laptopNum.data[0]?.product_number || 0) + (serverNum.data[0]?.product_number || 0) + (switchNum.data[0]?.product_number || 0) + (printerNum.data[0]?.product_number || 0) + (routerNum.data[0]?.product_number || 0) + (mobileNum.data[0]?.product_number || 0) + (monitorNum.data[0]?.product_number || 0) + (keyboardMouseNum.data[0]?.product_number || 0) + (othersNum.data[0]?.product_number || 0)
     }
   }catch (error) {
     throw error

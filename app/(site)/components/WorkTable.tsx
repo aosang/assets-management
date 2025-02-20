@@ -84,11 +84,12 @@ const WorkTable: React.FC<workTableProps> = ({ workInfo, onChangeSelectData, onG
     <>
       <div className="mt-5">
         <Table
+          className='[&_.ant-table-thead>tr>th]:!bg-[#f0f5ff]'
           rowSelection={{...rowSelection}}
           columns={colums} 
           dataSource={workInfo}
           bordered
-          size="middle"
+          size="small"
           pagination={{ 
             position: ['bottomRight'], 
             pageSizeOptions: ['10', '20', '50'], 

@@ -89,6 +89,7 @@ const Home = () => {
 
   const fetchITAssetsCount = async () => {
     const res = await getAllAssetsCount()
+    
     setComputerNum(res.computerNum)
     setLaptopNum(res.laptopNum)
     setServerNum(res.serverNum)

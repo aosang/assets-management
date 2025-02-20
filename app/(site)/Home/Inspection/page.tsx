@@ -1,17 +1,17 @@
 'use client'
 import { useState, useEffect } from "react"
-import { Collapse, Space, Card, Row, Col, Button, Modal, Input, Divider, Table, Badge, Select, Empty, Result } from "antd"
+import { Collapse, Space, Card, Row, Col, Button, Modal, Input, Divider, Table, Badge, Select, Empty, Result, Spin } from "antd"
 import { SearchOutlined, DownloadOutlined, CheckOutlined, DeleteOutlined } from '@ant-design/icons'
 import { getInspectionStatusData, insertInspectionDeviceData, getInspectionDeviceData, deleteInspectionDevice, getInspectionDetailsDeviceData} from '@/utils/providerInspection'
 import { inspectionStatusItem, inspectionForms, inspectionItem, selectInspectionItem } from '@/utils/dbType'
 import { getTimeNumber, getDeviceData } from '@/utils/pubFunProvider'
 import { getProfiles, getUser } from '@/utils/providerSelectData'
 import useMessage from '@/utils/message'
-import Head from 'next/head'
 
 type inspectionStatusProps = inspectionStatusItem[]
 
 const Inspection: React.FC = () => {
+  const [isLoading, setIsLoading] = useState<boolean>(true)
   const [isModalDelete, setIsModalDelete] = useState<boolean>(false)
   const [deleteInspectionId, setDeleteInspectionId] = useState<string>('')
   const [deviceRecordListData, setDeviceRecordListData] = useState<inspectionForms[]>([])
@@ -183,6 +183,7 @@ const Inspection: React.FC = () => {
         if(res) {
           setDeviceRecordListData(res as inspectionForms[])
         }
+        setIsLoading(false)
       })
     })
   }
@@ -268,9 +269,6 @@ const Inspection: React.FC = () => {
 
   return (
     <>
-      <Head>
-        <title>Inspection</title>
-      </Head>
       <div className="w-full p-3 box-border">
         <Space direction="vertical" size={16} className="w-full">
           <Card title="Inspection Record" style={{ background: '#f0f2f5' }}>
@@ -287,78 +285,82 @@ const Inspection: React.FC = () => {
             <>
               {deviceRecordListData.length > 0? (
                 <>
-                  <Row gutter={20}> 
-                    {deviceRecordListData.map(item => {
-                      return (
-                        <Col span={6} key={item.inspection_id} className="mb-5">
-                          <Card className="relative">
-                            <Row className="mb-2">
-                              <Col span={24}><span className="text-sm">Time: {item.inspection_time}</span></Col>
-                            </Row>
-                            <Row className="mb-2">
-                              <Col span={24}><span className="text-sm">Status: {item.inspection_status}</span></Col>
-                            </Row>
-                            <Row className="mb-2">
-                              <Col span={12}><span className="text-sm">Inspector: {item.inspection_name}</span></Col>                       
-                              <Col span={12}><span className="text-sm">phone: {item.inspection_phone}</span></Col>
-                            </Row>
-                            <Row className="mb-2">
-                              <Col span={24}><span className="text-sm">Email: {item.inspection_email}</span></Col>
-                            </Row>
+                  <Spin size="default" tip="Loading" spinning={isLoading} className="bg-white">
+                    <Row gutter={20}> 
+                      {deviceRecordListData.map(item => {
+                        return (
+                          <Col span={6} key={item.inspection_id} className="mb-5">
+                            <Card className="relative">
+                              <Row className="mb-2">
+                                <Col span={24}><span className="text-sm">Time: {item.inspection_time}</span></Col>
+                              </Row>
+                              <Row className="mb-2">
+                                <Col span={24}><span className="text-sm">Status: {item.inspection_status}</span></Col>
+                              </Row>
+                              <Row className="mb-2">
+                                <Col span={12}><span className="text-sm">Inspector: {item.inspection_name}</span></Col>                       
+                                <Col span={12}><span className="text-sm">phone: {item.inspection_phone}</span></Col>
+                              </Row>
+                              <Row className="mb-2">
+                                <Col span={24}><span className="text-sm">Email: {item.inspection_email}</span></Col>
+                              </Row>
 
-                            {
-                              Number(item.inspection_number) === 0? (
-                                <div className="w-7 h-7 bg-green-500 rounded-full absolute top-5 right-5">
-                                  <CheckOutlined className="text-center text-white block leading-7 font-bold" />
-                                </div>
-                              ):(
-                                <div className="w-7 h-7 bg-red-400 rounded-full absolute top-5 right-5">
-                                  <span className="text-center text-white block leading-7">{item.inspection_number}</span>
-                                </div>
-                              )
-                            }
-                            
-                            <div className="mt-4">
-                              <Button 
-                                color="primary"
-                                size="small"
-                                icon={<SearchOutlined />}
-                                variant="filled"
-                                className="mr-3"
-                                onClick={() => getInspectionDetailsData(item.inspection_id)}
-                                >
-                                  Details
-                              </Button>
+                              {
+                                Number(item.inspection_number) === 0? (
+                                  <div className="w-7 h-7 bg-green-500 rounded-full absolute top-5 right-5">
+                                    <CheckOutlined className="text-center text-white block leading-7 font-bold" />
+                                  </div>
+                                ):(
+                                  <div className="w-7 h-7 bg-red-400 rounded-full absolute top-5 right-5">
+                                    <span className="text-center text-white block leading-7">{item.inspection_number}</span>
+                                  </div>
+                                )
+                              }
                               
-                              <Button
-                                className="bg-green-100 text-green-500 border-green-100 mr-3"
-                                size="small"
-                                icon={<DownloadOutlined />}
-                                onClick={() => saveInspectionFile(item.inspection_id)}
-                              >
-                                Download
-                              </Button>
+                              <div className="mt-4">
+                                <Button 
+                                  color="primary"
+                                  size="small"
+                                  icon={<SearchOutlined />}
+                                  variant="filled"
+                                  className="mr-3"
+                                  onClick={() => getInspectionDetailsData(item.inspection_id)}
+                                  >
+                                    Details
+                                </Button>
+                                
+                                <Button
+                                  className="bg-green-100 text-green-500 border-green-100 mr-3"
+                                  size="small"
+                                  icon={<DownloadOutlined />}
+                                  onClick={() => saveInspectionFile(item.inspection_id)}
+                                >
+                                  Download
+                                </Button>
 
-                              <Button
-                                color="danger"
-                                size="small"
-                                variant="filled"
-                                icon={<DeleteOutlined />}
-                                onClick={() => onDeleteInspection(item.inspection_id)}
-                              >
-                                Delete
-                              </Button>
-                            </div>
-                          </Card>
-                        </Col>
-                      )
-                    })}
-                  </Row>
+                                <Button
+                                  color="danger"
+                                  size="small"
+                                  variant="filled"
+                                  icon={<DeleteOutlined />}
+                                  onClick={() => onDeleteInspection(item.inspection_id)}
+                                >
+                                  Delete
+                                </Button>
+                              </div>
+                            </Card>
+                          </Col>
+                        )
+                      })}
+                    </Row>
+                  </Spin>
                 </>
               ) : (
-                <Empty description="Please Create the Inspection Record">
-                  <Button type="primary" onClick={createInspectionModalHandler}>Create Now</Button>
-                </Empty>
+                <Spin spinning={isLoading} className="bg-white" size="default" tip="Loading">
+                  <Empty description="Please Create the Inspection Record">
+                    <Button type="primary" onClick={createInspectionModalHandler}>Create Now</Button>
+                  </Empty>
+                </Spin>
               )}
             </>
           </Card>

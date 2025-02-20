@@ -1,3 +1,4 @@
+import dayjs from "dayjs"
 import { supabase } from "./clients"
 
 export const getLoanOutTableData = async (id?: string) => {
@@ -20,6 +21,7 @@ export const getLoanOutTableData = async (id?: string) => {
 
 export const insertLoanOutTableData = async ({
   id,
+  loanout_id,
   loanout_name,
   loanout_type,
   loanout_brand,
@@ -32,6 +34,7 @@ export const insertLoanOutTableData = async ({
   .from('loanout_table')
   .insert({
     id,
+    loanout_id,
     loanout_name,
     loanout_type,
     loanout_brand,
@@ -42,4 +45,32 @@ export const insertLoanOutTableData = async ({
   })
   if(error) throw error
   return loanoutData
+}
+
+export const updateLoanOutTableData = async ({
+  id,
+  loanout_number,
+  loanout_remark
+}) => {
+  const {data, error} = await supabase
+  .from('loanout_table')
+  .update({
+    loanout_number,
+    loanout_remark,
+  })
+  .eq('id', id)
+  
+  if(error) throw error
+  return data
+}
+
+export const deleteLoadoutTableData = async (id: string) => {
+  console.log(id)
+  
+  const { error } = await supabase
+  .from('loanout_table')
+  .delete()
+  .eq('loanout_id', id)
+
+  if(error) throw error
 }
