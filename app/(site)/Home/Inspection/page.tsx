@@ -1,12 +1,14 @@
 'use client'
 import { useState, useEffect } from "react"
-import { Collapse, Space, Card, Row, Col, Button, Modal, Input, Divider, Table, Badge, Select, Empty, Result, Spin } from "antd"
+import { Collapse, Space, Card, Row, Col, Button, Modal, Input, Divider, Table, Badge, Select, Empty, Result, Spin, DatePicker } from "antd"
 import { SearchOutlined, DownloadOutlined, CheckOutlined, DeleteOutlined } from '@ant-design/icons'
-import { getInspectionStatusData, insertInspectionDeviceData, getInspectionDeviceData, deleteInspectionDevice, getInspectionDetailsDeviceData} from '@/utils/providerInspection'
+import { IoIosSearch } from 'react-icons/io'
+import { getInspectionStatusData, insertInspectionDeviceData, getInspectionDeviceData, deleteInspectionDevice, getInspectionDetailsDeviceData, searchFilterInspectionData} from '@/utils/providerInspection'
 import { inspectionStatusItem, inspectionForms, inspectionItem, selectInspectionItem } from '@/utils/dbType'
 import { getTimeNumber, getDeviceData } from '@/utils/pubFunProvider'
 import { getProfiles, getUser } from '@/utils/providerSelectData'
 import useMessage from '@/utils/message'
+import dayjs from 'dayjs'
 
 type inspectionStatusProps = inspectionStatusItem[]
 
@@ -20,7 +22,13 @@ const Inspection: React.FC = () => {
   const [createInspectionModal, setCreateInspectionModal] = useState<boolean>(false)
   const [selectAssetsData, setSelectAssetsData] = useState<selectInspectionItem[]>([])
   const [inspectionDataStatus, setInspectionDataStatus] = useState<inspectionStatusProps>([])
+  const [inspectionFilterStatus, setInspectionFilterStatus] = useState<inspectionStatusProps>([])
   const [problemNumberIsDisable, setProblemNumberIsDisable] = useState<boolean>(false)
+
+  const [inspectionSelectStatus, setInspectionSelectStatus] = useState<string>('')
+  const [inspectionSelectStartTime, setInspectionSelectStartTime] = useState<string>('')
+  const [inspectionSelectEndTime, setInspectionSelectEndTime] = useState<string>('')
+
   const [inspectionDataForm, setInspectionDataForm] = useState<inspectionForms>({
     inspection_id: '',
     inspection_time: '',
@@ -232,14 +240,47 @@ const Inspection: React.FC = () => {
   const saveInspectionFile = (inspectionId: string) => {
     getInspectionDetailsDeviceData(inspectionId)
     .then(res => {
-      // console.log(res)
       window.sessionStorage.setItem('inspectionData', JSON.stringify(res))
       window.open('/InspectionFile', '_blank')
     })
   }
 
+  const getTypeStatusData = () => {
+    getInspectionStatusData()
+    .then(res => {
+      setInspectionFilterStatus(res as inspectionStatusProps)
+    })
+  }
+
+  const filterInspectionData = (e: any) => {
+    setInspectionSelectStatus(e)
+  }
+
+  const filterInspectionTimeData = (dateString: any) => {
+    let startTime = dateString? dateString[0].$d : ''
+    let endTime = dateString? dateString[1].$d : ''
+    startTime = startTime?  dayjs(startTime).format('MMM D, YYYY h:mm a') : ''
+    endTime = endTime? dayjs(endTime).format('MMM D, YYYY h:mm a') : ''
+    setInspectionSelectStartTime(startTime)
+    setInspectionSelectEndTime(endTime)
+  }
+
+  const searchFilterInspectionDataEvent = () => {
+    getUser().then(res => {
+      searchFilterInspectionData(res!.user!.id, inspectionSelectStatus, inspectionSelectStartTime, inspectionSelectEndTime)
+      .then(res => {
+        if(res) {
+          setDeviceRecordListData(res as inspectionForms[])
+        }
+        setIsLoading(false)
+      })
+    })
+  }
+
   useEffect(() => {
     getInspectionRecordListData()
+    getTypeStatusData()
+
     document.title = 'Inspection'
   }, [])
 
@@ -272,7 +313,7 @@ const Inspection: React.FC = () => {
       <div className="w-full p-3 box-border">
         <Space direction="vertical" size={16} className="w-full">
           <Card title="Inspection Record" style={{ background: '#f0f2f5' }}>
-            {deviceRecordListData.length > 0 && (
+            <div className="flex">
               <Button
                 type="primary"
                 className="mb-4"
@@ -280,13 +321,35 @@ const Inspection: React.FC = () => {
               >
                 Create
               </Button>
-            )}
+              <div className="ml-auto">
+                <Select 
+                  className="w-[200px] mr-3" 
+                  placeholder="Type" 
+                  options={inspectionFilterStatus}
+                  onChange={filterInspectionData}
+                  allowClear
+                >
+                </Select>
+                <DatePicker.RangePicker
+                  className="mr-3"
+                  format={'YYYY-MM-DD'}
+                  onChange={filterInspectionTimeData}
+                />
+                <Button 
+                  type='primary' 
+                  icon={<IoIosSearch />}
+                  onClick={searchFilterInspectionDataEvent}
+                >
+                </Button>
+              </div>
+            </div>
 
             <>
+              <Divider className="my-3 mx-0" />
               {deviceRecordListData.length > 0? (
                 <>
                   <Spin size="default" tip="Loading" spinning={isLoading} className="bg-white">
-                    <Row gutter={20}> 
+                    <Row gutter={20} className="mt-6"> 
                       {deviceRecordListData.map(item => {
                         return (
                           <Col span={6} key={item.inspection_id} className="mb-5">
@@ -357,9 +420,12 @@ const Inspection: React.FC = () => {
                 </>
               ) : (
                 <Spin spinning={isLoading} className="bg-white" size="default" tip="Loading">
-                  <Empty description="Please Create the Inspection Record">
-                    <Button type="primary" onClick={createInspectionModalHandler}>Create Now</Button>
-                  </Empty>
+                  <div className="mt-16">
+                    <Empty description="Please Create the Inspection Record">
+                      {/* <Button type="primary" onClick={createInspectionModalHandler}>Create Now</Button> */}
+                    </Empty>
+                  </div>
+                  
                 </Spin>
               )}
             </>

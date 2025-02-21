@@ -286,8 +286,8 @@ const WorkOrder: React.FC = ({ }) => {
   const getTimeFilterData = (dateString: any) => {
     let startTime = dateString? dateString[0].$d : ''
     let endTime = dateString? dateString[1].$d : ''
-    startTime = startTime? dayjs(startTime).format('YYYY-MM-DD') : ''
-    endTime = endTime? dayjs(endTime).format('YYYY-MM-DD'): ''
+    startTime = startTime? dayjs(startTime).format('MMM D, YYYY h:mm a') : ''
+    endTime = endTime? dayjs(endTime).format('MMM D, YYYY h:mm a'): ''
     setStartTime(startTime)
     setEndTime(endTime)
   }

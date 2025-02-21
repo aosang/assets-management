@@ -31,7 +31,7 @@ const headerStyle: React.CSSProperties = {
 
 const contentStyle: React.CSSProperties = {
   width: 'calc(100% - 14%)',
-  margin: '64px 0 48px auto'
+  margin: '64px 0 48px auto',
 }
 
 const footerStyle: React.CSSProperties = {
@@ -43,7 +43,6 @@ const footerStyle: React.CSSProperties = {
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  background: '#fff',
   color: '#001529',
   zIndex: 1
 }
@@ -76,7 +75,7 @@ const AppLayout = ({children, userId, update}) => {
           <Content style={contentStyle}>
             {children}
           </Content>
-          <Footer style={footerStyle}>Assets-Management with StevenWang ©2024</Footer>
+          <Footer style={footerStyle} className='bg-gray-200'>Assets-Management with StevenWang ©2024</Footer>
         </Layout>
       </Layout>
     </div>

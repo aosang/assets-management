@@ -14,6 +14,7 @@ import {
   Space,
   Input,
   InputNumber,
+  Spin
 } from 'antd'
 import { getWorkOrderType, getWorkBrand } from '@/utils/providerSelectData'
 import { insertItAssets, deleteItAssets, searchItAssetsData, getItAssetsTabbleData, editItAssetsData } from '@/utils/providerItAssetsData'
@@ -25,7 +26,8 @@ type asstesDataProps = productItem[]
 type typeDataProps = typeDataName[]
 type typeDataBrandProps = typeDataBrand[]
 
-const WorkItAssetsTable: React.FC = () => {
+const WorkItAssetsTable: React.FC = () => { 
+  const [isSpining, setIsSpining] = useState<boolean>(true)
   const [assetsData, setAssetsData] = useState<asstesDataProps>([])
   const [filterTypeValue, setFilterTypeValue] = useState<string | null>(null)
   const [filterStatusValue, setFilterStatusValue] = useState<string | null>(null)
@@ -77,11 +79,6 @@ const WorkItAssetsTable: React.FC = () => {
       key: 'product_time',
       width: 230
     },  {
-      title: 'Updated time',
-      dataIndex: 'product_update',
-      key: 'product_update',
-      width: 230
-    }, {
       title: 'Number',
       dataIndex: 'product_number',
       key: 'product_number'
@@ -164,6 +161,7 @@ const WorkItAssetsTable: React.FC = () => {
           product_update: dayjs(item.product_update).format('MMM D, YYYY h:mm a'),
         }))
         setAssetsData(formatData)
+        setIsSpining(false)
       })
   }
 
@@ -306,8 +304,8 @@ const WorkItAssetsTable: React.FC = () => {
   const getTimeFilterData = (dateString: any) => {
     let startTime = dateString? dateString[0].$d : ''
     let endTime = dateString? dateString[1].$d : ''
-    startTime = startTime?  dayjs(startTime).format('YYYY-MM-DD') : ''
-    endTime = endTime? dayjs(endTime).format('YYYY-MM-DD') : ''
+    startTime = startTime?  dayjs(startTime).format('MMM D, YYYY h:mm a') : ''
+    endTime = endTime? dayjs(endTime).format('MMM D, YYYY h:mm a') : ''
     setFilterStartTime(startTime)
     setFilterEndTime(endTime)
   }
@@ -446,8 +444,7 @@ const WorkItAssetsTable: React.FC = () => {
             </Col>
 
             <Col span={layoutWidth}>
-              <label htmlFor="Price" className='mb-1 flex items-center font-semibold'
-              >
+              <label htmlFor="Price" className='mb-1 flex items-center font-semibold'>
                 <span className='mr-1 text-red-600 font-thin'>*</span>
                 Total Price <i className='text-xs text-gray-500 not-italic ml-2'>(Unit Price * Quantity)</i>
               </label>
@@ -459,8 +456,8 @@ const WorkItAssetsTable: React.FC = () => {
                 value={assetsDataForm.product_price}
                 onChange={e => {
                   setAssetsDataForm({
-                 ...assetsDataForm,
-                    product_price: Number(e)
+                  ...assetsDataForm,
+                  product_price: Number(e)
                   })
                 }}
               />
@@ -737,15 +734,6 @@ const WorkItAssetsTable: React.FC = () => {
             onChange={filterTypeDataText}
             value={filterTypeValue}
           />
-          {/* <Select
-            style={{width: '32%'}}
-            className='w-40 mr-3' 
-            placeholder="Status" 
-            allowClear
-            options={assetsStatus}
-            onChange={filterStatusDataText}
-            value={filterStatusValue}
-          /> */}
           <DatePicker.RangePicker
             className='mr-3'
             format={'YYYY-MM-DD'}
@@ -760,20 +748,23 @@ const WorkItAssetsTable: React.FC = () => {
         </Col>
       </Row>
       <div className='mt-5'>
-        <Table
-          className='[&_.ant-table-thead>tr>th]:!bg-[#f0f5ff]'
-          rowSelection={{...rowSelection}} 
-          size='small'
-          bordered
-          columns={columns}
-          dataSource={assetsData}
-          scroll={{ x: '1300px' }}
-          pagination={{ 
-            position: ['bottomRight'], 
-            pageSizeOptions: ['10', '20', '50'], 
-            showSizeChanger: true
-          }}
-        />
+        <Divider />
+        <Spin className='bg-white' size='default' tip="Laoding" spinning={isSpining}>
+          <Table
+            className='[&_.ant-table-thead>tr>th]:!bg-[#f0f5ff]'
+            rowSelection={{...rowSelection}} 
+            size='small'
+            bordered
+            columns={columns}
+            dataSource={assetsData}
+            scroll={{ x: '1300px' }}
+            pagination={{ 
+              position: ['bottomRight'], 
+              pageSizeOptions: ['10', '20', '50'], 
+              showSizeChanger: true
+            }}
+          />
+        </Spin>
       </div>
     </div>
   )
