@@ -1,15 +1,26 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { Card, Tabs, Table, Button, Drawer, Descriptions, Tag, Row, Col, Input, InputNumber, Empty } from 'antd'
+import { Card, Tabs, Table, Button, Drawer, Descriptions, Tag, Row, Col, Input, InputNumber, Empty, Select } from 'antd'
 import type { TabsProps } from 'antd'
-import { productItem, inventoryItem } from '@/utils/dbType'
+import { productItem, inventoryItem, inspectionStatusItem, typeDataName } from '@/utils/dbType'
 import { getItAssetsTabbleData } from '@/utils/providerItAssetsData'
-import { getLoanOutTableData, insertLoanOutTableData, updateLoanOutTableData, deleteLoadoutTableData } from '@/utils/providerLoanOut'
+import { getLoanOutTableData, insertLoanOutTableData, updateLoanOutTableData, deleteLoadoutTableData, searchInventoryTableData, searchLoanoutTableData } from '@/utils/providerLoanOut'
+import { getWorkOrderType } from '@/utils/providerSelectData'
 import dayjs from 'dayjs'
 import useMessage from '@/utils/message'
 import { getTimeNumber } from '@/utils/pubFunProvider'
+import { IoIosSearch } from 'react-icons/io'
 
 const Inventory = () => {
+  const [searchTypeText, setSearchTypeText] = useState<string | null>(null)
+  const [searchProductText, setSearchProductText] = useState<string | null>(null)
+  const [searchProductName, setSearchProductName] = useState<inspectionStatusItem[]>([])
+  const [searchTypeSelect, setSearchTypeSelect] = useState<typeDataName[]>([])
+  
+  const [searchLoanoutType, setSearchLoanoutType] = useState<string | null>(null)
+  const [searchLoanoutProductText, setSearchLoanoutText] = useState<string | null>(null)
+  const [searchLoanoutProdutcName, setSearchLoanoutProdutcName] = useState<inspectionStatusItem[]>([])
+  
   const [loanOutTabKeys, setLoanOutTabKeys] = useState<string>('1')
   const [inventoryData, setInventoryData] = useState<productItem[]>([])
   const [loanOutData, setLoanOutData] = useState<inventoryItem[]>([])
@@ -27,12 +38,14 @@ const Inventory = () => {
     loanout_time: getTimeNumber()[0],
     loanout_user: '',
     loanout_remark: '',
+    value: ''
   })
 
 
   const getInventoryData = () => {
     getItAssetsTabbleData().then(data => {
       setInventoryData(data as productItem[])
+      setSearchProductName(data as inspectionStatusItem[])
     })
   }
 
@@ -49,6 +62,7 @@ const Inventory = () => {
       loanout_type: deviceData![0].product_type,
       loanout_brand: deviceData![0].product_brand,
       loanout_time: dayjs().format('MMM D, YYYY h:mm a'),
+      value: deviceData![0].product_name
     })
 
     const loanOutData = await getLoanOutTableData(id)
@@ -89,6 +103,7 @@ const Inventory = () => {
       loanout_time: '',
       loanout_user: '',
       loanout_remark: '',
+      value: ''
     })
   }
 
@@ -137,6 +152,17 @@ const Inventory = () => {
     }
   }
 
+  const getLoanoutProductName = async () => {
+    getLoanOutTableData().then(data => {
+      const formatData = data?.map(item => ({
+       ...item,
+        value: item.loanout_name
+      }))
+      setSearchLoanoutProdutcName(formatData as inspectionStatusItem[])
+    })
+  }
+
+
   const returnDeviceLoanoutEvent = () => {
     const { loanout_number, loanout_id } = loanoutForm
     if (loanout_number === 0 || loanout_number > returnDeviceNum) {
@@ -174,6 +200,26 @@ const Inventory = () => {
         return
       }
     }
+  }
+
+  const searchFilterTableData = () => {
+    searchInventoryTableData(searchTypeText ,searchProductText).then(data => {
+      getItAssetsTabbleData().then(() => {
+        setInventoryData(data as productItem[])
+      })
+    })
+  }
+
+  const searchLoanoutFilterTableData = () => {
+    searchLoanoutTableData(searchLoanoutType, searchLoanoutProductText).then(data => {
+      getLoanOutTableData().then(() => {
+        const formatData = data?.map(item => ({
+         ...item,
+          loanout_time: dayjs().format('MMM D, YYYY h:mm a')
+        }))
+        setLoanOutData(formatData as inventoryItem[])
+      })
+    })
   }
 
   const inventoryColumns = [{
@@ -278,6 +324,35 @@ const Inventory = () => {
       label: 'Inventory',
       children:
         <div>
+          <div className='mb-4 flex'>
+            <div className='ml-auto'>
+              <Select 
+                className='w-[160px] mr-2' 
+                placeholder="Select type"
+                options={searchTypeSelect}
+                allowClear
+                value={searchTypeText}
+                onChange={e => setSearchTypeText(e)}
+              >
+              </Select>
+              <Select 
+                className='w-[220px] mr-2' 
+                placeholder='Select product' 
+                options={searchProductName}
+                allowClear
+                showSearch
+                value={searchProductText}
+                onChange={e => setSearchProductText(e)}
+              >  
+              </Select>
+              <Button 
+                type='primary' 
+                icon={<IoIosSearch />}
+                onClick={searchFilterTableData}
+              >  
+              </Button>
+            </div>
+          </div>
           <Table
             columns={inventoryColumns}
             dataSource={inventoryData}
@@ -463,6 +538,36 @@ const Inventory = () => {
       label: 'Loan out',
       children:
         <div>
+          <div className='mb-4 flex'>
+            <div className='ml-auto'>
+            <Select 
+                className='w-[160px] mr-2' 
+                placeholder="Select type"
+                options={searchTypeSelect}
+                allowClear
+                value={searchLoanoutType}
+                onChange={e => setSearchLoanoutType(e)}
+              >
+              </Select>
+              <Select 
+                className='w-[220px] mr-2' 
+                placeholder='Select product' 
+                options={searchLoanoutProdutcName}
+                allowClear
+                showSearch
+                value={searchLoanoutProductText}
+                onChange={e => setSearchLoanoutText(e)}
+                onFocus={getLoanoutProductName}
+              >  
+              </Select>
+              <Button 
+                type='primary' 
+                icon={<IoIosSearch />}
+                onClick={searchLoanoutFilterTableData}
+              >
+              </Button>
+            </div>
+          </div>
           <Table
             columns={loanOutColumns}
             dataSource={loanOutData}
@@ -475,12 +580,19 @@ const Inventory = () => {
               showSizeChanger: true
             }}
           />
-        </div>,
+        </div>
     }
   ]
 
+  const getInventoryTypeData = () => {
+    getWorkOrderType().then(data => {
+      setSearchTypeSelect(data as typeDataName[])
+    })
+  }
+
   useEffect(() => {
     getInventoryData()
+    getInventoryTypeData()
     document.title = 'Inventory Management'
   }, [])
 

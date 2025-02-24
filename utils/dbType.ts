@@ -131,5 +131,6 @@ export interface inventoryItem {
   loanout_number: number,
   return_number?: number,
   loanout_user: string,
-  loanout_remark: string
+  loanout_remark: string,
+  value: string
 }

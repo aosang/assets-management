@@ -110,7 +110,7 @@ export const deleteItAssets = async (id: string[]) => {
 }
 
 export const searchItAssetsData = async (
-  type?: string | null, status?: string | null, startTime?: string | null, endTime?: string | null
+  type?: string | null,  startTime?: string | null, endTime?: string | null
 ) => {
   if (type && !startTime) {
     const { data, error } = await supabase.

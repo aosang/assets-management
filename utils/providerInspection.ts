@@ -2,7 +2,6 @@ import { supabase } from "./clients"
 import useMessage from "@/utils/message"
 import { getTimeNumber } from "./pubFunProvider"
 import { inspectionForms } from '@/utils/dbType'
-import dayjs from "dayjs"
 
 export const getInspectionStatusData = async () => {
   const { data, error } = await supabase.from('inspection_status').select('*')
