@@ -19,7 +19,7 @@ import {
 } from '@/utils/providerSelectData'
 import { editWorkOrderData } from '@/utils/pubEditProviders'
 import { getFilterWorkStatus, getFilterWorkType, searchTypeData } from '@/utils/pubFilterProviders'
-import { Card, Space, Button, Row, Col, Modal, Divider, Select, Input, DatePicker } from 'antd'
+import { Card, Space, Button, Row, Col, Modal, Divider, Select, Input, DatePicker, Skeleton } from 'antd'
 import { IoIosSearch } from "react-icons/io"
 import { useState, useEffect } from 'react'
 import { getTimeNumber, getDeviceData } from '@/utils/pubFunProvider'
@@ -33,6 +33,8 @@ type typeDataBrandProps = typeDataBrand[]
 type statusItemProps = statusItem[]
 
 const WorkOrder: React.FC = ({ }) => {
+  const [isLoading, setIsLoading] = useState<boolean>(true)
+
   const [layoutWidth, setLayoutWidth] = useState<number>(8)
   const [productBrandShow, setProductBrandShow] = useState<boolean>(false)
   const [deleteDataId, setDeleteDataId] = useState<string[]>([])
@@ -233,6 +235,7 @@ const WorkOrder: React.FC = ({ }) => {
         getWorkOrder(id as string)
           .then(res => {
             setWorkData(res as tableItems[])
+            setIsLoading(false)
           })
       })
   }
@@ -284,10 +287,10 @@ const WorkOrder: React.FC = ({ }) => {
   }
 
   const getTimeFilterData = (dateString: any) => {
-    let startTime = dateString? dateString[0].$d : ''
-    let endTime = dateString? dateString[1].$d : ''
-    startTime = startTime? dayjs(startTime).format('MMM D, YYYY h:mm a') : ''
-    endTime = endTime? dayjs(endTime).format('MMM D, YYYY h:mm a'): ''
+    let startTime = dateString ? dateString[0].$d : ''
+    let endTime = dateString ? dateString[1].$d : ''
+    startTime = startTime ? dayjs(startTime).format('MMM D, YYYY h:mm a') : ''
+    endTime = endTime ? dayjs(endTime).format('MMM D, YYYY h:mm a') : ''
     setStartTime(startTime)
     setEndTime(endTime)
   }
@@ -312,472 +315,475 @@ const WorkOrder: React.FC = ({ }) => {
     <div style={{ width: '100%', padding: '12px', boxSizing: 'border-box' }}>
       <Space direction="vertical" size={16} style={{ width: '100%' }}>
         <Card title="WorkOrder">
-          <Row gutter={10}>
-            <Col>
-              <Button type='primary' onClick={modalAddHandler}>Create</Button>
-            </Col>
-            <Col>
-              <Button type='primary' danger onClick={onDeleteModal}>Delete</Button>
-            </Col>
-            <Col className='flex my-0 mr-0 ml-auto'>
-              <Select
-                className='w-40 mr-3'
-                placeholder="Type"
-                onFocus={getFilterType}
-                onChange={searchFilterTypeData}
-                options={typeFilter}
-                value={filterTypeValue}
-                allowClear
-              >
-              </Select>
-              <Select
-                className='w-40 mr-3'
-                placeholder="Status"
-                onFocus={getFilterStatus}
-                onChange={searchFilterStatusData}
-                options={statusFilter}
-                value={filterStatusValue}
-                allowClear
-              >
-              </Select>
-              <DatePicker.RangePicker
-                className='mr-3'
-                onChange={getTimeFilterData}
-                format={'YYYY-MM-DD'}
-              />
-              <Button type='primary' icon={<IoIosSearch />} onClick={searchFilterWorkOrderData}></Button>
-            </Col>
-          </Row>
+          <Skeleton loading={isLoading} active paragraph={{rows: 10}}>
+            <Row gutter={10}>
+              <Col>
+                <Button type='primary' onClick={modalAddHandler}>Create</Button>
+              </Col>
+              <Col>
+                <Button type='primary' danger onClick={onDeleteModal}>Delete</Button>
+              </Col>
+              <Col className='flex my-0 mr-0 ml-auto'>
+                <Select
+                  className='w-40 mr-3'
+                  placeholder="Type"
+                  onFocus={getFilterType}
+                  onChange={searchFilterTypeData}
+                  options={typeFilter}
+                  value={filterTypeValue}
+                  allowClear
+                >
+                </Select>
+                <Select
+                  className='w-40 mr-3'
+                  placeholder="Status"
+                  onFocus={getFilterStatus}
+                  onChange={searchFilterStatusData}
+                  options={statusFilter}
+                  value={filterStatusValue}
+                  allowClear
+                >
+                </Select>
+                <DatePicker.RangePicker
+                  className='mr-3'
+                  onChange={getTimeFilterData}
+                  format={'YYYY-MM-DD'}
+                />
+                <Button type='primary' icon={<IoIosSearch />} onClick={searchFilterWorkOrderData}></Button>
+              </Col>
+            </Row>
 
-          {/* delete */}
-          <Modal
-            title="Tips"
-            open={isModalDelete}
-            onOk={onDeleteConfirm}
-            onCancel={() => setIsModalDelete(false)}
-          >
-            <p className="text-sm text-black">Are you sure you want to delete this data?</p>
-          </Modal>
+            {/* delete */}
+            <Modal
+              title="Tips"
+              open={isModalDelete}
+              onOk={onDeleteConfirm}
+              onCancel={() => setIsModalDelete(false)}
+            >
+              <p className="text-sm text-black">Are you sure you want to delete this data?</p>
+            </Modal>
 
-          {/* add */}
-          <Modal
-            title="Create Work Order"
-            width={1000}
-            open={isModalAddOpen}
-            onOk={confirmModalForm}
-            onCancel={cancelModalForm}
-            okText="Confirm"
-            cancelText="Cancel"
-            afterClose={onClosedHandler}
-            maskClosable={false}
-          >
-            <Divider />
-            <Space direction="vertical" size="middle" style={{ width: '100%' }}>
-              <Row gutter={12}>
-                <Col span={8}>
-                  <label
-                    htmlFor="Product"
-                    className='mb-1 flex items-center font-semibold'
-                  >
-                    <span className='mr-1 text-red-600 font-thin'>*</span>
-                    Product
-                  </label>
-                  <Select 
-                    className='w-full' 
-                    options={deviceData} 
-                    placeholder="Select the product"
-                    showSearch
-                    allowClear
-                    onChange={e => setWorkOrderForm({ ...workOrderForm, created_product: e })}
-                  >
-                  </Select>
-                </Col>
-                <Col span={8}>
-                  <label
-                    htmlFor="Create_name"
-                    className='mb-1 flex items-center font-semibold'
-                  >
-                    <span className='mr-1 text-red-600  font-thin'>*</span>
-                    Create name
-                  </label>
-                  <Input
-                    style={{ width: '100%' }}
-                    readOnly
-                    value={workOrderForm.created_name}
-                  />
-                </Col>
-                <Col span={8}>
-                  <label
-                    htmlFor="Status"
-                    className='mb-1 flex items-center font-semibold'
-                  >
-                    <span className='mr-1 text-red-600 font-thin'>*</span>
-                    Status
-                  </label>
-                  <Select
-                    style={{ width: '100%' }}
-                    placeholder='Status'
-                    options={typeStatus}
-                    value={workOrderForm.created_status}
-                    onChange={e => setWorkOrderForm({ ...workOrderForm, created_status: e })}
-                  >
-                  </Select>
-                </Col>
-              </Row>
-              <Row gutter={15}>
-                <Col span={layoutWidth}>
-                  <label
-                    htmlFor="Create_name"
-                    className='mb-1 flex items-center font-semibold'
-                  >
-                    <span className='mr-1 text-red-600  font-thin'>*</span>
-                    Create time
-                  </label>
-                  <Input
-                    style={{ width: '100%' }}
-                    readOnly
-                    value={workOrderForm.created_time}
-                  />
-                </Col>
-                <Col span={layoutWidth}>
-                  <label
-                    htmlFor="Create_name"
-                    className='mb-1 flex items-center font-semibold'
-                  >
-                    <span className='mr-1 text-red-600  font-thin'>*</span>
-                    Update time
-                  </label>
-                  <Input
-                    style={{ width: '100%' }}
-                    readOnly
-                    value={workOrderForm.created_update}
-                  />
-                </Col>
-                <Col span={layoutWidth}>
-                  {/* product type */}
-                  <label
-                    htmlFor="Type"
-                    className='mb-1 flex items-center font-semibold'
-                  >
-                    <span className='mr-1 text-red-600 font-thin'>*</span>
-                    Type
-                  </label>
-                  <Select
-                    style={{ width: '100%' }}
-                    options={typeData}
-                    placeholder='Product type'
-                    onChange={selectProductType}
-                    value={workOrderForm.created_type}
-                    allowClear
-                  >
-                  </Select>
-                </Col>
-                {productBrandShow && (
-                  <Col span={layoutWidth}>
+            {/* add */}
+            <Modal
+              title="Create Work Order"
+              width={1000}
+              open={isModalAddOpen}
+              onOk={confirmModalForm}
+              onCancel={cancelModalForm}
+              okText="Confirm"
+              cancelText="Cancel"
+              afterClose={onClosedHandler}
+              maskClosable={false}
+            >
+              <Divider />
+              <Space direction="vertical" size="middle" style={{ width: '100%' }}>
+                <Row gutter={12}>
+                  <Col span={8}>
                     <label
-                      htmlFor="Brand"
+                      htmlFor="Product"
                       className='mb-1 flex items-center font-semibold'
                     >
                       <span className='mr-1 text-red-600 font-thin'>*</span>
-                      Brand
+                      Product
                     </label>
                     <Select
-                      style={{ width: '100%' }}
-                      placeholder='Product brand'
-                      options={typeDataBrand.map(item => {
-                        return {
-                          label:
-                            <div className='flex items-center'>
-                              {selectOpen && <img src={item.logo_url} alt='avatar' className='mr-2 w-7' />}<span className='w-7 mt-0.5'>{item.value}</span>
-                            </div>,
-                          value: item.value
-                        }
-                      })}
-                      value={workOrderForm.created_brand}
-                      onChange={e => setWorkOrderForm({ ...workOrderForm, created_brand: e })}
+                      className='w-full'
+                      options={deviceData}
+                      placeholder="Select the product"
+                      showSearch
                       allowClear
-                      onDropdownVisibleChange={onTriggerSelected}
+                      onChange={e => setWorkOrderForm({ ...workOrderForm, created_product: e })}
                     >
                     </Select>
                   </Col>
-                )}
-              </Row>
-              <Row>
-                <Col span={24}>
-                  <label
-                    htmlFor="Problem"
-                    className='mb-1 flex items-center font-semibold'
-                  >
-                    <span className='mr-1 text-red-600 font-thin'>*</span>
-                    Problem
-                  </label>
-                  <Input.TextArea
-                    rows={5}
-                    autoSize={{ minRows: 5, maxRows: 5 }}
-                    placeholder='Describe the device problem'
-                    value={workOrderForm.created_text}
-                    onChange={e => setWorkOrderForm({ ...workOrderForm, created_text: e.target.value })}
-                    maxLength={260}
-                    showCount
-                  />
-                </Col>
-              </Row>
-              <Row>
-                <Col span={24}>
-                  <label
-                    htmlFor="Solution"
-                    className='mb-1 flex items-center font-semibold'
-                  >
-                    <span className='mr-1 text-red-600 font-thin'>*</span>
-                    Solution
-                  </label>
-                  <Input.TextArea
-                    rows={5}
-                    placeholder='Describe the solution'
-                    autoSize={{ minRows: 5, maxRows: 5 }}
-                    value={workOrderForm.created_solved}
-                    onChange={e => setWorkOrderForm({ ...workOrderForm, created_solved: e.target.value })}
-                    maxLength={260}
-                    showCount
-                  />
-                </Col>
-              </Row>
-              <Row>
-                <Col span={24}>
-                  <label
-                    htmlFor="Remark"
-                    className='mb-1 flex items-center font-semibold'
-                  >
-                    Remark
-                  </label>
-                  <Input.TextArea
-                    rows={4}
-                    placeholder='Remark'
-                    autoSize={{ minRows: 3, maxRows: 3 }}
-                    value={workOrderForm.created_remark}
-                    onChange={e => setWorkOrderForm({ ...workOrderForm, created_remark: e.target.value })}
-                    maxLength={120}
-                    showCount
-                  />
-                </Col>
-              </Row>
-            </Space>
-            <Divider />
-          </Modal>
-
-          {/* edit */}
-          <Modal
-            title="Edit Work Order"
-            width={1000}
-            open={isModalEditOpen}
-            onOk={confirmEditModalForm}
-            onCancel={editCancelModalForm}
-            okText="Confirm"
-            cancelText="Cancel"
-            afterClose={onClosedHandler}
-            maskClosable={false}
-          >
-            <Divider />
-            <Space direction="vertical" size="middle" style={{ width: '100%' }}>
-              <Row gutter={15}>
-                <Col span={8}>
-                  <label
-                    htmlFor="Product"
-                    className='mb-1 flex items-center font-semibold'
-                  >
-                    <span className='mr-1 text-red-600 font-thin'>*</span>
-                    Product
-                  </label>
-                  <Select 
-                    className='w-full' 
-                    options={deviceData} 
-                    placeholder="Select the product"
-                    showSearch
-                    allowClear
-                    onChange={e => setWorkOrderForm({ ...workOrderForm, created_product: e })}
-                    value={workOrderForm.created_product}
-                  >
-                  </Select>
-                </Col>
-                <Col span={8}>
-                  <label
-                    htmlFor="Create_name"
-                    className='mb-1 flex items-center font-semibold'
-                  >
-                    <span className='mr-1 text-red-600  font-thin'>*</span>
-                    Create name
-                  </label>
-                  <Input
-                    style={{ width: '100%' }}
-                    readOnly
-                    value={workOrderForm.created_name}
-                  />
-                </Col>
-                <Col span={8}>
-                  <label
-                    htmlFor="Status"
-                    className='mb-1 flex items-center font-semibold'
-                  >
-                    <span className='mr-1 text-red-600 font-thin'>*</span>
-                    Status
-                  </label>
-                  <Select
-                    style={{ width: '100%' }}
-                    placeholder='Status'
-                    options={typeStatus}
-                    value={workOrderForm.created_status}
-                    onChange={e => setWorkOrderForm({ ...workOrderForm, created_status: e })}
-                  >
-                  </Select>
-                </Col>
-              </Row>
-              <Row gutter={15}>
-                <Col span={layoutWidth}>
-                  <label
-                    htmlFor="Create_time"
-                    className='mb-1 flex items-center font-semibold'
-                  >
-                    <span className='mr-1 text-red-600  font-thin'>*</span>
-                    Created time
-                  </label>
-                  <Input
-                    style={{ width: '100%' }}
-                    readOnly
-                    value={workOrderForm.created_time}
-                  />
-                </Col>
-                <Col span={layoutWidth}>
-                  <label
-                    htmlFor="Create_time"
-                    className='mb-1 flex items-center font-semibold'
-                  >
-                    <span className='mr-1 text-red-600  font-thin'>*</span>
-                    Updated time
-                  </label>
-                  <Input
-                    style={{ width: '100%' }}
-                    readOnly
-                    value={workOrderForm.created_update}
-                  />
-                </Col>
-                <Col span={layoutWidth}>
-                  {/* product type */}
-                  <label
-                    htmlFor="Type"
-                    className='mb-1 flex items-center font-semibold'
-                  >
-                    <span className='mr-1 text-red-600 font-thin'>*</span>
-                    Type
-                  </label>
-                  <Select
-                    style={{ width: '100%' }}
-                    options={typeData}
-                    placeholder='Product type'
-                    onChange={selectProductType}
-                    value={workOrderForm.created_type}
-                    allowClear
-                  >
-                  </Select>
-                </Col>
-                {productBrandShow && (
-                  <Col span={layoutWidth}>
+                  <Col span={8}>
                     <label
-                      htmlFor="Brand"
+                      htmlFor="Create_name"
+                      className='mb-1 flex items-center font-semibold'
+                    >
+                      <span className='mr-1 text-red-600  font-thin'>*</span>
+                      Create name
+                    </label>
+                    <Input
+                      style={{ width: '100%' }}
+                      readOnly
+                      value={workOrderForm.created_name}
+                    />
+                  </Col>
+                  <Col span={8}>
+                    <label
+                      htmlFor="Status"
                       className='mb-1 flex items-center font-semibold'
                     >
                       <span className='mr-1 text-red-600 font-thin'>*</span>
-                      Brand
+                      Status
                     </label>
                     <Select
                       style={{ width: '100%' }}
-                      placeholder='Product brand'
-                      options={typeDataBrand.map(item => {
-                        return {
-                          label:
-                            <div className='flex'>
-                              {selectOpen && <img src={item.logo_url} alt='avatar' className='mr-2 w-6' />}<span className='w-7 mt-0.5'>{item.value}</span>
-                            </div>,
-                          value: item.value
-                        }
-                      })}
-                      value={workOrderForm.created_brand}
-                      onChange={e => setWorkOrderForm({ ...workOrderForm, created_brand: e })}
-                      allowClear
-                      onDropdownVisibleChange={onTriggerSelected}
+                      placeholder='Status'
+                      options={typeStatus}
+                      value={workOrderForm.created_status}
+                      onChange={e => setWorkOrderForm({ ...workOrderForm, created_status: e })}
                     >
                     </Select>
                   </Col>
-                )}
-              </Row>
-              <Row>
-                <Col span={24}>
-                  <label
-                    htmlFor="Problem"
-                    className='mb-1 flex items-center font-semibold'
-                  >
-                    <span className='mr-1 text-red-600 font-thin'>*</span>
-                    Problem
-                  </label>
-                  <Input.TextArea
-                    rows={5}
-                    autoSize={{ minRows: 5, maxRows: 5 }}
-                    placeholder='Describe the device problem'
-                    value={workOrderForm.created_text}
-                    onChange={e => setWorkOrderForm({ ...workOrderForm, created_text: e.target.value })}
-                    maxLength={260}
-                    showCount
-                  />
-                </Col>
-              </Row>
-              <Row>
-                <Col span={24}>
-                  <label
-                    htmlFor="Solution"
-                    className='mb-1 flex items-center font-semibold'
-                  >
-                    <span className='mr-1 text-red-600 font-thin'>*</span>
-                    Solution
-                  </label>
-                  <Input.TextArea
-                    rows={5}
-                    placeholder='Describe the solution'
-                    autoSize={{ minRows: 5, maxRows: 5 }}
-                    value={workOrderForm.created_solved}
-                    onChange={e => setWorkOrderForm({ ...workOrderForm, created_solved: e.target.value })}
-                    maxLength={260}
-                    showCount
-                  />
-                </Col>
-              </Row>
-              <Row>
-                <Col span={24}>
-                  <label
-                    htmlFor="Remark"
-                    className='mb-1 flex items-center font-semibold'
-                  >
-                    Remark
-                  </label>
-                  <Input.TextArea
-                    rows={4}
-                    placeholder='Remark'
-                    autoSize={{ minRows: 3, maxRows: 3 }}
-                    value={workOrderForm.created_remark}
-                    onChange={e => setWorkOrderForm({ ...workOrderForm, created_remark: e.target.value })}
-                    maxLength={120}
-                    showCount
-                  />
-                </Col>
-              </Row>
-            </Space>
-            <Divider />
-          </Modal>
+                </Row>
+                <Row gutter={15}>
+                  <Col span={layoutWidth}>
+                    <label
+                      htmlFor="Create_name"
+                      className='mb-1 flex items-center font-semibold'
+                    >
+                      <span className='mr-1 text-red-600  font-thin'>*</span>
+                      Create time
+                    </label>
+                    <Input
+                      style={{ width: '100%' }}
+                      readOnly
+                      value={workOrderForm.created_time}
+                    />
+                  </Col>
+                  <Col span={layoutWidth}>
+                    <label
+                      htmlFor="Create_name"
+                      className='mb-1 flex items-center font-semibold'
+                    >
+                      <span className='mr-1 text-red-600  font-thin'>*</span>
+                      Update time
+                    </label>
+                    <Input
+                      style={{ width: '100%' }}
+                      readOnly
+                      value={workOrderForm.created_update}
+                    />
+                  </Col>
+                  <Col span={layoutWidth}>
+                    {/* product type */}
+                    <label
+                      htmlFor="Type"
+                      className='mb-1 flex items-center font-semibold'
+                    >
+                      <span className='mr-1 text-red-600 font-thin'>*</span>
+                      Type
+                    </label>
+                    <Select
+                      style={{ width: '100%' }}
+                      options={typeData}
+                      placeholder='Product type'
+                      onChange={selectProductType}
+                      value={workOrderForm.created_type}
+                      allowClear
+                    >
+                    </Select>
+                  </Col>
+                  {productBrandShow && (
+                    <Col span={layoutWidth}>
+                      <label
+                        htmlFor="Brand"
+                        className='mb-1 flex items-center font-semibold'
+                      >
+                        <span className='mr-1 text-red-600 font-thin'>*</span>
+                        Brand
+                      </label>
+                      <Select
+                        style={{ width: '100%' }}
+                        placeholder='Product brand'
+                        options={typeDataBrand.map(item => {
+                          return {
+                            label:
+                              <div className='flex items-center'>
+                                {selectOpen && <img src={item.logo_url} alt='avatar' className='mr-2 w-7' />}<span className='w-7 mt-0.5'>{item.value}</span>
+                              </div>,
+                            value: item.value
+                          }
+                        })}
+                        value={workOrderForm.created_brand}
+                        onChange={e => setWorkOrderForm({ ...workOrderForm, created_brand: e })}
+                        allowClear
+                        onDropdownVisibleChange={onTriggerSelected}
+                      >
+                      </Select>
+                    </Col>
+                  )}
+                </Row>
+                <Row>
+                  <Col span={24}>
+                    <label
+                      htmlFor="Problem"
+                      className='mb-1 flex items-center font-semibold'
+                    >
+                      <span className='mr-1 text-red-600 font-thin'>*</span>
+                      Problem
+                    </label>
+                    <Input.TextArea
+                      rows={5}
+                      autoSize={{ minRows: 5, maxRows: 5 }}
+                      placeholder='Describe the device problem'
+                      value={workOrderForm.created_text}
+                      onChange={e => setWorkOrderForm({ ...workOrderForm, created_text: e.target.value })}
+                      maxLength={260}
+                      showCount
+                    />
+                  </Col>
+                </Row>
+                <Row>
+                  <Col span={24}>
+                    <label
+                      htmlFor="Solution"
+                      className='mb-1 flex items-center font-semibold'
+                    >
+                      <span className='mr-1 text-red-600 font-thin'>*</span>
+                      Solution
+                    </label>
+                    <Input.TextArea
+                      rows={5}
+                      placeholder='Describe the solution'
+                      autoSize={{ minRows: 5, maxRows: 5 }}
+                      value={workOrderForm.created_solved}
+                      onChange={e => setWorkOrderForm({ ...workOrderForm, created_solved: e.target.value })}
+                      maxLength={260}
+                      showCount
+                    />
+                  </Col>
+                </Row>
+                <Row>
+                  <Col span={24}>
+                    <label
+                      htmlFor="Remark"
+                      className='mb-1 flex items-center font-semibold'
+                    >
+                      Remark
+                    </label>
+                    <Input.TextArea
+                      rows={4}
+                      placeholder='Remark'
+                      autoSize={{ minRows: 3, maxRows: 3 }}
+                      value={workOrderForm.created_remark}
+                      onChange={e => setWorkOrderForm({ ...workOrderForm, created_remark: e.target.value })}
+                      maxLength={120}
+                      showCount
+                    />
+                  </Col>
+                </Row>
+              </Space>
+              <Divider />
+            </Modal>
 
-          <WorkTable
-            workInfo={workData}
-            onChangeSelectData={onDeleteData}
-            onGetEditData={onEditData}
-          />
+            {/* edit */}
+            <Modal
+              title="Edit Work Order"
+              width={1000}
+              open={isModalEditOpen}
+              onOk={confirmEditModalForm}
+              onCancel={editCancelModalForm}
+              okText="Confirm"
+              cancelText="Cancel"
+              afterClose={onClosedHandler}
+              maskClosable={false}
+            >
+              <Divider />
+              <Space direction="vertical" size="middle" style={{ width: '100%' }}>
+                <Row gutter={15}>
+                  <Col span={8}>
+                    <label
+                      htmlFor="Product"
+                      className='mb-1 flex items-center font-semibold'
+                    >
+                      <span className='mr-1 text-red-600 font-thin'>*</span>
+                      Product
+                    </label>
+                    <Select
+                      className='w-full'
+                      options={deviceData}
+                      placeholder="Select the product"
+                      showSearch
+                      allowClear
+                      onChange={e => setWorkOrderForm({ ...workOrderForm, created_product: e })}
+                      value={workOrderForm.created_product}
+                    >
+                    </Select>
+                  </Col>
+                  <Col span={8}>
+                    <label
+                      htmlFor="Create_name"
+                      className='mb-1 flex items-center font-semibold'
+                    >
+                      <span className='mr-1 text-red-600  font-thin'>*</span>
+                      Create name
+                    </label>
+                    <Input
+                      style={{ width: '100%' }}
+                      readOnly
+                      value={workOrderForm.created_name}
+                    />
+                  </Col>
+                  <Col span={8}>
+                    <label
+                      htmlFor="Status"
+                      className='mb-1 flex items-center font-semibold'
+                    >
+                      <span className='mr-1 text-red-600 font-thin'>*</span>
+                      Status
+                    </label>
+                    <Select
+                      style={{ width: '100%' }}
+                      placeholder='Status'
+                      options={typeStatus}
+                      value={workOrderForm.created_status}
+                      onChange={e => setWorkOrderForm({ ...workOrderForm, created_status: e })}
+                    >
+                    </Select>
+                  </Col>
+                </Row>
+                <Row gutter={15}>
+                  <Col span={layoutWidth}>
+                    <label
+                      htmlFor="Create_time"
+                      className='mb-1 flex items-center font-semibold'
+                    >
+                      <span className='mr-1 text-red-600  font-thin'>*</span>
+                      Created time
+                    </label>
+                    <Input
+                      style={{ width: '100%' }}
+                      readOnly
+                      value={workOrderForm.created_time}
+                    />
+                  </Col>
+                  <Col span={layoutWidth}>
+                    <label
+                      htmlFor="Create_time"
+                      className='mb-1 flex items-center font-semibold'
+                    >
+                      <span className='mr-1 text-red-600  font-thin'>*</span>
+                      Updated time
+                    </label>
+                    <Input
+                      style={{ width: '100%' }}
+                      readOnly
+                      value={workOrderForm.created_update}
+                    />
+                  </Col>
+                  <Col span={layoutWidth}>
+                    {/* product type */}
+                    <label
+                      htmlFor="Type"
+                      className='mb-1 flex items-center font-semibold'
+                    >
+                      <span className='mr-1 text-red-600 font-thin'>*</span>
+                      Type
+                    </label>
+                    <Select
+                      style={{ width: '100%' }}
+                      options={typeData}
+                      placeholder='Product type'
+                      onChange={selectProductType}
+                      value={workOrderForm.created_type}
+                      allowClear
+                    >
+                    </Select>
+                  </Col>
+                  {productBrandShow && (
+                    <Col span={layoutWidth}>
+                      <label
+                        htmlFor="Brand"
+                        className='mb-1 flex items-center font-semibold'
+                      >
+                        <span className='mr-1 text-red-600 font-thin'>*</span>
+                        Brand
+                      </label>
+                      <Select
+                        style={{ width: '100%' }}
+                        placeholder='Product brand'
+                        options={typeDataBrand.map(item => {
+                          return {
+                            label:
+                              <div className='flex'>
+                                {selectOpen && <img src={item.logo_url} alt='avatar' className='mr-2 w-6' />}<span className='w-7 mt-0.5'>{item.value}</span>
+                              </div>,
+                            value: item.value
+                          }
+                        })}
+                        value={workOrderForm.created_brand}
+                        onChange={e => setWorkOrderForm({ ...workOrderForm, created_brand: e })}
+                        allowClear
+                        onDropdownVisibleChange={onTriggerSelected}
+                      >
+                      </Select>
+                    </Col>
+                  )}
+                </Row>
+                <Row>
+                  <Col span={24}>
+                    <label
+                      htmlFor="Problem"
+                      className='mb-1 flex items-center font-semibold'
+                    >
+                      <span className='mr-1 text-red-600 font-thin'>*</span>
+                      Problem
+                    </label>
+                    <Input.TextArea
+                      rows={5}
+                      autoSize={{ minRows: 5, maxRows: 5 }}
+                      placeholder='Describe the device problem'
+                      value={workOrderForm.created_text}
+                      onChange={e => setWorkOrderForm({ ...workOrderForm, created_text: e.target.value })}
+                      maxLength={260}
+                      showCount
+                    />
+                  </Col>
+                </Row>
+                <Row>
+                  <Col span={24}>
+                    <label
+                      htmlFor="Solution"
+                      className='mb-1 flex items-center font-semibold'
+                    >
+                      <span className='mr-1 text-red-600 font-thin'>*</span>
+                      Solution
+                    </label>
+                    <Input.TextArea
+                      rows={5}
+                      placeholder='Describe the solution'
+                      autoSize={{ minRows: 5, maxRows: 5 }}
+                      value={workOrderForm.created_solved}
+                      onChange={e => setWorkOrderForm({ ...workOrderForm, created_solved: e.target.value })}
+                      maxLength={260}
+                      showCount
+                    />
+                  </Col>
+                </Row>
+                <Row>
+                  <Col span={24}>
+                    <label
+                      htmlFor="Remark"
+                      className='mb-1 flex items-center font-semibold'
+                    >
+                      Remark
+                    </label>
+                    <Input.TextArea
+                      rows={4}
+                      placeholder='Remark'
+                      autoSize={{ minRows: 3, maxRows: 3 }}
+                      value={workOrderForm.created_remark}
+                      onChange={e => setWorkOrderForm({ ...workOrderForm, created_remark: e.target.value })}
+                      maxLength={120}
+                      showCount
+                    />
+                  </Col>
+                </Row>
+              </Space>
+              <Divider />
+            </Modal>
+
+            <WorkTable
+              workInfo={workData}
+              onChangeSelectData={onDeleteData}
+              onGetEditData={onEditData}
+            />
+          </Skeleton>
         </Card>
+
       </Space>
     </div>
   )

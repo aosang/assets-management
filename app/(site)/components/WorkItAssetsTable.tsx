@@ -1,20 +1,21 @@
 'use client'
-import { useEffect, useState} from 'react'
+import { useEffect, useState } from 'react'
 import dayjs from 'dayjs'
-import{ typeDataName, typeDataBrand, productItem } from '@/utils/dbType'
-import { 
-  Button, 
-  Row, 
-  Col, 
-  Select, 
-  DatePicker, 
-  Table, 
-  Modal, 
+import { typeDataName, typeDataBrand, productItem } from '@/utils/dbType'
+import {
+  Button,
+  Row,
+  Col,
+  Select,
+  DatePicker,
+  Table,
+  Modal,
   Divider,
   Space,
   Input,
   InputNumber,
-  Spin
+  Spin,
+  Skeleton
 } from 'antd'
 import { getWorkOrderType, getWorkBrand } from '@/utils/providerSelectData'
 import { insertItAssets, deleteItAssets, searchItAssetsData, getItAssetsTabbleData, editItAssetsData } from '@/utils/providerItAssetsData'
@@ -26,8 +27,8 @@ type asstesDataProps = productItem[]
 type typeDataProps = typeDataName[]
 type typeDataBrandProps = typeDataBrand[]
 
-const WorkItAssetsTable: React.FC = () => { 
-  const [isSpining, setIsSpining] = useState<boolean>(true)
+const WorkItAssetsTable: React.FC = () => {
+  const [isLoading, setIsLoading] = useState<boolean>(true)
   const [assetsData, setAssetsData] = useState<asstesDataProps>([])
   const [filterTypeValue, setFilterTypeValue] = useState<string | null>(null)
   const [filterStatusValue, setFilterStatusValue] = useState<string | null>(null)
@@ -65,25 +66,27 @@ const WorkItAssetsTable: React.FC = () => {
       title: 'Type',
       dataIndex: 'product_type',
       key: 'product_type',
+      width: 150
     }, {
       title: 'Brand',
       dataIndex: 'product_brand',
       key: 'product_brand',
-    },  {
+    }, {
       title: 'Product',
       dataIndex: 'product_name',
       key: 'product_name'
-    },  {
+    }, {
       title: 'Created time',
       dataIndex: 'product_time',
       key: 'product_time',
       width: 230
-    },  {
+    }, {
       title: 'Number',
       dataIndex: 'product_number',
       key: 'product_number'
     }, {
       title: 'Total Price',
+      width: 150,
       dataIndex: 'product_price',
       render: (record: number) => {
         return (
@@ -106,7 +109,7 @@ const WorkItAssetsTable: React.FC = () => {
               type='primary'
               size='small'
               onClick={() => onRowData.onClick(record)}
-              style={{fontSize: '13px'}}
+              style={{ fontSize: '13px' }}
             >
               Edit
             </Button>
@@ -128,27 +131,27 @@ const WorkItAssetsTable: React.FC = () => {
   const getCreateTime = () => {
     let myCreateTimeData = getTimeNumber()[0]
     setAssetsDataForm({
-     ...assetsDataForm,
+      ...assetsDataForm,
       product_time: myCreateTimeData,
       product_update: myCreateTimeData
     })
   }
 
   const onAddItAssets = () => {
-    if(assetsDataForm.product_name === '') {
-      useMessage(2, 'Please enter the product name','error')
-    }else if(assetsDataForm.product_number <= 0) {
-      useMessage(2, 'Please enter the product number','error')
-    }else if(assetsDataForm.product_price <= 0) {
-      useMessage(2, 'Please enter the product price','error')
-    } else if(!assetsDataForm.product_type) {
-      useMessage(2, 'Please select the product type','error')
-    }else {
+    if (assetsDataForm.product_name === '') {
+      useMessage(2, 'Please enter the product name', 'error')
+    } else if (assetsDataForm.product_number <= 0) {
+      useMessage(2, 'Please enter the product number', 'error')
+    } else if (assetsDataForm.product_price <= 0) {
+      useMessage(2, 'Please enter the product price', 'error')
+    } else if (!assetsDataForm.product_type) {
+      useMessage(2, 'Please select the product type', 'error')
+    } else {
       setAddItAssetsShow(false)
       insertItAssets(assetsDataForm)
-      .then(() => {
-        getMyItAssetsData()
-      })
+        .then(() => {
+          getMyItAssetsData()
+        })
     }
   }
 
@@ -161,7 +164,7 @@ const WorkItAssetsTable: React.FC = () => {
           product_update: dayjs(item.product_update).format('MMM D, YYYY h:mm a'),
         }))
         setAssetsData(formatData)
-        setIsSpining(false)
+        setIsLoading(false)
       })
   }
 
@@ -178,7 +181,7 @@ const WorkItAssetsTable: React.FC = () => {
         ...record,
         product_name: record.product_name,
         product_type: record.product_type,
-        product_brand: record. product_brand,
+        product_brand: record.product_brand,
         product_time: record.product_time,
         product_update: getTimeNumber()[0],
         product_number: record.product_number,
@@ -191,20 +194,20 @@ const WorkItAssetsTable: React.FC = () => {
 
   // edit confirm data
   const onConfirmEditAssetsData = () => {
-    if(assetsDataForm.product_name === '') {
-      useMessage(2, 'Please enter the product name','error')
-    }else if(!assetsDataForm.product_type) {
-      useMessage(2, 'Please select the product type','error')
-    }else if(assetsDataForm.product_number <= 0) {
-      useMessage(2, 'Please select the product number','error')
-    }else if(assetsDataForm.product_price <= 0) {
-      useMessage(2, 'Please enter the product price','error')
+    if (assetsDataForm.product_name === '') {
+      useMessage(2, 'Please enter the product name', 'error')
+    } else if (!assetsDataForm.product_type) {
+      useMessage(2, 'Please select the product type', 'error')
+    } else if (assetsDataForm.product_number <= 0) {
+      useMessage(2, 'Please select the product number', 'error')
+    } else if (assetsDataForm.product_price <= 0) {
+      useMessage(2, 'Please enter the product price', 'error')
     } else {
       editItAssetsData(isEditId, assetsDataForm)
-      .then(() => {
-        setIsEditModalShow(false)
-        getMyItAssetsData()
-      })
+        .then(() => {
+          setIsEditModalShow(false)
+          getMyItAssetsData()
+        })
     }
   }
 
@@ -242,7 +245,7 @@ const WorkItAssetsTable: React.FC = () => {
 
   const assetsProductBrand = (keys: string) => {
     setAssetsDataForm({
-    ...assetsDataForm,
+      ...assetsDataForm,
       product_brand: keys
     })
   }
@@ -251,7 +254,7 @@ const WorkItAssetsTable: React.FC = () => {
   const clearAssetsDataForm = () => {
     setProductBrandShow(false)
     setLayoutWidth(8)
- 
+
     setAssetsDataForm({
       id: '',
       product_name: '',
@@ -263,7 +266,7 @@ const WorkItAssetsTable: React.FC = () => {
       product_username: '',
       product_price: 0,
       product_remark: '',
-      value:''
+      value: ''
     })
   }
 
@@ -279,49 +282,49 @@ const WorkItAssetsTable: React.FC = () => {
 
   // Delete data
   const deleteAssetsDataIdHandler = () => {
-    if(deleteAssetsDataId.length > 0) return setIsModalDelete(true)
-    useMessage(2, 'Please select the data you want to delete','error')
+    if (deleteAssetsDataId.length > 0) return setIsModalDelete(true)
+    useMessage(2, 'Please select the data you want to delete', 'error')
   }
 
   // Confirm delete data
   const confirmDeleteAssetsData = () => {
     setIsModalDelete(false)
     deleteItAssets(deleteAssetsDataId)
-    .then (() => {
-      getMyItAssetsData()
-      setFilterStatusValue(null)
-      setFilterTypeValue(null)
-      setFilterStartTime('')
-      setFilterEndTime('')
-    })
+      .then(() => {
+        getMyItAssetsData()
+        setFilterStatusValue(null)
+        setFilterTypeValue(null)
+        setFilterStartTime('')
+        setFilterEndTime('')
+      })
   }
 
   // filter data
   const filterTypeDataText = (e: string) => {
     setFilterTypeValue(e)
   }
-  
+
   const getTimeFilterData = (dateString: any) => {
-    let startTime = dateString? dateString[0].$d : ''
-    let endTime = dateString? dateString[1].$d : ''
-    startTime = startTime?  dayjs(startTime).format('MMM D, YYYY h:mm a') : ''
-    endTime = endTime? dayjs(endTime).format('MMM D, YYYY h:mm a') : ''
+    let startTime = dateString ? dateString[0].$d : ''
+    let endTime = dateString ? dateString[1].$d : ''
+    startTime = startTime ? dayjs(startTime).format('MMM D, YYYY h:mm a') : ''
+    endTime = endTime ? dayjs(endTime).format('MMM D, YYYY h:mm a') : ''
     setFilterStartTime(startTime)
     setFilterEndTime(endTime)
   }
 
   const searchFilterItAssetsData = () => {
-    searchItAssetsData(filterTypeValue, filterStatusValue, filterStartTime, filterEndTime)
-    .then(res => {
-      setAssetsData(res as asstesDataProps)
-    })
+    searchItAssetsData(filterTypeValue,  filterStartTime, filterEndTime)
+      .then(res => {
+        setAssetsData(res as asstesDataProps)
+      })
   }
 
   useEffect(() => {
     getWorkOrderType()
-    .then(res => {
-      setTypeData(res as typeDataProps)
-    })
+      .then(res => {
+        setTypeData(res as typeDataProps)
+      })
     getMyItAssetsData()
   }, [])
 
@@ -337,8 +340,8 @@ const WorkItAssetsTable: React.FC = () => {
       </Modal>
 
       {/* add modal */}
-      <Modal 
-        open={addItAssetsShow} 
+      <Modal
+        open={addItAssetsShow}
         title="Add an IT device"
         onCancel={() => setAddItAssetsShow(false)}
         onOk={onAddItAssets}
@@ -346,7 +349,7 @@ const WorkItAssetsTable: React.FC = () => {
         maskClosable={false}
         width={1000}
       >
-        <Divider/>
+        <Divider />
         <Space direction="vertical" size="middle" style={{ width: '100%' }}>
           <Row gutter={20}>
             {/* product name */}
@@ -361,7 +364,7 @@ const WorkItAssetsTable: React.FC = () => {
                 value={assetsDataForm.product_name}
                 onChange={e => {
                   setAssetsDataForm({
-                   ...assetsDataForm,
+                    ...assetsDataForm,
                     product_name: e.target.value,
                     value: e.target.value
                   })
@@ -431,7 +434,7 @@ const WorkItAssetsTable: React.FC = () => {
               </label>
               <InputNumber
                 min={0}
-                style={{ width: '100%'}}
+                style={{ width: '100%' }}
                 placeholder='Product number'
                 value={assetsDataForm.product_number}
                 onChange={e => {
@@ -450,20 +453,20 @@ const WorkItAssetsTable: React.FC = () => {
               </label>
               <InputNumber
                 min={0}
-                style={{ width: '100%'}}
+                style={{ width: '100%' }}
                 placeholder='Product price'
                 addonAfter="USD"
                 value={assetsDataForm.product_price}
                 onChange={e => {
                   setAssetsDataForm({
-                  ...assetsDataForm,
-                  product_price: Number(e)
+                    ...assetsDataForm,
+                    product_price: Number(e)
                   })
                 }}
               />
             </Col>
           </Row>
-          
+
           <Row gutter={20}>
             {/* create time */}
             <Col span={12}>
@@ -512,7 +515,7 @@ const WorkItAssetsTable: React.FC = () => {
                 value={assetsDataForm.product_remark}
                 onChange={e => {
                   setAssetsDataForm({
-                 ...assetsDataForm,
+                    ...assetsDataForm,
                     product_remark: e.target.value
                   })
                 }}
@@ -520,12 +523,12 @@ const WorkItAssetsTable: React.FC = () => {
             </Col>
           </Row>
         </Space>
-        <Divider/>
+        <Divider />
       </Modal>
 
       {/* edit modal */}
       <Modal
-        title="Edit Device" 
+        title="Edit Device"
         open={isEditModalShow}
         onOk={onConfirmEditAssetsData}
         onCancel={() => setIsEditModalShow(false)}
@@ -533,7 +536,7 @@ const WorkItAssetsTable: React.FC = () => {
         maskClosable={false}
         width={1000}
       >
-        <Divider/>
+        <Divider />
         <Space direction="vertical" size="middle" style={{ width: '100%' }}>
           <Row gutter={15}>
             {/* product name */}
@@ -614,14 +617,14 @@ const WorkItAssetsTable: React.FC = () => {
                 Number
               </label>
               <InputNumber
-                  min={0}
-                  style={{ width: '100%'}}
-                  placeholder='Product price'
-                  addonAfter="USD"
-                  value={assetsDataForm.product_number}
-                  onChange={e => {
+                min={0}
+                style={{ width: '100%' }}
+                placeholder='Product price'
+                addonAfter="USD"
+                value={assetsDataForm.product_number}
+                onChange={e => {
                   setAssetsDataForm({
-                  ...assetsDataForm,
+                    ...assetsDataForm,
                     product_number: Number(e)
                   })
                 }}
@@ -635,13 +638,13 @@ const WorkItAssetsTable: React.FC = () => {
               </label>
               <InputNumber
                 min={0}
-                style={{ width: '100%'}}
+                style={{ width: '100%' }}
                 placeholder='Product price'
                 addonAfter="USD"
                 value={assetsDataForm.product_price}
                 onChange={e => {
                   setAssetsDataForm({
-                 ...assetsDataForm,
+                    ...assetsDataForm,
                     product_price: Number(e)
                   })
                 }}
@@ -694,7 +697,7 @@ const WorkItAssetsTable: React.FC = () => {
                 value={assetsDataForm.product_remark}
                 onChange={e => {
                   setAssetsDataForm({
-                 ...assetsDataForm,
+                    ...assetsDataForm,
                     product_remark: e.target.value
                   })
                 }}
@@ -702,72 +705,76 @@ const WorkItAssetsTable: React.FC = () => {
             </Col>
           </Row>
         </Space>
-        <Divider/>
-      </Modal>
-
-      <Row gutter={10}>
-        <Col>
-          <Button 
-            type='primary' 
-            onClick={modalAddDeviceHandler}
-          >
-            Create
-          </Button>
-        </Col>
-
-        <Col>
-         <Button 
-            type='primary' 
-            danger
-            onClick={deleteAssetsDataIdHandler}
-          >
-            Delete
-          </Button>
-        </Col>
-
-        <Col className='flex my-0 mr-0 ml-auto'>
-          <Select
-            className='w-40 mr-3' 
-            placeholder="Type" 
-            allowClear
-            options={typeData}
-            onChange={filterTypeDataText}
-            value={filterTypeValue}
-          />
-          <DatePicker.RangePicker
-            className='mr-3'
-            format={'YYYY-MM-DD'}
-            onChange={getTimeFilterData}
-          />
-          <Button 
-            type='primary' 
-            icon={<IoIosSearch />}
-            onClick={searchFilterItAssetsData}
-          >
-         </Button>
-        </Col>
-      </Row>
-      <div className='mt-5'>
         <Divider />
-        <Spin className='bg-white' size='default' tip="Laoding" spinning={isSpining}>
+      </Modal>
+    
+      <Skeleton loading={isLoading} active paragraph={{rows: 10}}>
+        <Row gutter={10}>
+          <Col>
+            <Button
+              type='primary'
+              onClick={modalAddDeviceHandler}
+            >
+              Create
+            </Button>
+          </Col>
+
+          <Col>
+            <Button
+              type='primary'
+              danger
+              onClick={deleteAssetsDataIdHandler}
+            >
+              Delete
+            </Button>
+          </Col>
+
+          <Col className='flex my-0 mr-0 ml-auto'>
+            <Select
+              className='w-40 mr-3'
+              placeholder="Type"
+              allowClear
+              options={typeData}
+              onChange={filterTypeDataText}
+              value={filterTypeValue}
+            />
+            <DatePicker.RangePicker
+              className='mr-3'
+              format={'YYYY-MM-DD'}
+              onChange={getTimeFilterData}
+            />
+            <Button
+              type='primary'
+              icon={<IoIosSearch />}
+              onClick={searchFilterItAssetsData}
+            >
+            </Button>
+          </Col>
+        </Row>
+        <div className='mt-5'>
+          <Divider />
+
           <Table
             className='[&_.ant-table-thead>tr>th]:!bg-[#f0f5ff]'
-            rowSelection={{...rowSelection}} 
-            size='small'
+            rowSelection={{ ...rowSelection }}
+            size='middle'
             bordered
             columns={columns}
             dataSource={assetsData}
             scroll={{ x: '1300px' }}
-            pagination={{ 
-              position: ['bottomRight'], 
-              pageSizeOptions: ['10', '20', '50'], 
-              showSizeChanger: true
+            pagination={{
+              position: ['bottomRight'],
+              pageSizeOptions: ['10', '20', '50'],
+              showSizeChanger: true,
+              style: {
+                marginBottom: '-5px'
+              }
             }}
           />
-        </Spin>
-      </div>
+        </div>
+      </Skeleton>
     </div>
   )
 }
- 
+
 export default WorkItAssetsTable

@@ -193,7 +193,7 @@ const EditorPage = ({isEdit, setIsEdit, onSubmit}: {
             </label>
             <Input
               showCount
-              maxLength={60}
+              maxLength={70}
               value={knowledgeItem.title} 
               placeholder="Enter knowledge title"
               onChange={changeTitleValue}

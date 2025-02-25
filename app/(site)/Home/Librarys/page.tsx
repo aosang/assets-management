@@ -1,9 +1,8 @@
 "use client"
 import { useState, useEffect } from "react"
-import { Card, Button, Select, List, Divider, Tag, Modal } from "antd"
+import { Card, Button, Select, List, Divider, Tag, Modal, Skeleton } from "antd"
 import { getWorkOrderType } from "@/utils/providerSelectData"
 import { typeDataName, knowledgeTypeItem } from "@/utils/dbType"
-import Head from "next/head"
 import dynamic from "next/dynamic"
 import useMessage  from "@/utils/message"
 import { ImBooks } from "react-icons/im"
@@ -25,6 +24,7 @@ const UpdateEditor = dynamic(() => import('../../components/EditorUpdate'), {
 
 const Librarys = () => {
   const router = useRouter()
+  const [isLoading, setIsLoading] = useState<boolean>(true)
   const [libraryList, setLibraryList] = useState<knowledgeTypeItem[]>([])
   const [LibrarysType, setLibrarysType] = useState<typeDataName[]>([])
   const [editorModal, setEditorModal] = useState<boolean>(false)
@@ -42,6 +42,7 @@ const Librarys = () => {
   const getLibraryListData = (type?: string) => {
     getLibraryTableData(type).then(res => {
       setLibraryList(res as [])
+      setIsLoading(false)
     })
   }
 
@@ -87,9 +88,7 @@ const Librarys = () => {
       >
         <p>Are you sure you want to delete this Librarys?</p>
       </Modal>
-      <Head>
-        <title>Librarys</title>
-      </Head>
+    
       <div style={{ width: '100%', padding: '12px', boxSizing: 'border-box', overflowY: 'visible' }}>
         <Card>
           <div
@@ -105,6 +104,7 @@ const Librarys = () => {
             <ImBooks style={{ color: '#4483f5', opacity: 0.65 }} className="text-4xl" />
             <span className="text-base ml-6" style={{ color: '#00091a' }}>IT Equipment Knowledge Base</span>
           </div>
+          <Skeleton active loading={isLoading} paragraph={{rows: 10}}>
           {(!editorModal && !updateEditorModal) &&
             <>
               <div className="flex mt-4 items-center">
@@ -184,6 +184,7 @@ const Librarys = () => {
               </div>
             </>
           }
+          </Skeleton>
           {editorModal && 
             <div className="mt-4">
               <ReactWEditor 

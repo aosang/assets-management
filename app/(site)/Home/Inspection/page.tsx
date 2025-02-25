@@ -1,9 +1,9 @@
 'use client'
 import { useState, useEffect } from "react"
-import { Collapse, Space, Card, Row, Col, Button, Modal, Input, Divider, Table, Badge, Select, Empty, Result, Spin, DatePicker } from "antd"
+import { Collapse, Space, Card, Row, Col, Button, Modal, Input, Divider, Table, Badge, Select, Empty, Result, Skeleton, DatePicker } from "antd"
 import { SearchOutlined, DownloadOutlined, CheckOutlined, DeleteOutlined } from '@ant-design/icons'
 import { IoIosSearch } from 'react-icons/io'
-import { getInspectionStatusData, insertInspectionDeviceData, getInspectionDeviceData, deleteInspectionDevice, getInspectionDetailsDeviceData, searchFilterInspectionData} from '@/utils/providerInspection'
+import { getInspectionStatusData, insertInspectionDeviceData, getInspectionDeviceData, deleteInspectionDevice, getInspectionDetailsDeviceData, searchFilterInspectionData } from '@/utils/providerInspection'
 import { inspectionStatusItem, inspectionForms, inspectionItem, selectInspectionItem } from '@/utils/dbType'
 import { getTimeNumber, getDeviceData } from '@/utils/pubFunProvider'
 import { getProfiles, getUser } from '@/utils/providerSelectData'
@@ -61,7 +61,7 @@ const Inspection: React.FC = () => {
       setInspectionDataForm({
         ...inspectionDataForm,
         inspection_deviceData: inspectionDataForm.inspection_deviceData!.filter(item => {
-          return item.inspection_id!== record.inspection_id
+          return item.inspection_id !== record.inspection_id
         })
       })
     }
@@ -80,14 +80,14 @@ const Inspection: React.FC = () => {
     getUser()
       .then((res) => {
         getProfiles(res?.user!.id as string)
-        .then(res => {
-          setInspectionDataForm({
-            ...inspectionDataForm,
-            inspection_time: getTimeNumber()[0],
-            inspection_email: res![0].email || '',
-            inspection_name: res![0].username || ''
+          .then(res => {
+            setInspectionDataForm({
+              ...inspectionDataForm,
+              inspection_time: getTimeNumber()[0],
+              inspection_email: res![0].email || '',
+              inspection_name: res![0].username || ''
+            })
           })
-        })
       })
   }
 
@@ -100,10 +100,10 @@ const Inspection: React.FC = () => {
     if (e === 'Discovered problem') {
       setProblemNumberIsDisable(false)
       getDeviceData(e)
-      .then(res => {
-        setSelectAssetsData(res as selectInspectionItem[])
-      })
-    }else {
+        .then(res => {
+          setSelectAssetsData(res as selectInspectionItem[])
+        })
+    } else {
       setProblemNumberIsDisable(true)
     }
   }
@@ -125,19 +125,19 @@ const Inspection: React.FC = () => {
   }
 
   const confirmProblemDeviceName = () => {
-    const {inspection_device, inspection_description} = inspectionItemForm
-    if(!inspection_device) {
+    const { inspection_device, inspection_description } = inspectionItemForm
+    if (!inspection_device) {
       useMessage(2, 'Please enter the problem device', 'error')
-    }else if(!inspection_description) {
+    } else if (!inspection_description) {
       useMessage(2, 'Please enter the problem description', 'error')
-    }else {
+    } else {
       setInspectionDataForm({
         ...inspectionDataForm,
         inspection_deviceData: [...inspectionDataForm.inspection_deviceData!, inspectionItemForm]
       })
-  
+
       setInspectionItemForm({
-      ...inspectionItemForm,
+        ...inspectionItemForm,
         key: '',
         inspection_description: '',
         inspection_device: null
@@ -146,30 +146,30 @@ const Inspection: React.FC = () => {
   }
 
   const insertInspectionRecordData = () => {
-    const {inspection_status, inspection_phone, inspection_number, inspection_deviceData} = inspectionDataForm
-    if(!inspection_status) {
+    const { inspection_status, inspection_phone, inspection_number, inspection_deviceData } = inspectionDataForm
+    if (!inspection_status) {
       useMessage(2, 'Please select the status', 'error')
-    }else if(!inspection_phone) {
+    } else if (!inspection_phone) {
       useMessage(2, 'Please enter phone number', 'error')
-    }else{
-      if(inspection_status === 'Discovered problem') {
-        if(inspection_number === 0) {
+    } else {
+      if (inspection_status === 'Discovered problem') {
+        if (inspection_number === 0) {
           useMessage(2, 'Please enter the number of problem devices', 'error')
-        }else if (inspection_number !== inspection_deviceData?.length) {
+        } else if (inspection_number !== inspection_deviceData?.length) {
           useMessage(2, 'The number of problem devices is not equal to the number of problem devices', 'error')
-        }else {
+        } else {
           setCreateInspectionModal(false)
           insertInspectionDeviceData(inspectionDataForm)
+            .then(() => {
+              getInspectionRecordListData()
+            })
+        }
+      } else {
+        setCreateInspectionModal(false)
+        insertInspectionDeviceData(inspectionDataForm)
           .then(() => {
             getInspectionRecordListData()
           })
-        }
-      }else {
-        setCreateInspectionModal(false)
-        insertInspectionDeviceData(inspectionDataForm)
-        .then(() => {
-          getInspectionRecordListData()
-        })
       }
     }
   }
@@ -187,12 +187,12 @@ const Inspection: React.FC = () => {
   const getInspectionRecordListData = () => {
     getUser().then(res => {
       getInspectionDeviceData(res?.user!.id as string)
-      .then(res => {
-        if(res) {
-          setDeviceRecordListData(res as inspectionForms[])
-        }
-        setIsLoading(false)
-      })
+        .then(res => {
+          if (res) {
+            setDeviceRecordListData(res as inspectionForms[])
+          }
+          setIsLoading(false)
+        })
     })
   }
 
@@ -204,32 +204,32 @@ const Inspection: React.FC = () => {
   const confirmDeleteAssetsData = () => {
     setIsModalDelete(false)
     deleteInspectionDevice(deleteInspectionId)
-    .then(() => {
-      getInspectionRecordListData()
-    })
+      .then(() => {
+        getInspectionRecordListData()
+      })
   }
 
   const getInspectionDetailsData = (inspectionId: string) => {
     setIsDetailsShow(true)
     getInspectionDetailsDeviceData(inspectionId)
-    .then(res => {
-      setInspectionDataForm({
-        ...inspectionDataForm,
-        inspection_time: res![0].inspection_time,
-        inspection_name: res![0].inspection_name,
-        inspection_phone: res![0].inspection_phone,
-        inspection_number: res![0].inspection_number,
-        inspection_status: res![0].inspection_status,
-        inspection_email: res![0].inspection_email,
-        inspection_deviceData: res![0].inspection_deviceData,
+      .then(res => {
+        setInspectionDataForm({
+          ...inspectionDataForm,
+          inspection_time: res![0].inspection_time,
+          inspection_name: res![0].inspection_name,
+          inspection_phone: res![0].inspection_phone,
+          inspection_number: res![0].inspection_number,
+          inspection_status: res![0].inspection_status,
+          inspection_email: res![0].inspection_email,
+          inspection_deviceData: res![0].inspection_deviceData,
+        })
       })
-    })
   }
 
   // close details and clear cache data
   const clearAllDeivceDataForm = () => {
     setInspectionDataForm({
-     ...inspectionDataForm,
+      ...inspectionDataForm,
       inspection_status: null,
       inspection_deviceData: [],
       inspection_phone: '',
@@ -239,17 +239,17 @@ const Inspection: React.FC = () => {
 
   const saveInspectionFile = (inspectionId: string) => {
     getInspectionDetailsDeviceData(inspectionId)
-    .then(res => {
-      window.sessionStorage.setItem('inspectionData', JSON.stringify(res))
-      window.open('/InspectionFile', '_blank')
-    })
+      .then(res => {
+        window.sessionStorage.setItem('inspectionData', JSON.stringify(res))
+        window.open('/InspectionFile', '_blank')
+      })
   }
 
   const getTypeStatusData = () => {
     getInspectionStatusData()
-    .then(res => {
-      setInspectionFilterStatus(res as inspectionStatusProps)
-    })
+      .then(res => {
+        setInspectionFilterStatus(res as inspectionStatusProps)
+      })
   }
 
   const filterInspectionData = (e: any) => {
@@ -257,10 +257,10 @@ const Inspection: React.FC = () => {
   }
 
   const filterInspectionTimeData = (dateString: any) => {
-    let startTime = dateString? dateString[0].$d : ''
-    let endTime = dateString? dateString[1].$d : ''
-    startTime = startTime?  dayjs(startTime).format('MMM D, YYYY h:mm a') : ''
-    endTime = endTime? dayjs(endTime).format('MMM D, YYYY h:mm a') : ''
+    let startTime = dateString ? dateString[0].$d : ''
+    let endTime = dateString ? dateString[1].$d : ''
+    startTime = startTime ? dayjs(startTime).format('MMM D, YYYY h:mm a') : ''
+    endTime = endTime ? dayjs(endTime).format('MMM D, YYYY h:mm a') : ''
     setInspectionSelectStartTime(startTime)
     setInspectionSelectEndTime(endTime)
   }
@@ -268,12 +268,12 @@ const Inspection: React.FC = () => {
   const searchFilterInspectionDataEvent = () => {
     getUser().then(res => {
       searchFilterInspectionData(res!.user!.id, inspectionSelectStatus, inspectionSelectStartTime, inspectionSelectEndTime)
-      .then(res => {
-        if(res) {
-          setDeviceRecordListData(res as inspectionForms[])
-        }
-        setIsLoading(false)
-      })
+        .then(res => {
+          if (res) {
+            setDeviceRecordListData(res as inspectionForms[])
+          }
+          setIsLoading(false)
+        })
     })
   }
 
@@ -297,9 +297,9 @@ const Inspection: React.FC = () => {
     width: 80,
     render: (record: inspectionItem) => {
       return (
-        <Button 
-          variant="filled" 
-          color="danger" 
+        <Button
+          variant="filled"
+          color="danger"
           icon={<DeleteOutlined />}
           onClick={() => onRowData.onClick(record)}
         >
@@ -313,43 +313,42 @@ const Inspection: React.FC = () => {
       <div className="w-full p-3 box-border">
         <Space direction="vertical" size={16} className="w-full">
           <Card title="Inspection Record" style={{ background: '#f0f2f5' }}>
-            <div className="flex">
-              <Button
-                type="primary"
-                className="mb-4"
-                onClick={createInspectionModalHandler}
-              >
-                Create
-              </Button>
-              <div className="ml-auto">
-                <Select 
-                  className="w-[200px] mr-3" 
-                  placeholder="Type" 
-                  options={inspectionFilterStatus}
-                  onChange={filterInspectionData}
-                  allowClear
+            <Skeleton active loading={isLoading}>
+              <div className="flex">
+                <Button
+                  type="primary"
+                  className="mb-4"
+                  onClick={createInspectionModalHandler}
                 >
-                </Select>
-                <DatePicker.RangePicker
-                  className="mr-3"
-                  format={'YYYY-MM-DD'}
-                  onChange={filterInspectionTimeData}
-                />
-                <Button 
-                  type='primary' 
-                  icon={<IoIosSearch />}
-                  onClick={searchFilterInspectionDataEvent}
-                >
+                  Create
                 </Button>
+                <div className="ml-auto">
+                  <Select
+                    className="w-[200px] mr-3"
+                    placeholder="Type"
+                    options={inspectionFilterStatus}
+                    onChange={filterInspectionData}
+                    allowClear
+                  >
+                  </Select>
+                  <DatePicker.RangePicker
+                    className="mr-3"
+                    format={'YYYY-MM-DD'}
+                    onChange={filterInspectionTimeData}
+                  />
+                  <Button
+                    type='primary'
+                    icon={<IoIosSearch />}
+                    onClick={searchFilterInspectionDataEvent}
+                  >
+                  </Button>
+                </div>
               </div>
-            </div>
-
-            <>
-              <Divider className="my-3 mx-0" />
-              {deviceRecordListData.length > 0? (
-                <>
-                  <Spin size="default" tip="Loading" spinning={isLoading} className="bg-white">
-                    <Row gutter={20} className="mt-6"> 
+              <>
+                <Divider className="my-3 mx-0" />
+                {deviceRecordListData.length > 0 ? (
+                  <>
+                    <Row gutter={20} className="mt-6">
                       {deviceRecordListData.map(item => {
                         return (
                           <Col span={6} key={item.inspection_id} className="mb-5">
@@ -361,7 +360,7 @@ const Inspection: React.FC = () => {
                                 <Col span={24}><span className="text-sm">Status: {item.inspection_status}</span></Col>
                               </Row>
                               <Row className="mb-2">
-                                <Col span={12}><span className="text-sm">Inspector: {item.inspection_name}</span></Col>                       
+                                <Col span={12}><span className="text-sm">Inspector: {item.inspection_name}</span></Col>
                                 <Col span={12}><span className="text-sm">phone: {item.inspection_phone}</span></Col>
                               </Row>
                               <Row className="mb-2">
@@ -369,29 +368,29 @@ const Inspection: React.FC = () => {
                               </Row>
 
                               {
-                                Number(item.inspection_number) === 0? (
+                                Number(item.inspection_number) === 0 ? (
                                   <div className="w-7 h-7 bg-green-500 rounded-full absolute top-5 right-5">
                                     <CheckOutlined className="text-center text-white block leading-7 font-bold" />
                                   </div>
-                                ):(
+                                ) : (
                                   <div className="w-7 h-7 bg-red-400 rounded-full absolute top-5 right-5">
                                     <span className="text-center text-white block leading-7">{item.inspection_number}</span>
                                   </div>
                                 )
                               }
-                              
+
                               <div className="mt-4">
-                                <Button 
+                                <Button
                                   color="primary"
                                   size="small"
                                   icon={<SearchOutlined />}
                                   variant="filled"
                                   className="mr-3"
                                   onClick={() => getInspectionDetailsData(item.inspection_id)}
-                                  >
-                                    Details
+                                >
+                                  Details
                                 </Button>
-                                
+
                                 <Button
                                   className="bg-green-100 text-green-500 border-green-100 mr-3"
                                   size="small"
@@ -416,22 +415,19 @@ const Inspection: React.FC = () => {
                         )
                       })}
                     </Row>
-                  </Spin>
-                </>
-              ) : (
-                <Spin spinning={isLoading} className="bg-white" size="default" tip="Loading">
+                  </>
+                ) : (
                   <div className="mt-16">
                     <Empty description="Please Create the Inspection Record">
                       {/* <Button type="primary" onClick={createInspectionModalHandler}>Create Now</Button> */}
                     </Empty>
                   </div>
-                  
-                </Spin>
-              )}
-            </>
+                )}
+              </>
+            </Skeleton>
           </Card>
         </Space>
-        
+
         {/* details */}
         <Modal
           open={isDetailsShow}
@@ -497,21 +493,21 @@ const Inspection: React.FC = () => {
             </Row>
           </Space>
           {
-            Number(inspectionDataForm.inspection_number) === 0? (
+            Number(inspectionDataForm.inspection_number) === 0 ? (
               <Card className="mt-6">
-                <Result 
+                <Result
                   status={'success'}
                   title="All the device is ok"
                   subTitle="No abnormalities were found during this inspection."
                 />
               </Card>
-            ): (
+            ) : (
               <Collapse
                 defaultActiveKey={['1']}
                 accordion={isAccordion}
                 className="mt-5"
-                size="small" 
-                items= {
+                size="small"
+                items={
                   [{
                     key: '1',
                     label: (
@@ -521,8 +517,8 @@ const Inspection: React.FC = () => {
                       </div>
                     ),
                     children:
-                      <Table 
-                        columns={columns} 
+                      <Table
+                        columns={columns}
                         dataSource={inspectionDataForm.inspection_deviceData}
                         size="small"
                         pagination={false}
@@ -536,7 +532,7 @@ const Inspection: React.FC = () => {
           }
           <Divider />
         </Modal>
-        
+
         {/* add */}
         <Modal
           width={1260}
@@ -638,7 +634,7 @@ const Inspection: React.FC = () => {
 
             {inspectionDataForm.inspection_status === 'All the device is ok' && (
               <Card className="mt-6">
-                <Result 
+                <Result
                   status={'success'}
                   title="All the device is ok"
                   subTitle="No abnormalities were found during this inspection."
@@ -670,7 +666,7 @@ const Inspection: React.FC = () => {
                       onChange={selectInspectionDeviceName}
                       allowClear
                     />
-                    
+
                   </Col>
                   <Col span={18}>
                     <Input.TextArea
@@ -685,9 +681,9 @@ const Inspection: React.FC = () => {
                     </Input.TextArea>
                   </Col>
                   <Col span={2}>
-                    <Button 
-                      type="primary" 
-                      icon={<CheckOutlined />} 
+                    <Button
+                      type="primary"
+                      icon={<CheckOutlined />}
                       onClick={confirmProblemDeviceName}>
                     </Button>
                   </Col>

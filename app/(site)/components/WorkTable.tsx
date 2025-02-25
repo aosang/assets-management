@@ -1,5 +1,5 @@
 'use client'
-import { Button, Table, Tag } from "antd"
+import { Button, Table, Tag, Skeleton } from "antd"
 import type { TableColumnsType} from 'antd'
 import { tableItems } from "@/utils/dbType"
 
@@ -89,11 +89,14 @@ const WorkTable: React.FC<workTableProps> = ({ workInfo, onChangeSelectData, onG
           columns={colums} 
           dataSource={workInfo}
           bordered
-          size="small"
+          size="middle"
           pagination={{ 
             position: ['bottomRight'], 
             pageSizeOptions: ['10', '20', '50'], 
-            showSizeChanger: true, 
+            showSizeChanger: true,
+            style: {
+              marginBottom: '-5px'
+            }
           }}
         />
       </div>

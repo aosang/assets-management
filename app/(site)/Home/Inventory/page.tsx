@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { Card, Tabs, Table, Button, Drawer, Descriptions, Tag, Row, Col, Input, InputNumber, Empty, Select } from 'antd'
+import { Card, Tabs, Table, Button, Drawer, Descriptions, Tag, Row, Col, Input, InputNumber, Empty, Select, Skeleton } from 'antd'
 import type { TabsProps } from 'antd'
 import { productItem, inventoryItem, inspectionStatusItem, typeDataName } from '@/utils/dbType'
 import { getItAssetsTabbleData } from '@/utils/providerItAssetsData'
@@ -12,6 +12,8 @@ import { getTimeNumber } from '@/utils/pubFunProvider'
 import { IoIosSearch } from 'react-icons/io'
 
 const Inventory = () => {
+  const [isLoading, setIsLoading] = useState<boolean>(true)
+
   const [searchTypeText, setSearchTypeText] = useState<string | null>(null)
   const [searchProductText, setSearchProductText] = useState<string | null>(null)
   const [searchProductName, setSearchProductName] = useState<inspectionStatusItem[]>([])
@@ -41,10 +43,11 @@ const Inventory = () => {
     value: ''
   })
 
-
   const getInventoryData = () => {
     getItAssetsTabbleData().then(data => {
       setInventoryData(data as productItem[])
+      setIsLoading(false)
+
       setSearchProductName(data as inspectionStatusItem[])
     })
   }
@@ -79,6 +82,7 @@ const Inventory = () => {
 
   const switchTabChange = (key: string) => {
     setLoanOutTabKeys(key)
+    setIsLoading(true)
     if (key === '2') {
       getLoanOutTableData().then(data => {
         const formatData = data?.map(item => ({
@@ -86,7 +90,10 @@ const Inventory = () => {
           loanout_time: dayjs(item.loanout_time).format('MMM D, YYYY h:mm a')
         }))
         setLoanOutData(formatData as inventoryItem[])
+        setIsLoading(false)
       })
+    }else {
+      setIsLoading(false)
     }
   }
 
@@ -356,13 +363,16 @@ const Inventory = () => {
           <Table
             columns={inventoryColumns}
             dataSource={inventoryData}
-            size='small'
+            size='middle'
             bordered
             className='[&_.ant-table-thead>tr>th]:!bg-[#f0f5ff]'
             pagination={{ 
               position: ['bottomRight'], 
               pageSizeOptions: ['10', '20', '50'], 
-              showSizeChanger: true
+              showSizeChanger: true,
+              style: {
+                marginBottom: '-5px'
+              }
             }}
           />
           <Drawer
@@ -573,11 +583,14 @@ const Inventory = () => {
             dataSource={loanOutData}
             size='small'
             bordered
-            className='[&_.ant-table-thead>tr>th]:!bg-[#f0f5ff]'
+            className='[&_.ant-table-thead>tr>th]:!bg-[#f0f5ff] [&_.ant-pagination]: my-0'
             pagination={{ 
               position: ['bottomRight'], 
               pageSizeOptions: ['10', '20', '50'], 
-              showSizeChanger: true
+              showSizeChanger: true,
+              style: {
+                marginBottom: '-5px'
+              }
             }}
           />
         </div>
@@ -598,12 +611,16 @@ const Inventory = () => {
 
   return (
     <div className='p-3 w-full box-border'>
+      
       <Card title="Inventory Management">
-        <Tabs
-          activeKey={loanOutTabKeys}
-          items={items}
-          onChange={switchTabChange}
-        />
+        <Skeleton loading={isLoading} active paragraph={{rows: 10}}>
+          <Tabs
+            activeKey={loanOutTabKeys}
+            items={items}
+            onChange={switchTabChange}
+            className='-mt-2'
+          />
+          </Skeleton>
       </Card>
     </div>
   )

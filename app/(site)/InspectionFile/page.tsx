@@ -6,7 +6,6 @@ import { inspectionForms } from '@/utils/dbType'
 import { getSession } from "@/utils/providerSelectData"
 import Transation from "../components/Transation"
 import { getTimeNumber } from "@/utils/pubFunProvider"
-import Head from "next/head"
 import html2Canvas from "html2canvas"
 import jsPDF from "jspdf"
 
@@ -102,9 +101,6 @@ const InspectionFile: React.FC = () => {
 
   return (
     <>
-      <Head>
-        <title>Inspection File</title>
-      </Head>
       <Button 
         type="primary" 
         shape="circle" 

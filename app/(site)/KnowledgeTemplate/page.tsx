@@ -5,7 +5,7 @@ import { FilePptOutlined, PictureOutlined, VerticalAlignTopOutlined, ArrowLeftOu
 import { useSearchParams, useRouter } from "next/navigation"
 import { getLibrarysDataList } from "@/utils/provideLibraryData"
 import { getTimeNumber } from '@/utils/pubFunProvider'
-import knwoledgeCss from './knowledge.module.scss'
+// import knwoledgeCss from './knowledge.module.scss'
 import html2canvas from 'html2canvas'
 import jsPDF from 'jspdf'
 
@@ -81,8 +81,8 @@ const KnowledgeTemplate = () => {
   }, [])
   return (
     <>
-    <div className='relative'>
-      <FloatButton.Group>
+      <div className='relative'>
+        <FloatButton.Group>
           <FloatButton 
             icon={<FilePptOutlined />} 
             shape='square'
@@ -115,8 +115,6 @@ const KnowledgeTemplate = () => {
             onClick={() => router.back()}
           />
         </FloatButton.Group>
-
-
       <div 
         className="bg-white p-2 mx-auto my-4 rounded-lg min-h-[950px]"
         style={{width: '760px'}}
@@ -131,14 +129,19 @@ const KnowledgeTemplate = () => {
             <p className='mr-4 text-gray-400'>Type: {librarysData[0].type}</p>
           </div>
           <Divider />
-          <div 
+          <div
             dangerouslySetInnerHTML={{__html: librarysData[0].content}}
             className={`
               text-gray-600 
               text-sm
-              px-4 
+              px-4
+              box-border
               leading-7
-              ${knwoledgeCss.knowledge}
+              [&_img]:!w-[100%] 
+              [&_img]:!h-auto 
+              [&_img]:mb-5
+              [&_img]:mx-auto
+              [&_img]:rounded-lg
             `}
           >
           </div>

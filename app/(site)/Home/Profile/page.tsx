@@ -1,15 +1,13 @@
 'use client'
 import { useEffect, useState } from "react"
-import { Card, Col, Row, Input, Upload, Image, Button } from "antd"
+import { Card, Col, Row, Input, Upload, Image, Button, Skeleton } from "antd"
 import { PlusOutlined, InfoCircleFilled } from '@ant-design/icons'
 import { RiDeleteBin5Fill } from "react-icons/ri"
 import { IoEyeSharp } from "react-icons/io5"
 import { getTimeNumber } from "@/utils/pubFunProvider"
 import { supabase } from "@/utils/clients"
 import { getProfiles, updateProfiles } from "@/utils/providerSelectData"
-import { useUserStore } from '@/store/userStore'
 import useMessage from '@/utils/message'
-import dayjs from "dayjs"
 
 type myProfileInfoProps = {
   email: string,
@@ -20,7 +18,7 @@ type myProfileInfoProps = {
 }
 
 const Profile = () => {
-  const { setUser } = useUserStore()
+  const [isLoading, setIsLoading] = useState<boolean>(true)
   const [imageUrl, setImageUrl] = useState<string>('')
   const [userId, setUserId] = useState<string>('')
   const [removePath, setRemovePath] = useState('')
@@ -75,6 +73,7 @@ const Profile = () => {
         avatar_url: res![0].avatar_url,
         created_at: res![0].created_at
       })
+      setIsLoading(false)
     })
   }
 
@@ -132,6 +131,7 @@ const Profile = () => {
   return (
     <div className="p-3">
       <Card title="My Infomation">
+        <Skeleton active loading={isLoading} paragraph={{rows: 6}}>
         <Row gutter={30}>
           <Col span={12}>
             <div className="mb-5">
@@ -205,6 +205,7 @@ const Profile = () => {
         <div className="flex mt-3">
           <Button type="primary" onClick={updateProfileInfo}>Save</Button>
         </div>
+        </Skeleton>
       </Card>
     </div>
   )
