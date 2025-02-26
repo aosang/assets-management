@@ -45,6 +45,7 @@ const resetPassword = () => {
           try {
             if (error !== null) return useMessage(2, 'The operation is too frequent, please try again later', 'error')
             useMessage(2, 'Email sent! Please check your email', 'success')
+            setResetEmail('')
           } catch (error) {
             throw error
           }
@@ -88,21 +89,23 @@ const resetPassword = () => {
     let code: string | null = ''
     code = parsedUrl.searchParams.get("code")
 
-    if (code) {
-      changeSetPassword(true)
-    } else {
+    if(code) {
       changeSetPassword(false)
+    } else {
+      changeSetPassword(true)
     }
 
     window.addEventListener('beforeunload', () => {
       supabase.auth.signOut()
     })
+
+    document.title = 'Reset Password'
   }, [])
 
   return (
     <div style={resetBg}>
       {/* email */}
-      {setPassword ? (
+      {setPassword === true? (
         <div className="
           w-520 
           bg-white 

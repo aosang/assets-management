@@ -2,7 +2,8 @@ import { Menu } from 'antd'
 import type { MenuProps } from 'antd'
 import { useRouter } from 'next/navigation'
 import {useState, useEffect} from 'react'
-import { AiTwotoneHome, AiFillProfile  } from "react-icons/ai"
+import { AiFillProfile  } from "react-icons/ai"
+import { GoHomeFill } from "react-icons/go"
 import { RiComputerFill  } from 'react-icons/ri'
 import { FaUser } from "react-icons/fa"
 import { IoDocumentText, IoLibrary } from "react-icons/io5"
@@ -13,7 +14,7 @@ type MenuItem = Required<MenuProps>['items'][number]
 const items: MenuItem[] = [{
   key: 'Home',
   label: 'Home',
-  icon: <AiTwotoneHome style={{fontSize: '16px'}} />,
+  icon: <GoHomeFill style={{fontSize: '16px'}} />,
   style: {
     marginBottom: '12px'
   }

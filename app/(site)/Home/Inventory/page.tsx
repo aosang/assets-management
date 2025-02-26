@@ -229,6 +229,10 @@ const Inventory = () => {
     })
   }
 
+  const createQrCodePage = (id: string) => {
+    window.open(`/TemplateCode?id=${id}`, '_blank')
+  }
+
   const inventoryColumns = [{
     title: 'No.',
     key: 'no',
@@ -268,7 +272,7 @@ const Inventory = () => {
         >
           loan out
         </Button>
-        <Button size='small' className='bg-green-500 text-xs'>QR Code</Button>
+        {/* <Button size='small' className='bg-green-500 text-xs'>QR Code</Button> */}
       </div>
     )
   }]
@@ -317,9 +321,19 @@ const Inventory = () => {
           size='small'
           className='bg-green-500 
           text-xs 
-          text-white'
+          text-white
+          border
+          border-green-500'
         >
           Return
+        </Button>
+        <Button 
+          size='small' 
+          type='primary' 
+          className='text-xs ml-2'
+          onClick={() => createQrCodePage(item.id)}
+        >
+          QR Code
         </Button>
       </div>
     )
@@ -551,12 +565,12 @@ const Inventory = () => {
           <div className='mb-4 flex'>
             <div className='ml-auto'>
             <Select 
-                className='w-[160px] mr-2' 
-                placeholder="Select type"
-                options={searchTypeSelect}
-                allowClear
-                value={searchLoanoutType}
-                onChange={e => setSearchLoanoutType(e)}
+              className='w-[160px] mr-2' 
+              placeholder="Select type"
+              options={searchTypeSelect}
+              allowClear
+              value={searchLoanoutType}
+              onChange={e => setSearchLoanoutType(e)}
               >
               </Select>
               <Select 
@@ -581,7 +595,7 @@ const Inventory = () => {
           <Table
             columns={loanOutColumns}
             dataSource={loanOutData}
-            size='small'
+            size='middle'
             bordered
             className='[&_.ant-table-thead>tr>th]:!bg-[#f0f5ff] [&_.ant-pagination]: my-0'
             pagination={{ 

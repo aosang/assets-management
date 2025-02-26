@@ -50,4 +50,4 @@ const Verify: React.FC<emailProps> = ({ emailAddress }) => {
   )
 }
  
-export default Verify;
+export default Verify

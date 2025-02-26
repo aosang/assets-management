@@ -31,9 +31,9 @@ export const getItAssetsTabbleData = async (id?: string) => {
 
 export const getCodeAssetsData = async (query?: string) => {
   const { data, error } = await supabase
-  .from('it_assets')
+  .from('loanout_table')
   .select('*')
-  .eq('product_id', query)
+  .eq('id', query)
 
   try {
     if (data) return data || []

@@ -128,7 +128,7 @@ const InspectionFile: React.FC = () => {
           <div className="mb-0 mr-0 ml-auto font-bold text-xl float-right">{createPdfCompanyName}</div>
         </div>
         
-        <Divider></Divider>
+        <Divider />
         <Descriptions>
           <Descriptions.Item label="Insepector">{createPdfData.inspection_name}</Descriptions.Item>
           <Descriptions.Item label="Time">{createPdfData.inspection_time}</Descriptions.Item>
@@ -159,7 +159,7 @@ const InspectionFile: React.FC = () => {
         }
 
         <div className="absolute bottom-7">
-          <Divider></Divider>
+          <Divider />
           <div className="mt-3">
             <span className="mb-4" style={{fontSize: '15px'}}>Signature of the inspector:</span>
             <span style={{fontSize: '15px'}}>Signature of the responsible person:</span>

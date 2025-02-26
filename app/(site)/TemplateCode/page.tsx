@@ -4,29 +4,32 @@ import { flexible } from './phone.js'
 import { useSearchParams } from "next/navigation"
 import { QRCodeSVG } from 'qrcode.react'
 import { getCodeAssetsData } from '@/utils/providerItAssetsData'
-import { Button } from "antd"
+import { Button, Descriptions, Spin } from "antd"
 import tempcss from './temp.module.scss'
 import html2canvas from "html2canvas"
 import { getTimeNumber } from "@/utils/pubFunProvider"
-
+import dayjs from "dayjs";
 
 type myDeviceInfo = {
-  product_id: string,
-  product_name: string,
-  product_time: string,
-  product_type: string,
-  product_brand: string
+  loanout_id: string,
+  loanout_name: string,
+  loanout_time: string,
+  loanout_type: string,
+  loanout_brand: string,
+  loanout_user: string
 }
+
 
 const TemplateCode: React.FC = () => {
   const searchParams = useSearchParams()
   const [qrCodeData, setQrCodeData] = useState<string>('')
   const [deviceInfo, setDeviceInfo] = useState<myDeviceInfo>({
-    product_id: '',
-    product_name: '',
-    product_time: '',
-    product_type: '',
-    product_brand: ''
+    loanout_id: '',
+    loanout_name: '',
+    loanout_time: '',
+    loanout_type: '',
+    loanout_brand: '',
+    loanout_user: ''
   })
 
   const createQRcodeDataImage = () => {
@@ -34,7 +37,7 @@ const TemplateCode: React.FC = () => {
     if (myId) {
       getCodeAssetsData(myId).then(res => {
         setDeviceInfo(res![0] as myDeviceInfo)
-        setQrCodeData(`http://37165a514c.vicp.fun/TemplateCode?id=${myId}`)
+        setQrCodeData(`https://37165a514c.vicp.fun/TemplateCode?id=${myId}`)
       })
     }
   }
@@ -45,54 +48,60 @@ const TemplateCode: React.FC = () => {
       allowTaint: false,
       useCORS: true,
     })
-    .then(canvas => {
-      let dataUrl = canvas.toDataURL("image/jpeg");
-      let img = new Image()
-      img.src = dataUrl
-      const link = document.createElement('a')
-      link.href = dataUrl
-      link.download = 'deviceCode' + getTimeNumber()[1] + '.jpg'
-      link.click()
-    })
-    .catch(err => {
-      console.log(err)
-    })
+      .then(canvas => {
+        let dataUrl = canvas.toDataURL("image/jpeg");
+        let img = new Image()
+        img.src = dataUrl
+        const link = document.createElement('a')
+        link.href = dataUrl
+        link.download = 'deviceCode' + getTimeNumber()[1] + '.jpg'
+        link.click()
+      })
+      .catch(err => {
+        console.log(err)
+      })
   }
 
   useEffect(() => {
     flexible()
     createQRcodeDataImage()
+
+    document.title = 'Device Code'
   }, [])
 
   return (
     <div className={tempcss.rootLay}>
+
       <div className={tempcss.container}>
         <div id="canvas">
           <div className={tempcss.container_nav}>
             <h2>Device Info</h2>
           </div>
-          <ul className={tempcss.container_info}>
-            <li>
-              <span>Device-number:</span>
-              <p>{deviceInfo.product_id}</p>
-            </li>
-            <li>
-              <span>Device-name:</span>
-              <p>{deviceInfo.product_name}</p>
-            </li>
-            <li>
-              <span>Device-time:</span>
-              <p>{deviceInfo.product_time}</p>
-            </li>
-            <li>
-              <span>Device-type:</span>
-              <p>{deviceInfo.product_type}</p>
-            </li>
-            <li>
-              <span>Device-brand:</span>
-              <p>{deviceInfo.product_brand}</p>
-            </li>
-          </ul>
+          <div className="w-full pl-[0.16rem] pr-[0.16rem] pt-[0.16rem] pb-0">
+            <Descriptions
+              column={24}
+              style={{ marginBottom: '0.2rem' }}
+            >
+              <Descriptions.Item label="Loanout-Number" span={24}>
+                {deviceInfo.loanout_id}
+              </Descriptions.Item>
+              <Descriptions.Item label="Device-Name" span={24}>
+                {deviceInfo.loanout_name}
+              </Descriptions.Item>
+              <Descriptions.Item label="Loanout-User" span={24}>
+                {deviceInfo.loanout_user}
+              </Descriptions.Item>
+              <Descriptions.Item label="Loanout-Type" span={24}>
+                {deviceInfo.loanout_type}
+              </Descriptions.Item>
+              <Descriptions.Item label="Loanout-Brand" span={24}>
+                {deviceInfo.loanout_brand}
+              </Descriptions.Item>
+              <Descriptions.Item label="Loanout-Time" span={24}>
+                {dayjs(deviceInfo.loanout_time).format('MMM D, YYYY h:mm a')}
+              </Descriptions.Item>
+            </Descriptions>
+          </div>
 
           {qrCodeData &&
             <div className={tempcss.qrcodeBox}>
@@ -108,9 +117,9 @@ const TemplateCode: React.FC = () => {
           <div className={tempcss.qrcodeWhite}></div>
         </div>
 
-        <div className={tempcss.qrcodeSaveImage}>
+        <div className='mx-auto my-0 w-[2rem]'>
           <Button
-            style={{ width: '2rem', height: '0.32rem', fontSize: '0.15rem' }}
+            style={{ width: '2rem', height: '0.32rem', fontSize: '0.15rem', display: 'block'}}
             type="primary"
             onClick={saveImageQrcode}
             id="downLink"
@@ -118,16 +127,25 @@ const TemplateCode: React.FC = () => {
             Save Image
           </Button>
         </div>
-
       </div>
+
     </div>
   )
 }
 
-const WrappedTemplateCode: React.FC = () => (
-  <Suspense fallback={<div>Loading...</div>}>
-    <TemplateCode />
-  </Suspense>
-)
-
+const WrappedTemplateCode: React.FC = () => {
+  const [isSpinning, setIsSpinning] = useState<boolean>(true)
+  useEffect(() => {
+    setTimeout(() => {
+      setIsSpinning(false)
+    }, 1000)
+  }, [])
+  return (
+    <Suspense>
+      
+      <TemplateCode />
+      
+    </Suspense>
+  )
+}
 export default WrappedTemplateCode
