@@ -5,6 +5,11 @@ const nextConfig = {
   // experimental: {
   //   missingSuspenseWithCSRBailout: false
   // },
+  optimizeFonts: false,
+  transpilePackages: ['antd'],
+  experimental: {
+    optimizeCss: true
+  },
 
   images: {
     domains: ['www.wangle.run'], // 确保这里的数组包含你要使用的域名

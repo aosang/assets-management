@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { Card, Tabs, Table, Button, Drawer, Descriptions, Tag, Row, Col, Input, InputNumber, Empty, Select, Skeleton } from 'antd'
+import { Card, Tabs, Table, Button, Drawer, Descriptions, Tag, Row, Col, Input, InputNumber, Empty, Select, Skeleton, Spin, ConfigProvider } from 'antd'
 import type { TabsProps } from 'antd'
 import { productItem, inventoryItem, inspectionStatusItem, typeDataName } from '@/utils/dbType'
 import { getItAssetsTabbleData } from '@/utils/providerItAssetsData'
@@ -13,21 +13,25 @@ import { IoIosSearch } from 'react-icons/io'
 
 const Inventory = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true)
+  const [loanoutSpin, setLoanoutSpin] = useState<boolean>(true)
+  const [returnSpin, setReturnSpin] = useState<boolean>(true)
 
   const [searchTypeText, setSearchTypeText] = useState<string | null>(null)
   const [searchProductText, setSearchProductText] = useState<string | null>(null)
   const [searchProductName, setSearchProductName] = useState<inspectionStatusItem[]>([])
   const [searchTypeSelect, setSearchTypeSelect] = useState<typeDataName[]>([])
-  
+
   const [searchLoanoutType, setSearchLoanoutType] = useState<string | null>(null)
   const [searchLoanoutProductText, setSearchLoanoutText] = useState<string | null>(null)
   const [searchLoanoutProdutcName, setSearchLoanoutProdutcName] = useState<inspectionStatusItem[]>([])
-  
+
   const [loanOutTabKeys, setLoanOutTabKeys] = useState<string>('1')
   const [inventoryData, setInventoryData] = useState<productItem[]>([])
   const [loanOutData, setLoanOutData] = useState<inventoryItem[]>([])
+
   const [isShowDetails, setIsShowDetails] = useState(false)
   const [isShowReturn, setIsShowReturn] = useState(false)
+
   const [stockQuantity, setStockQuantity] = useState<number>(0)
   const [returnDeviceNum, setReturnDeviceNum] = useState<number>(0)
   const [loanoutForm, setLoanoutForm] = useState<inventoryItem>({
@@ -78,6 +82,8 @@ const Inventory = () => {
 
     let stoke = totalQuantity - loanOutSum
     setStockQuantity(stoke)
+
+    setLoanoutSpin(false)
   }
 
   const switchTabChange = (key: string) => {
@@ -92,7 +98,7 @@ const Inventory = () => {
         setLoanOutData(formatData as inventoryItem[])
         setIsLoading(false)
       })
-    }else {
+    } else {
       setIsLoading(false)
     }
   }
@@ -132,6 +138,7 @@ const Inventory = () => {
       loanout_user: item.loanout_user,
       loanout_remark: item.loanout_remark,
     })
+    setReturnSpin(false)
   }
 
   const submitLoanoutDevice = () => {
@@ -162,13 +169,12 @@ const Inventory = () => {
   const getLoanoutProductName = async () => {
     getLoanOutTableData().then(data => {
       const formatData = data?.map(item => ({
-       ...item,
+        ...item,
         value: item.loanout_name
       }))
       setSearchLoanoutProdutcName(formatData as inspectionStatusItem[])
     })
   }
-
 
   const returnDeviceLoanoutEvent = () => {
     const { loanout_number, loanout_id } = loanoutForm
@@ -189,18 +195,18 @@ const Inventory = () => {
           })
           setIsShowReturn(false)
         })
-      }else if(returnComputed === 0) {
+      } else if (returnComputed === 0) {
         deleteLoadoutTableData(loanout_id).then(data => {
           getLoanOutTableData().then(data => {
             const formatData = data?.map(item => ({
-             ...item,
+              ...item,
               loanout_time: dayjs().format('MMM D, YYYY h:mm a')
             }))
             setLoanOutData(formatData as inventoryItem[])
           })
           setIsShowReturn(false)
           clearloanoutDataForm(2)
-          useMessage(2, 'Return device success!','success')
+          useMessage(2, 'Return device success!', 'success')
         })
       } else {
         useMessage(2, 'Return quantity is invalid', 'error')
@@ -210,7 +216,7 @@ const Inventory = () => {
   }
 
   const searchFilterTableData = () => {
-    searchInventoryTableData(searchTypeText ,searchProductText).then(data => {
+    searchInventoryTableData(searchTypeText, searchProductText).then(data => {
       getItAssetsTabbleData().then(() => {
         setInventoryData(data as productItem[])
       })
@@ -221,7 +227,7 @@ const Inventory = () => {
     searchLoanoutTableData(searchLoanoutType, searchLoanoutProductText).then(data => {
       getLoanOutTableData().then(() => {
         const formatData = data?.map(item => ({
-         ...item,
+          ...item,
           loanout_time: dayjs().format('MMM D, YYYY h:mm a')
         }))
         setLoanOutData(formatData as inventoryItem[])
@@ -327,9 +333,9 @@ const Inventory = () => {
         >
           Return
         </Button>
-        <Button 
-          size='small' 
-          type='primary' 
+        <Button
+          size='small'
+          type='primary'
           className='text-xs ml-2'
           onClick={() => createQrCodePage(item.id)}
         >
@@ -347,8 +353,8 @@ const Inventory = () => {
         <div>
           <div className='mb-4 flex'>
             <div className='ml-auto'>
-              <Select 
-                className='w-[160px] mr-2' 
+              <Select
+                className='w-[160px] mr-2'
                 placeholder="Select type"
                 options={searchTypeSelect}
                 allowClear
@@ -356,21 +362,21 @@ const Inventory = () => {
                 onChange={e => setSearchTypeText(e)}
               >
               </Select>
-              <Select 
-                className='w-[220px] mr-2' 
-                placeholder='Select product' 
+              <Select
+                className='w-[220px] mr-2'
+                placeholder='Select product'
                 options={searchProductName}
                 allowClear
                 showSearch
                 value={searchProductText}
                 onChange={e => setSearchProductText(e)}
-              >  
+              >
               </Select>
-              <Button 
-                type='primary' 
+              <Button
+                type='primary'
                 icon={<IoIosSearch />}
                 onClick={searchFilterTableData}
-              >  
+              >
               </Button>
             </div>
           </div>
@@ -380,9 +386,9 @@ const Inventory = () => {
             size='middle'
             bordered
             className='[&_.ant-table-thead>tr>th]:!bg-[#f0f5ff]'
-            pagination={{ 
-              position: ['bottomRight'], 
-              pageSizeOptions: ['10', '20', '50'], 
+            pagination={{
+              position: ['bottomRight'],
+              pageSizeOptions: ['10', '20', '50'],
               showSizeChanger: true,
               style: {
                 marginBottom: '-5px'
@@ -395,18 +401,164 @@ const Inventory = () => {
             onClose={() => clearloanoutDataForm(1)}
             maskClosable={false}
           >
-            <div className='w-full'>
-              <Descriptions column={24}>
-                <Descriptions.Item span={12} label="Stock quantity">
-                  <div>{stockQuantity}</div>
-                </Descriptions.Item>
-                <Descriptions.Item span={12} label="Status">
-                  {stockQuantity > 0 ? <Tag color='green'>In stock</Tag> : <Tag color='red'>Out of stock</Tag>}
-                </Descriptions.Item>
-              </Descriptions>
-              {stockQuantity > 0 ? (
-                <>
-                  <Row gutter={15} className='mt-4'>
+            <ConfigProvider theme={{
+              components: {
+                Spin: {contentHeight: '100%'}
+              }
+            }}>
+              <Spin spinning={loanoutSpin} tip='Loading...' className='bg-white'>
+                <div className='w-full'>
+                  <Descriptions column={24}>
+                    <Descriptions.Item span={12} label="Stock quantity">
+                      <div>{stockQuantity}</div>
+                    </Descriptions.Item>
+                    <Descriptions.Item span={12} label="Status">
+                      {stockQuantity > 0 ? <Tag color='green'>In stock</Tag> : <Tag color='red'>Out of stock</Tag>}
+                    </Descriptions.Item>
+                  </Descriptions>
+                  {stockQuantity > 0 ? (
+                    <>
+                      <Row gutter={15} className='mt-4'>
+                        <Col span={24} className='mb-3'>
+                          <label className='flex mb-1' htmlFor="Product Name">
+                            Product Name
+                          </label>
+                          <Input value={loanoutForm.loanout_name} readOnly />
+                        </Col>
+                        <Col span={24} className='mb-3'>
+                          <label className='flex mb-1' htmlFor="Product Type">
+                            Product Type
+                          </label>
+                          <Input value={loanoutForm.loanout_type} readOnly />
+                        </Col>
+                        <Col span={24} className='mb-3'>
+                          <label className='flex mb-1' htmlFor="Product Type">
+                            Product Brand
+                          </label>
+                          <Input placeholder="Product Brand" readOnly value={loanoutForm.loanout_brand} />
+                        </Col>
+                        <Col span={24} className='mb-3'>
+                          <label className='flex mb-1' htmlFor="Loan Out Quantity">
+                            Loan Out Time
+                          </label>
+                          <Input placeholder="Loan Out Time" readOnly value={loanoutForm.loanout_time} />
+                        </Col>
+                        <Col span={24} className='mb-3'>
+                          <label className='flex mb-1' htmlFor="Loan Out Quantity">
+                            <span className='text-red-500 text-sx mNumber mr-1'>*</span>
+                            Loan Out Quantity
+                          </label>
+                          <InputNumber
+                            style={{ width: '100%' }}
+                            min={0}
+                            placeholder="Number"
+                            value={loanoutForm.loanout_number}
+                            addonAfter={'<=' + stockQuantity}
+                            onChange={value => setLoanoutForm({ ...loanoutForm, loanout_number: value ?? 0 })}
+                          />
+                        </Col>
+                        <Col span={24} className='mb-3'>
+                          <label className='flex mb-1' htmlFor="Loan Out Quantity">
+                            <span className='text-red-500 text-sx mr-1'>*</span>
+                            Loan Out User
+                          </label>
+                          <Input
+                            placeholder="username"
+                            value={loanoutForm.loanout_user}
+                            onChange={e => setLoanoutForm({ ...loanoutForm, loanout_user: e.target.value })}
+                          />
+                        </Col>
+                        <Col span={24} className='mt-3'>
+                          <Input.TextArea
+                            placeholder='Remark'
+                            showCount
+                            rows={5}
+                            autoSize={{ minRows: 5, maxRows: 5 }}
+                            maxLength={100}
+                          />
+                        </Col>
+                      </Row>
+                      <div className='flex mt-6'>
+                        <Button className='mr-4' onClick={() => setIsShowDetails(false)}>Cancel</Button>
+                        <Button type='primary' onClick={submitLoanoutDevice}>Confirm</Button>
+                      </div>
+                    </>
+                  ) : (
+                    <div className='flex justify-center mt-16 flex-col'>
+                      <Empty description='Low Inventory' />
+                    </div>
+                  )}
+                </div>
+              </Spin>
+            </ConfigProvider>
+          </Drawer>
+        </div>
+    },
+    {
+      key: '2',
+      label: 'Loan out',
+      children:
+        <div>
+          <div className='mb-4 flex'>
+            <div className='ml-auto'>
+              <Select
+                className='w-[160px] mr-2'
+                placeholder="Select type"
+                options={searchTypeSelect}
+                allowClear
+                value={searchLoanoutType}
+                onChange={e => setSearchLoanoutType(e)}
+              >
+              </Select>
+              <Select
+                className='w-[220px] mr-2'
+                placeholder='Select product'
+                options={searchLoanoutProdutcName}
+                allowClear
+                showSearch
+                value={searchLoanoutProductText}
+                onChange={e => setSearchLoanoutText(e)}
+                onFocus={getLoanoutProductName}
+              >
+              </Select>
+              <Button
+                type='primary'
+                icon={<IoIosSearch />}
+                onClick={searchLoanoutFilterTableData}
+              >
+              </Button>
+            </div>
+          </div>
+          <Table
+            columns={loanOutColumns}
+            dataSource={loanOutData}
+            size='middle'
+            bordered
+            className='[&_.ant-table-thead>tr>th]:!bg-[#f0f5ff] [&_.ant-pagination]: my-0'
+            pagination={{
+              position: ['bottomRight'],
+              pageSizeOptions: ['10', '20', '50'],
+              showSizeChanger: true,
+              style: {
+                marginBottom: '-5px'
+              }
+            }}
+          />
+          {/* return device */}
+          <Drawer
+            title="Return Device"
+            open={isShowReturn}
+            onClose={() => clearloanoutDataForm(2)}
+            maskClosable={false}
+          >
+            <ConfigProvider theme={{
+              components: {
+                Spin: {contentHeight: '100%'}
+              }
+            }}>
+              <Spin spinning={returnSpin} tip='Loading...' className='bg-white'>
+                <div className='w-full'>
+                  <Row gutter={15}>
                     <Col span={24} className='mb-3'>
                       <label className='flex mb-1' htmlFor="Product Name">
                         Product Name
@@ -441,7 +593,7 @@ const Inventory = () => {
                         min={0}
                         placeholder="Number"
                         value={loanoutForm.loanout_number}
-                        addonAfter={'<=' + stockQuantity}
+                        addonAfter={'<=' + returnDeviceNum}
                         onChange={value => setLoanoutForm({ ...loanoutForm, loanout_number: value ?? 0 })}
                       />
                     </Col>
@@ -454,6 +606,7 @@ const Inventory = () => {
                         placeholder="username"
                         value={loanoutForm.loanout_user}
                         onChange={e => setLoanoutForm({ ...loanoutForm, loanout_user: e.target.value })}
+                        readOnly
                       />
                     </Col>
                     <Col span={24} className='mt-3'>
@@ -466,147 +619,14 @@ const Inventory = () => {
                       />
                     </Col>
                   </Row>
-                  <div className='flex mt-6'>
-                    <Button className='mr-4' onClick={() => setIsShowDetails(false)}>Cancel</Button>
-                    <Button type='primary' onClick={submitLoanoutDevice}>Confirm</Button>
-                  </div>
-                </>
-              ) : (
-                <div className='flex justify-center mt-16 flex-col'>
-                  <Empty description='Low Inventory' />
                 </div>
-              )}
-
-            </div>
+                <div className='flex mt-6'>
+                  <Button className='mr-4' onClick={() => setIsShowReturn(false)}>Cancel</Button>
+                  <Button type='primary' onClick={returnDeviceLoanoutEvent}>Return</Button>
+                </div>
+              </Spin>
+            </ConfigProvider>
           </Drawer>
-
-          {/* return device */}
-          <Drawer
-            title="Return Device"
-            open={isShowReturn}
-            onClose={() => clearloanoutDataForm(2)}
-            maskClosable={false}
-          >
-            <div className='w-full'>
-              <Row gutter={15}>
-                <Col span={24} className='mb-3'>
-                  <label className='flex mb-1' htmlFor="Product Name">
-                    Product Name
-                  </label>
-                  <Input value={loanoutForm.loanout_name} readOnly />
-                </Col>
-                <Col span={24} className='mb-3'>
-                  <label className='flex mb-1' htmlFor="Product Type">
-                    Product Type
-                  </label>
-                  <Input value={loanoutForm.loanout_type} readOnly />
-                </Col>
-                <Col span={24} className='mb-3'>
-                  <label className='flex mb-1' htmlFor="Product Type">
-                    Product Brand
-                  </label>
-                  <Input placeholder="Product Brand" readOnly value={loanoutForm.loanout_brand} />
-                </Col>
-                <Col span={24} className='mb-3'>
-                  <label className='flex mb-1' htmlFor="Loan Out Quantity">
-                    Loan Out Time
-                  </label>
-                  <Input placeholder="Loan Out Time" readOnly value={loanoutForm.loanout_time} />
-                </Col>
-                <Col span={24} className='mb-3'>
-                  <label className='flex mb-1' htmlFor="Loan Out Quantity">
-                    <span className='text-red-500 text-sx mNumber mr-1'>*</span>
-                    Loan Out Quantity
-                  </label>
-                  <InputNumber
-                    style={{ width: '100%' }}
-                    min={0}
-                    placeholder="Number"
-                    value={loanoutForm.loanout_number}
-                    addonAfter={'<=' + returnDeviceNum}
-                    onChange={value => setLoanoutForm({ ...loanoutForm, loanout_number: value ?? 0 })}
-                  />
-                </Col>
-                <Col span={24} className='mb-3'>
-                  <label className='flex mb-1' htmlFor="Loan Out Quantity">
-                    <span className='text-red-500 text-sx mr-1'>*</span>
-                    Loan Out User
-                  </label>
-                  <Input
-                    placeholder="username"
-                    value={loanoutForm.loanout_user}
-                    onChange={e => setLoanoutForm({ ...loanoutForm, loanout_user: e.target.value })}
-                    readOnly
-                  />
-                </Col>
-                <Col span={24} className='mt-3'>
-                  <Input.TextArea
-                    placeholder='Remark'
-                    showCount
-                    rows={5}
-                    autoSize={{ minRows: 5, maxRows: 5 }}
-                    maxLength={100}
-                  />
-                </Col>
-              </Row>
-            </div>
-            <div className='flex mt-6'>
-              <Button className='mr-4' onClick={() => setIsShowReturn(false)}>Cancel</Button>
-              <Button type='primary' onClick={returnDeviceLoanoutEvent}>Return</Button>
-            </div>
-          </Drawer>
-        </div>
-    },
-    {
-      key: '2',
-      label: 'Loan out',
-      children:
-        <div>
-          <div className='mb-4 flex'>
-            <div className='ml-auto'>
-            <Select 
-              className='w-[160px] mr-2' 
-              placeholder="Select type"
-              options={searchTypeSelect}
-              allowClear
-              value={searchLoanoutType}
-              onChange={e => setSearchLoanoutType(e)}
-              >
-              </Select>
-              <Select 
-                className='w-[220px] mr-2' 
-                placeholder='Select product' 
-                options={searchLoanoutProdutcName}
-                allowClear
-                showSearch
-                value={searchLoanoutProductText}
-                onChange={e => setSearchLoanoutText(e)}
-                onFocus={getLoanoutProductName}
-              >  
-              </Select>
-              <Button 
-                type='primary' 
-                icon={<IoIosSearch />}
-                onClick={searchLoanoutFilterTableData}
-              >
-              </Button>
-            </div>
-          </div>
-          <Table
-            columns={loanOutColumns}
-            dataSource={loanOutData}
-            size='middle'
-            bordered
-            className='[&_.ant-table-thead>tr>th]:!bg-[#f0f5ff] [&_.ant-pagination]: my-0'
-            pagination={{ 
-              position: ['bottomRight'], 
-              pageSizeOptions: ['10', '20', '50'], 
-              showSizeChanger: true,
-              style: {
-                marginBottom: '-5px'
-              }
-            }}
-          />
         </div>
     }
   ]
@@ -625,16 +645,15 @@ const Inventory = () => {
 
   return (
     <div className='p-3 w-full box-border'>
-      
       <Card title="Inventory Management">
-        <Skeleton loading={isLoading} active paragraph={{rows: 10}}>
+        <Skeleton loading={isLoading} active paragraph={{ rows: 10 }}>
           <Tabs
             activeKey={loanOutTabKeys}
             items={items}
             onChange={switchTabChange}
             className='-mt-2'
           />
-          </Skeleton>
+        </Skeleton>
       </Card>
     </div>
   )

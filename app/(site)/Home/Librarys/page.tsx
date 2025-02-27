@@ -47,7 +47,8 @@ const Librarys = () => {
   }
 
   const goToLibrarysDetails = (id: string) => {
-    router.push(`/KnowledgeTemplate?KnowledgeId=${id}`)
+    // router.push(`/KnowledgeTemplate?KnowledgeId=${id}`)
+    window.open(`/KnowledgeTemplate?KnowledgeId=${id}`, '_blank')
   }
 
   const delteLibrarModal = (id: string) => {
@@ -164,20 +165,19 @@ const Librarys = () => {
                         }
                         description={item.description}
                       />
-                      <div className="flex justify-end text-gray-400 text-sm">
-                        <p>{item.created_time}</p>
+                      <div className="flex text-gray-400 text-sm ">
+                        <p className="mb-0">{item.created_time}</p>
+                        {item.type == 'Computer' && <Tag color="magenta" className="ml-4">Computer</Tag>}
+                        {item.type == 'Server' && <Tag color="red" className="ml-3">Server</Tag>}
+                        {item.type == 'Switch' && <Tag color="volcano" className="ml-3">Switch</Tag>}
+                        {item.type == 'Router' && <Tag color="purple" className="ml-3">Router</Tag>}
+                        {item.type == 'Printer' && <Tag color="gold" className="ml-3">Printer</Tag>}
+                        {item.type == 'Laptop' && <Tag color="blue" className="ml-3">Laptop</Tag>}
+                        {item.type == 'Mobile' && <Tag color="green" className="ml-3">Mobile</Tag>}
+                        {item.type == 'Monitor' && <Tag color="geekblue" className="ml-3">Monitor</Tag>}
+                        {item.type == 'Keyboard/Mouse' && <Tag color="geekblue" className="ml-3">Keyboard/Mouse</Tag>}
+                        {item.type == 'Other' && <Tag color="cyan" className="ml-3">Other</Tag>}
                       </div>
-                      {item.type == 'Computer' && <Tag color="magenta" className="ml-3">Computer</Tag>}
-                      {item.type == 'Server' && <Tag color="red" className="ml-3">Server</Tag>}
-                      {item.type == 'Switch' && <Tag color="volcano" className="ml-3">Switch</Tag>}
-                      {item.type == 'Router' && <Tag color="purple" className="ml-3">Router</Tag>}
-                      {item.type == 'Printer' && <Tag color="gold" className="ml-3">Printer</Tag>}
-                      {item.type == 'Laptop' && <Tag color="blue" className="ml-3">Laptop</Tag>}
-                      {item.type == 'Mobile' && <Tag color="green" className="ml-3">Mobile</Tag>}
-                      {item.type == 'Monitor' && <Tag color="geekblue" className="ml-3">Monitor</Tag>}
-                      {item.type == 'Keyboard/Mouse' && <Tag color="geekblue" className="ml-3">Keyboard/Mouse</Tag>}
-                      {item.type == 'Other' && <Tag color="cyan" className="ml-3">Other</Tag>}
-                      
                     </List.Item>
                   )}
                 />

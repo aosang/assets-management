@@ -4,11 +4,11 @@ import { flexible } from './phone.js'
 import { useSearchParams } from "next/navigation"
 import { QRCodeSVG } from 'qrcode.react'
 import { getCodeAssetsData } from '@/utils/providerItAssetsData'
-import { Button, Descriptions, Spin } from "antd"
+import { Button, Descriptions, Skeleton } from "antd"
 import tempcss from './temp.module.scss'
 import html2canvas from "html2canvas"
 import { getTimeNumber } from "@/utils/pubFunProvider"
-import dayjs from "dayjs";
+import dayjs from "dayjs"
 
 type myDeviceInfo = {
   loanout_id: string,
@@ -19,8 +19,8 @@ type myDeviceInfo = {
   loanout_user: string
 }
 
-
 const TemplateCode: React.FC = () => {
+  const [isLoading, setIsLoading] = useState<boolean>(true)
   const searchParams = useSearchParams()
   const [qrCodeData, setQrCodeData] = useState<string>('')
   const [deviceInfo, setDeviceInfo] = useState<myDeviceInfo>({
@@ -38,6 +38,9 @@ const TemplateCode: React.FC = () => {
       getCodeAssetsData(myId).then(res => {
         setDeviceInfo(res![0] as myDeviceInfo)
         setQrCodeData(`https://37165a514c.vicp.fun/TemplateCode?id=${myId}`)
+        setTimeout(() => {
+          setIsLoading(false)
+        }, 500)
       })
     }
   }
@@ -65,13 +68,13 @@ const TemplateCode: React.FC = () => {
   useEffect(() => {
     flexible()
     createQRcodeDataImage()
-
     document.title = 'Device Code'
+
   }, [])
 
   return (
     <div className={tempcss.rootLay}>
-
+      <Skeleton active loading={isLoading} paragraph={{rows: 8}}>
       <div className={tempcss.container}>
         <div id="canvas">
           <div className={tempcss.container_nav}>
@@ -119,7 +122,7 @@ const TemplateCode: React.FC = () => {
 
         <div className='mx-auto my-0 w-[2rem]'>
           <Button
-            style={{ width: '2rem', height: '0.32rem', fontSize: '0.15rem', display: 'block'}}
+            style={{ width: '2rem', height: '0.32rem', fontSize: '0.15rem', display: 'block' }}
             type="primary"
             onClick={saveImageQrcode}
             id="downLink"
@@ -128,7 +131,7 @@ const TemplateCode: React.FC = () => {
           </Button>
         </div>
       </div>
-
+      </Skeleton>    
     </div>
   )
 }
@@ -142,9 +145,7 @@ const WrappedTemplateCode: React.FC = () => {
   }, [])
   return (
     <Suspense>
-      
       <TemplateCode />
-      
     </Suspense>
   )
 }
