@@ -49,7 +49,17 @@ const Inventory = () => {
 
   const getInventoryData = () => {
     getItAssetsTabbleData().then(data => {
-      setInventoryData(data as productItem[])
+      // setInventoryData(data as productItem[])
+
+      const sortedData = [...data!].sort((a, b) => {
+        // 首先按照 product_type 排序
+        if (a.product_type < b.product_type) return -1
+        if (a.product_type > b.product_type) return 1
+         
+        return 0
+      })
+
+      setInventoryData(sortedData as productItem[])
       setIsLoading(false)
 
       setSearchProductName(data as inspectionStatusItem[])

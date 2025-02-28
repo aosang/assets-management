@@ -157,7 +157,7 @@ const Home = () => {
                   </Col>
                   <Col span={6}>
                     <div style={workCardInfo} className="bg-[#ee5253]">
-                      <div style={workIcon}>
+                      <div className='w-[72px] h-[72px] rounded-2xl bg-[rgba(255,255,255,0.3)]'>
                         <AiOutlineFileSync style={workIconText} size={30} />
                       </div>
                       <div style={workTotal}>

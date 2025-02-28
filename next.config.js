@@ -17,11 +17,11 @@ const nextConfig = {
   },
    
   trailingSlash: false,
-  // output: 'export',
-  // basePath: '/assetsManager',
-  // assetPrefix: '/assetsManager',
+  output: 'export',
   basePath: '',
   assetPrefix: '',
+  // basePath: '',
+  // assetPrefix: '',
 }
 
 module.exports = nextConfig

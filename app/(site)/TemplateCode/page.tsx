@@ -20,8 +20,8 @@ type myDeviceInfo = {
 }
 
 const TemplateCode: React.FC = () => {
-  const [isLoading, setIsLoading] = useState<boolean>(true)
   const searchParams = useSearchParams()
+  const [isLoading, setIsLoading] = useState<boolean>(true)
   const [qrCodeData, setQrCodeData] = useState<string>('')
   const [deviceInfo, setDeviceInfo] = useState<myDeviceInfo>({
     loanout_id: '',

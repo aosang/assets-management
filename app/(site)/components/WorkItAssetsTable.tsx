@@ -14,24 +14,27 @@ import {
   Space,
   Input,
   InputNumber,
-  Spin,
+  Upload,
   Skeleton
 } from 'antd'
 import { getWorkOrderType, getWorkBrand } from '@/utils/providerSelectData'
 import { insertItAssets, deleteItAssets, searchItAssetsData, getItAssetsTabbleData, editItAssetsData } from '@/utils/providerItAssetsData'
 import { getTimeNumber } from '@/utils/pubFunProvider'
 import { IoIosSearch } from 'react-icons/io'
+import { InboxOutlined } from '@ant-design/icons'
 import useMessage from '@/utils/message'
+
+const { Dragger } = Upload
 
 type asstesDataProps = productItem[]
 type typeDataProps = typeDataName[]
 type typeDataBrandProps = typeDataBrand[]
 
 const WorkItAssetsTable: React.FC = () => {
+  const [isImportModalShow, setIsImportModalShow] = useState<boolean>(false)
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [assetsData, setAssetsData] = useState<asstesDataProps>([])
   const [filterTypeValue, setFilterTypeValue] = useState<string | null>(null)
-  const [filterStatusValue, setFilterStatusValue] = useState<string | null>(null)
   const [filterStartTime, setFilterStartTime] = useState<string>('')
   const [filterEndTime, setFilterEndTime] = useState<string>('')
 
@@ -118,14 +121,6 @@ const WorkItAssetsTable: React.FC = () => {
       }
     }
   ])
-
-  // go to qrcode
-  // const createQrCodePage = {
-  //   onClick: (record: productItem) => {
-  //     // window.open(`/assetsManager/TemplateCode?id=${record.product_id}`, '_blank')
-  //     window.open(`/TemplateCode?id=${record.id}`, '_blank')
-  //   }
-  // }
 
   // get create time 
   const getCreateTime = () => {
@@ -292,7 +287,6 @@ const WorkItAssetsTable: React.FC = () => {
     deleteItAssets(deleteAssetsDataId)
       .then(() => {
         getMyItAssetsData()
-        setFilterStatusValue(null)
         setFilterTypeValue(null)
         setFilterStartTime('')
         setFilterEndTime('')
@@ -330,6 +324,37 @@ const WorkItAssetsTable: React.FC = () => {
 
   return (
     <div>
+      {/* import modal */}
+      <Modal
+        title="Excel template import"
+        open={isImportModalShow}
+        onCancel={() => setIsImportModalShow(false)}
+        footer={false}
+        width={800}
+        maskClosable={false}
+      >
+        <Divider />
+        <Row>
+          <Space >
+            <Col span={4}>
+              <Button color='cyan' variant='solid'>Download Excel</Button>
+            </Col>
+            <Col span={4}>
+              <Button color='cyan' variant='solid'>Download Documentation</Button>
+            </Col>
+          </Space>
+        </Row>
+        <Dragger className='mt-6' showUploadList={false}>
+          <p className="ant-upload-drag-icon">
+            <InboxOutlined />
+          </p>
+          <p className="ant-upload-text">Click or drag Excel file to this area to upload</p>
+          <p className="ant-upload-hint">
+            Support for a single upload. Strictly prohibited from uploading business data or sensitive information
+          </p>
+        </Dragger>
+      </Modal>
+
       <Modal
         title="Tips"
         open={isModalDelete}
@@ -729,6 +754,15 @@ const WorkItAssetsTable: React.FC = () => {
             </Button>
           </Col>
 
+          <Col>
+            <Button
+              color='cyan'
+              variant="solid"
+              onClick={() => setIsImportModalShow(true)}
+            >
+              Import
+            </Button>
+          </Col>
           <Col className='flex my-0 mr-0 ml-auto'>
             <Select
               className='w-40 mr-3'
