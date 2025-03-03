@@ -181,3 +181,12 @@ export const editItAssetsData = async (assetsId: string, assetsOrderForm: produc
     throw error
   }
 }
+
+export const uploadExcelItAssetsData = async (jsonData: productItem[]) => {
+  const {data: insertedData, error} = await supabase
+  .from('it_assets')
+  .upsert(jsonData)
+
+  if(error) return useMessage(2, error.message, 'error')
+  return insertedData
+}

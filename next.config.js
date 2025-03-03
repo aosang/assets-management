@@ -16,12 +16,12 @@ const nextConfig = {
     unoptimized: true,
   },
    
-  trailingSlash: false,
+  trailingSlash: true,
   output: 'export',
+  // basePath: '/assetsManager',
+  // assetPrefix: '/assetsManager'
   basePath: '',
   assetPrefix: '',
-  // basePath: '',
-  // assetPrefix: '',
 }
 
 module.exports = nextConfig

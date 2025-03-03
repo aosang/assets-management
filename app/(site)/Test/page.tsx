@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect } from "react"
 import { supabase } from "@/utils/clients"
-import { Button, Upload, Table } from 'antd'
+import { Upload, Table } from 'antd'
 import { InboxOutlined } from '@ant-design/icons'
 import dayjs from "dayjs"
 import * as XLSX from 'xlsx'

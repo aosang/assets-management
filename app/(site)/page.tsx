@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Input, Button, Tooltip  } from 'antd'
+import { Input, Button, Tooltip } from 'antd'
 import { emailRegFunc, passwordRegFunc } from '@/utils/pubFunProvider'
 import { supabase } from '@/utils/clients'
 import { formCollect } from '@/utils/dbType'
@@ -11,10 +11,10 @@ import authScss from './auth.module.scss'
 import useMessage from '@/utils/message'
 import Verify from './components/Verify'
 import MaskLoad from './components/MaskLoad'
-import Head from 'next/head'
 
 const Auth: React.FC = () => {
   const router = useRouter()
+  const [isSpining, setIsSpining] = useState<boolean>(true)
   const [mySession, setMySession] = useState<any>('')
   const [isVerify, setIsVerify] = useState<boolean>(false)
   const [formVisiable, setFormVisiable] = useState(false)
@@ -26,20 +26,20 @@ const Auth: React.FC = () => {
   })
 
   const getSession = async () => {
-    const { data: { session },  error } = await supabase.auth.getSession()
-    
+    const { data: { session }, error } = await supabase.auth.getSession()
+
     if (session) {
       setMySession(session)
       router.push('/Home')
     }
   }
 
-// 回车登录
-  const onPressEnterSigin = (e:any) => { 
-    if(!formVisiable) {
-      if(e.key === 'Enter') validateSignUpForm(2)
+  // 回车登录
+  const onPressEnterSigin = (e: any) => {
+    if (!formVisiable) {
+      if (e.key === 'Enter') validateSignUpForm(2)
     } else {
-      if(e.key === 'Enter') validateSignUpForm(1)
+      if (e.key === 'Enter') validateSignUpForm(1)
     }
   }
 
@@ -50,7 +50,7 @@ const Auth: React.FC = () => {
       if (!emailRegFunc(email)) {
         useMessage(2, 'Please enter your email address!', 'error')
       } else if (!passwordRegFunc(password)) {
-        useMessage(2, 'Please enter your password!', 'error')
+        useMessage(2, 'Invalid password format. Please check requirements!', 'error')
       } else if (!company) {
         useMessage(2, 'Please enter your company name!', 'error')
       } else if (!username) {
@@ -72,13 +72,13 @@ const Auth: React.FC = () => {
             created_at: getTimeNumber()[0],
             avatar_url: ''
           }))
-          
+
           const { error } = await supabase.auth.signUp({
             email,
             password,
             options: {
-              // emailRedirectTo: 'https://www.wangle.run/assetsManager/Home'
-              emailRedirectTo: 'http://localhost:3000/Home'
+              emailRedirectTo: 'https://www.wangle.run/assetsManager/Home'
+              // emailRedirectTo: 'http://localhost:3000/Home'
             }
           })
           if (error) return useMessage(2, error.message, 'error')
@@ -136,16 +136,30 @@ const Auth: React.FC = () => {
   useEffect(() => {
     getSession()
     document.title = 'IT-Assets'
-  })
+
+    const handleLoad = () => {
+      setIsSpining(false)
+    }
+
+    setIsSpining(true)
+    window.addEventListener('load', handleLoad)
+
+
+    if (document.readyState === 'complete') {
+      setIsSpining(false)
+    }
+
+    // 组件卸载时移除事件监听
+    return () => {
+      window.removeEventListener('load', handleLoad)
+    }
+  }, [])
 
   return (
     <>
-      <MaskLoad />
-      {!mySession && 
+      {isSpining && <MaskLoad />}
+      {!mySession &&
         <div>
-          <Head>
-            <title>It-Assets</title>
-          </Head>
           {isVerify ? <Verify emailAddress={formState.email} /> : (
             <div className={authScss.background}>
               <div className={authScss.signUpForm}>
@@ -172,12 +186,12 @@ const Auth: React.FC = () => {
                         <li className={authScss.commitFormItem}>
                           <div className='flex items-center'>
                             <label htmlFor="Email" className='mr-1'>Password</label>
-                            <Tooltip 
+                            <Tooltip
                               placement='right'
                               title='Password must be 8-20 characters long and contain at least one uppercase letter, one lowercase letter, and one number'
                             >
                               <InfoCircleOutlined className='text-sm -mt-1 text-blue-700' />
-                            </Tooltip> 
+                            </Tooltip>
                           </div>
                           <Input.Password
                             placeholder="Enter password"
@@ -252,8 +266,8 @@ const Auth: React.FC = () => {
                           />
                         </li>
                         <div className='flex'>
-                          <a 
-                            className='text-xs ml-auto underline cursor-pointer -mt-1' 
+                          <a
+                            className='text-xs ml-auto underline cursor-pointer -mt-1'
                             onClick={() => router.push('/ResetPassword')}
                           >
                             Forget password?
@@ -282,5 +296,4 @@ const Auth: React.FC = () => {
 
   )
 }
-
 export default Auth

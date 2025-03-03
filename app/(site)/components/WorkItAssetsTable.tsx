@@ -2,27 +2,14 @@
 import { useEffect, useState } from 'react'
 import dayjs from 'dayjs'
 import { typeDataName, typeDataBrand, productItem } from '@/utils/dbType'
-import {
-  Button,
-  Row,
-  Col,
-  Select,
-  DatePicker,
-  Table,
-  Modal,
-  Divider,
-  Space,
-  Input,
-  InputNumber,
-  Upload,
-  Skeleton
-} from 'antd'
+import { Button, Row, Col, Select, DatePicker, Table, Modal, Divider, Space, Input, InputNumber, Upload, Skeleton } from 'antd'
 import { getWorkOrderType, getWorkBrand } from '@/utils/providerSelectData'
-import { insertItAssets, deleteItAssets, searchItAssetsData, getItAssetsTabbleData, editItAssetsData } from '@/utils/providerItAssetsData'
+import { insertItAssets, deleteItAssets, searchItAssetsData, getItAssetsTabbleData, editItAssetsData, uploadExcelItAssetsData } from '@/utils/providerItAssetsData'
 import { getTimeNumber } from '@/utils/pubFunProvider'
 import { IoIosSearch } from 'react-icons/io'
 import { InboxOutlined } from '@ant-design/icons'
 import useMessage from '@/utils/message'
+import * as XLSX from 'xlsx'
 
 const { Dragger } = Upload
 
@@ -152,15 +139,15 @@ const WorkItAssetsTable: React.FC = () => {
 
   const getMyItAssetsData = () => {
     getItAssetsTabbleData()
-      .then(res => {
-        const formatData = (res as asstesDataProps).map(item => ({
-          ...item,
-          product_time: dayjs(item.product_time).format('MMM D, YYYY h:mm a'),
-          product_update: dayjs(item.product_update).format('MMM D, YYYY h:mm a'),
-        }))
-        setAssetsData(formatData)
-        setIsLoading(false)
-      })
+    .then(res => {
+      const formatData = (res as asstesDataProps).map(item => ({
+        ...item,
+        product_time: dayjs(item.product_time).format('MMM D, YYYY h:mm a'),
+        product_update: dayjs(item.product_update).format('MMM D, YYYY h:mm a'),
+      }))
+      setAssetsData(formatData)
+      setIsLoading(false)
+    })
   }
 
   const modalAddDeviceHandler = () => {
@@ -309,9 +296,55 @@ const WorkItAssetsTable: React.FC = () => {
 
   const searchFilterItAssetsData = () => {
     searchItAssetsData(filterTypeValue,  filterStartTime, filterEndTime)
-      .then(res => {
-        setAssetsData(res as asstesDataProps)
+    .then(res => {
+      setAssetsData(res as asstesDataProps)
+    })
+  }
+
+  // download excel template
+  const downLoadExcelTemplate = () => {
+    const templateUrl = 'https://ctfrp48g91ht4obgh0u0.baseapi.memfiredb.com/storage/v1/object/public/file_download/it_template.xlsx'
+    const link = document.createElement('a')
+    link.href = templateUrl
+    link.download = 'it_template.xlsx'
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
+
+  const handleUploadEvent = (file: File) => {
+    const reader = new FileReader()
+    reader.onload = async (e) => {
+      const binaryString = e.target?.result as string
+      const wb = XLSX.read(binaryString, { type: 'binary' })
+      const sheetName = wb.SheetNames[0]
+      const sheet = wb.Sheets[sheetName]
+      const jsonData = XLSX.utils.sheet_to_json(sheet)
+
+      uploadExcelItAssetsData(jsonData as productItem[])
+      .then(() => {
+        getMyItAssetsData()
+        useMessage(2, 'Excel file uploaded successfully!', 'success')
+        setIsImportModalShow(false)
       })
+    }
+    reader.readAsArrayBuffer(file)
+  }
+
+  // upload excel template
+  const uploadProps = {
+    beforeUpload: (file: File) => {
+      const isExcel = file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' || file.type === 'application/vnd.ms-excel'
+      if(!isExcel) {
+        useMessage(2, 'Please upload Excel files only', 'error')
+      }
+      return isExcel
+    },
+
+    customRequest: (options: any) => {
+      handleUploadEvent(options.file)
+      options.onSuccess()
+    }
   }
 
   useEffect(() => {
@@ -337,14 +370,24 @@ const WorkItAssetsTable: React.FC = () => {
         <Row>
           <Space >
             <Col span={4}>
-              <Button color='cyan' variant='solid'>Download Excel</Button>
+              <Button 
+                color='cyan' 
+                variant='solid'
+                onClick={downLoadExcelTemplate}
+              >
+                Download Excel
+              </Button>
             </Col>
             <Col span={4}>
               <Button color='cyan' variant='solid'>Download Documentation</Button>
             </Col>
           </Space>
         </Row>
-        <Dragger className='mt-6' showUploadList={false}>
+        <Dragger 
+          className='mt-6' 
+          showUploadList={false}
+          {...uploadProps}
+        >
           <p className="ant-upload-drag-icon">
             <InboxOutlined />
           </p>
