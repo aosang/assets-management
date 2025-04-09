@@ -3,10 +3,10 @@
 @tailwind utilities;
 
 
-@font-face {
+/* @font-face {
   font-family: roboto;
   src: url('../public/fonts/Roboto-Regular.ttf')
-}
+} */
 
 body,
 html,
@@ -26,7 +26,7 @@ img {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: roboto;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 
 span,

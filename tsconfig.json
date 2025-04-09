@@ -25,6 +25,15 @@
     "paths": {
       "@/*": [
         "./*"
+      ],
+      "@components/*": [
+        "./app/(site)/components/*"
+      ],
+      "@styles/*": [
+        "./styles/*"
+      ],
+      "@/locale/*": [
+        "./locale/*"
       ]
     }
   },

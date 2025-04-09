@@ -1,7 +1,7 @@
 "use client"
 import { Layout } from 'antd';
-import SideBarItem from './sideBarItem'
-import DropDownMenu from './dropDownMenu'
+import SideBarItem from './SideBarItem'
+import DropDownMenu from './DropDownMenu'
 
 const { Header, Content, Footer, Sider } = Layout;
 

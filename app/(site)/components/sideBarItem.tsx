@@ -62,29 +62,42 @@ const items: MenuItem[] = [{
 const SideBarItem: React.FC = () => {
   const router = useRouter()
   const [currentUrl, setCurrentUrl] = useState<string>('')
-  const switchMenuItem: MenuProps['onClick'] = (e: any) => {
-    if(e.key === 'Home') {
-      router.replace(`/${e.key}`)
-      setCurrentUrl(e.key)
-    } else {     
-      router.replace(`/Home/${e.key}`)
-      setCurrentUrl(e.key)
+  
+  const extractCurrentPath = () => {
+    const pathname = window.location.pathname
+    if (pathname === '/' || pathname === '/Home') {
+      return 'Home'
     }
+
+    // 从路径中提取最后一个部分作为当前页面key
+    const pathParts = pathname.split('/')
+    const lastPart = pathParts[pathParts.length - 1]
+    
+    // 如果最后部分为空（路径以/结尾），则取倒数第二部分
+    return lastPart || pathParts[pathParts.length - 2] || 'Home'
+  }
+  
+  const switchMenuItem: MenuProps['onClick'] = (e: any) => {
+    // 直接设置当前URL，避免等待路由变化后的useEffect
+    setCurrentUrl(e.key)
+    
+    // 然后执行路由跳转
+    const path = e.key === 'Home' ? `/${e.key}` : `/Home/${e.key}`
+    router.push(path)
   }
 
   useEffect(() => {
+    setCurrentUrl(extractCurrentPath())
+    
+    // 仅监听浏览器的前进/后退操作
     const handlePopState = () => {
-      let currentUrlLink = window.location.pathname
-      currentUrlLink =currentUrlLink.replace(/^.*\/([^\/]+)\/?$/, "$1")
-      setCurrentUrl(currentUrlLink)
+      setCurrentUrl(extractCurrentPath())
     }
+    
     window.addEventListener('popstate', handlePopState)
-  }, [])
-
-  useEffect(() => {
-    let currentUrlLink = window.location.pathname
-    currentUrlLink =currentUrlLink.replace(/^.*\/([^\/]+)\/?$/, "$1")
-    setCurrentUrl(currentUrlLink)
+    return () => {
+      window.removeEventListener('popstate', handlePopState)
+    }
   }, [])
 
   return (

@@ -1,6 +1,7 @@
 // 'use client'
 import './globals.css'
 import 'antd/dist/reset.css'
+import Providers from './Provider'
 
 export const metadata = {
   description: 'IT asset management system',
@@ -42,7 +43,9 @@ export default function RootLayout({
         style={{backgroundColor: '#f0f2f5'}} 
         suppressHydrationWarning={true}
       >
-        {children}
+        <Providers>
+          {children}
+        </Providers>
       </body>
     </html>
   )

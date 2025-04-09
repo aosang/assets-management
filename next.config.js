@@ -1,5 +1,5 @@
 /** @type {import('next').NextConfig} */
-
+const path = require('path')
 // const isProd = process.env.NODE_ENV === "production";
 const nextConfig = {
   // experimental: {
@@ -22,6 +22,15 @@ const nextConfig = {
   // assetPrefix: '/assetsManager'
   basePath: '',
   assetPrefix: '',
+
+  webpack: (config) => {
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@': path.resolve(__dirname, './'),
+      '@components': path.join(__dirname, './app/(site)/components')
+    }
+    return config
+  }
 }
 
 module.exports = nextConfig

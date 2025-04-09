@@ -145,9 +145,9 @@ const Auth: React.FC = () => {
     window.addEventListener('load', handleLoad)
 
 
-    if (document.readyState === 'complete') {
-      setIsSpining(false)
-    }
+    // if (document.readyState === 'complete') {
+    //   setIsSpining(false)
+    // }
 
     // 组件卸载时移除事件监听
     return () => {
@@ -158,7 +158,7 @@ const Auth: React.FC = () => {
   return (
     <>
       {isSpining && <MaskLoad />}
-      {!mySession &&
+      {!mySession && !isSpining && (
         <div>
           {isVerify ? <Verify emailAddress={formState.email} /> : (
             <div className={authScss.background}>
@@ -291,7 +291,10 @@ const Auth: React.FC = () => {
               </div>
             </div>
           )}
-        </div>}
+        </div>
+      )
+        
+      }
     </>
 
   )
