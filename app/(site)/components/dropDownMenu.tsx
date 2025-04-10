@@ -1,4 +1,4 @@
-import { Dropdown, Space, Button } from 'antd'
+import { Dropdown, Space} from 'antd'
 import { DownOutlined, ClockCircleOutlined } from '@ant-design/icons'
 import { supabase } from '@/utils/clients'
 import { useRouter } from 'next/navigation'
@@ -9,6 +9,9 @@ import { useState, useEffect } from 'react'
 import { getProfiles } from '@/utils/providerSelectData'
 import dayjs from 'dayjs'
 import LanguageSwitch from './LanguageChange/LanguageSwitch'
+
+import { useLanguage } from './LanguageChange/LanguageContext'
+import { useTranslation } from 'react-i18next'
 
 const items: MenuProps['items'] = [{
   key: '1',
@@ -22,6 +25,9 @@ const profile: React.CSSProperties = {
 }
 
 const DropDownMenu = () => {
+  const { t } = useTranslation()
+  const { locale } = useLanguage()
+
   const [currentTime, setCurrentTime] = useState(dayjs())
   const router = useRouter()
   const [ username, setUsername ] = useState('')
@@ -59,9 +65,15 @@ const DropDownMenu = () => {
       <div style={profile}>
         {username && (
           <>
-            <span className='mt-0 mb-0 -ml-3 mr-auto text-sm font-semibold text-blue-950'>
-              <ClockCircleOutlined className='mr-1' /> {currentTime.format('ddd, MMM D, YYYY h:mm:ss A')}
-            </span>
+            {locale === 'en' ? (
+              <span className='mt-0 mb-0 -ml-3 mr-auto text-sm font-semibold text-blue-950'>
+                <ClockCircleOutlined className='mr-1' /> {currentTime.format('ddd, MMM D, YYYY h:mm:ss A')}
+              </span>
+            ) : (
+              <span className='mt-0 mb-0 -ml-3 mr-auto text-sm font-semibold text-blue-950'>
+                <ClockCircleOutlined className='mr-1' /> {currentTime.format('YYYY-MM-DD HH:mm:ss')}
+              </span>
+            )}
             <LanguageSwitch />
             <Image 
               src={avatarUrl? avatarUrl : 'https://www.wangle.run/company_icon/public_image/pub_avatar.jpg' } 

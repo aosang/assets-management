@@ -1,22 +1,6 @@
 'use client'
-import {
-  tableItems,
-  typeDataName,
-  typeDataBrand,
-  statusItem,
-  workOrderFormProps,
-  selectInspectionItem
-} from '@/utils/dbType'
-import {
-  getWorkOrderType,
-  getWorkOrderStatus,
-  getWorkBrand,
-  getProfiles,
-  getUser,
-  getWorkOrder,
-  insertUpdateWorkOrder,
-  deleteWorkOrder
-} from '@/utils/providerSelectData'
+import {tableItems, typeDataName, typeDataBrand, statusItem, workOrderFormProps, selectInspectionItem} from '@/utils/dbType'
+import {getWorkOrderType, getWorkOrderStatus, getWorkBrand, getProfiles, getUser, getWorkOrder, insertUpdateWorkOrder, deleteWorkOrder } from '@/utils/providerSelectData'
 import { editWorkOrderData } from '@/utils/pubEditProviders'
 import { getFilterWorkStatus, getFilterWorkType, searchTypeData } from '@/utils/pubFilterProviders'
 import { Card, Space, Button, Row, Col, Modal, Divider, Select, Input, DatePicker, Skeleton } from 'antd'
@@ -26,6 +10,7 @@ import { getTimeNumber, getDeviceData } from '@/utils/pubFunProvider'
 import WorkTable from '../../components/WorkTable'
 import useMessage from '@/utils/message'
 import dayjs from 'dayjs'
+import { useTranslation } from 'react-i18next'
 
 type tableData = tableItems[]
 type typeDataProps = typeDataName[]
@@ -33,6 +18,7 @@ type typeDataBrandProps = typeDataBrand[]
 type statusItemProps = statusItem[]
 
 const WorkOrder: React.FC = ({ }) => {
+  const { t } = useTranslation()
   const [isLoading, setIsLoading] = useState<boolean>(true)
 
   const [layoutWidth, setLayoutWidth] = useState<number>(8)

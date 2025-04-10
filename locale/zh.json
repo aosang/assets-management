@@ -2,9 +2,33 @@
   "siderbar": {
     "Home": "综合信息",
     "WorkOrder": "我的工单",
-    "assetManagement": "资产",
-    "inventoryManagement": "库存",
-    "report": "报表",
-    "setting": "设置"
+    "ITDevice": "IT设备",
+    "inventoryManagement": "库存管理",
+    "Library": "知识库",
+    "Inspection": "巡检记录",
+    "Profile": "个人设置"
+  },
+
+  "Home": {
+    "WorkOrderInfo": "工单信息",
+    "Total": "总计",
+    "Finished": "已完成",
+    "Processing": "处理中",
+    "Pending": "待处理",
+
+    "assetsInfo": "资产信息",
+    "Computer": "电脑",
+    "Laptop": "笔记本",
+    "Server": "服务器",
+    "Switch": "交换机",
+    "Router": "路由器",
+    "Mobile": "手机",
+    "Printer": "打印机",
+    "Keymouse": "键盘/鼠标",
+    "Monitor": "显示器",
+    "Others": "其他",
+
+    "TotalPrice": "资产总价",
+    "TotalNum": "资产总数"
   }
 }

@@ -8,60 +8,62 @@ import { RiComputerFill  } from 'react-icons/ri'
 import { FaUser } from "react-icons/fa"
 import { IoDocumentText, IoLibrary } from "react-icons/io5"
 import { MdInventory } from "react-icons/md"
+import { useTranslation } from 'react-i18next'
 
 type MenuItem = Required<MenuProps>['items'][number]
 
-const items: MenuItem[] = [{
-  key: 'Home',
-  label: 'Home',
-  icon: <GoHomeFill style={{fontSize: '16px'}} />,
-  style: {
-    marginBottom: '12px'
-  }
-}, {
-  key: 'WorkOrder',
-  label: 'WorkOrder',
-  icon: <AiFillProfile style={{fontSize: '16px'}} />,
-  style: {
-    marginBottom: '12px'
-  }
-}, {
-  key: 'Inventory',
-  label: 'Inventory',
-  icon: <MdInventory style={{fontSize: '16px'}} />,
-  style: {
-    marginBottom: '12px'
-  }
-}, {
-  key: 'Inspection',
-  label: 'Inspection',
-  icon: <IoDocumentText style={{fontSize: '16px'}} />,
-  style: {
-    marginBottom: '12px'
-  }
-}, {
-  key: 'Librarys',
-  label: 'Librarys',
-  icon: <IoLibrary style={{fontSize: '16px'}} />,
-  style: {
-    marginBottom: '12px'
-  }
-}, {
-  key: 'WorkItAssets',
-  label: 'IT Device',
-  icon: <RiComputerFill style={{fontSize: '16px'}} />,
-  style: {
-    marginBottom: '12px'
-  }
-}, {
-  key: 'Profile',
-  label: 'Profile',
-  icon: <FaUser style={{fontSize: '16px'}} />,
-}]
-
 const SideBarItem: React.FC = () => {
+  const { t } = useTranslation()
   const router = useRouter()
   const [currentUrl, setCurrentUrl] = useState<string>('')
+  
+  const items: MenuItem[] = [{
+    key: 'Home',
+    label: t('siderbar.Home'),
+    icon: <GoHomeFill style={{fontSize: '16px'}} />,
+    style: {
+      marginBottom: '12px'
+    }
+  }, {
+    key: 'WorkOrder',
+    label: t('siderbar.WorkOrder'),
+    icon: <AiFillProfile style={{fontSize: '16px'}} />,
+    style: {
+      marginBottom: '12px'
+    }
+  }, {
+    key: 'Inventory',
+    label: t('siderbar.inventoryManagement'),
+    icon: <MdInventory style={{fontSize: '16px'}} />,
+    style: {
+      marginBottom: '12px'
+    }
+  }, {
+    key: 'Inspection',
+    label: t('siderbar.Inspection'),
+    icon: <IoDocumentText style={{fontSize: '16px'}} />,
+    style: {
+      marginBottom: '12px'
+    }
+  }, {
+    key: 'Librarys',
+    label: t('siderbar.Library'),
+    icon: <IoLibrary style={{fontSize: '16px'}} />,
+    style: {
+      marginBottom: '12px'
+    }
+  }, {
+    key: 'WorkItAssets',
+    label: t('siderbar.ITDevice'),
+    icon: <RiComputerFill style={{fontSize: '16px'}} />,
+    style: {
+      marginBottom: '12px'
+    }
+  }, {
+    key: 'Profile',
+    label: t('siderbar.Profile'),
+    icon: <FaUser style={{fontSize: '16px'}} />,
+  }]
   
   const extractCurrentPath = () => {
     const pathname = window.location.pathname

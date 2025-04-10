@@ -9,7 +9,7 @@ import { HiMiniDevicePhoneMobile } from "react-icons/hi2"
 import { BsToggles } from "react-icons/bs"
 import { LuMouse, LuRouter } from "react-icons/lu"
 import CountUp from 'react-countup'
-
+import { useTranslation } from 'react-i18next'
 import { getWorkOrderCount, getAllAssetsCount, getTotalAssetsPrice } from '@/utils/providerSelectData'
 
 const workCardInfo: React.CSSProperties = {
@@ -60,6 +60,7 @@ const assetsText: React.CSSProperties = {
 }
 
 const Home = () => {
+  const { t } = useTranslation()
   const [isSpiningLoading, setIsSpiningLoading] = useState<boolean>(true)
   const [isDeviceLoading, setDeviceLoading] = useState<boolean>(true)
 
@@ -126,7 +127,7 @@ const Home = () => {
       <div style={{ width: '100%', padding: '12px', boxSizing: 'border-box' }}>
         <div>
           <Space direction="vertical" size={12} style={{ width: '100%' }}>
-            <Card title="WorkOrder Info">
+            <Card title={t('Home.WorkOrderInfo')}>
               <Skeleton active loading={isSpiningLoading}>
                 <Row gutter={20}>
                   <Col span={6}>
@@ -138,7 +139,7 @@ const Home = () => {
                         <span style={{ fontSize: '36px', fontWeight: '600' }}>
                           <CountUp end={totalNum} duration={2} delay={0.5} />
                         </span>
-                        <p style={{ fontSize: '15px' }}>Total</p>
+                        <p style={{ fontSize: '15px' }}>{t('Home.Total')}</p>
                       </div>
                     </div>
                   </Col>
@@ -151,7 +152,7 @@ const Home = () => {
                         <span style={{ fontSize: '36px', fontWeight: '600' }}>
                           <CountUp end={finishedNum} duration={2} delay={0.5} />
                         </span>
-                        <p style={{ fontSize: '15px' }}>Finished</p>
+                        <p style={{ fontSize: '15px' }}>{t('Home.Finished')}</p>
                       </div>
                     </div>
                   </Col>
@@ -164,7 +165,7 @@ const Home = () => {
                         <span style={{ fontSize: '36px', fontWeight: '600' }}>
                           <CountUp end={processingNum} duration={2} delay={0.5} />
                         </span>
-                        <p style={{ fontSize: '15px' }}>Processing</p>
+                        <p style={{ fontSize: '15px' }}>{t('Home.Processing')}</p>
                       </div>
                     </div>
                   </Col>
@@ -177,7 +178,7 @@ const Home = () => {
                         <span style={{ fontSize: '36px', fontWeight: '600' }}>
                           <CountUp end={pendingNum} duration={2} delay={0.5} />
                         </span>
-                        <p style={{ fontSize: '15px' }}>Pending</p>
+                        <p style={{ fontSize: '15px' }}>{t('Home.Pending')}</p>
                       </div>
                     </div>
                   </Col>
@@ -187,7 +188,7 @@ const Home = () => {
             
           </Space>
           <Space direction="vertical" size={12} style={{ width: '100%', marginTop: '12px' }}>
-            <Card title="Asset information">
+            <Card title={t('Home.assetsInfo')}>
               <Skeleton active loading={isDeviceLoading}>
                 <Row gutter={15}>
                   <Col span={4} >
@@ -195,7 +196,7 @@ const Home = () => {
                       <FiMonitor size={26} />
                       <div style={assetsTotal}>
                         <span style={assetsText} className='block text-right'>{computerNum}</span>
-                        <p className='block text-right'>Computer</p>
+                        <p className='block text-right'>{t('Home.Computer')}</p>
                       </div>
                     </div>
                   </Col>
@@ -205,7 +206,7 @@ const Home = () => {
                       <MdOutlineComputer size={26} />
                       <div style={assetsTotal}>
                         <span style={assetsText} className='block text-right'>{laptopNum}</span>
-                        <p className='block text-right'>Laptop</p>
+                        <p className='block text-right'>{t('Home.Laptop')}</p>
                       </div>
                     </div>
                   </Col>
@@ -214,7 +215,7 @@ const Home = () => {
                       <HiOutlineServer size={26} />
                       <div style={assetsTotal}>
                         <span style={assetsText} className='block text-right'>{serverNum}</span>
-                        <p className='block text-right'>Server</p>
+                        <p className='block text-right'>{t('Home.Server')}</p>
                       </div>
                     </div>
                   </Col>
@@ -224,7 +225,7 @@ const Home = () => {
                       <BsToggles size={26} />
                       <div style={assetsTotal}>
                         <span style={assetsText} className='block text-right'>{switchNum}</span>
-                        <p className='block text-right'>Switch</p>
+                        <p className='block text-right'>{t('Home.Switch')}</p>
                       </div>
                     </div>
 
@@ -234,7 +235,7 @@ const Home = () => {
                       <FiPrinter size={26} />
                       <div style={assetsTotal}>
                         <span style={assetsText} className='block text-right'>{printerNum}</span>
-                        <p className='block text-right'>Printer</p>
+                        <p className='block text-right'>{t('Home.Printer')}</p>
                       </div>
                     </div>
                   </Col>
@@ -244,7 +245,7 @@ const Home = () => {
                       <LuRouter size={26} />
                       <div style={assetsTotal}>
                         <span style={assetsText} className='block text-right'>{routerNum}</span>
-                        <p className='block text-right'>Router</p>
+                        <p className='block text-right'>{t('Home.Router')}</p>
                       </div>
                     </div>
                   </Col>
@@ -255,7 +256,7 @@ const Home = () => {
                       <HiMiniDevicePhoneMobile size={26} />
                       <div style={assetsTotal}>
                         <span style={assetsText} className='block text-right'>{mobileNum}</span>
-                        <p className='block text-right'>Mobile</p>
+                        <p className='block text-right'>{t('Home.Mobile')}</p>
                       </div>
                     </div>
                   </Col>
@@ -264,7 +265,7 @@ const Home = () => {
                       <MdOutlineScreenshotMonitor size={26} />
                       <div style={assetsTotal}>
                         <span style={assetsText} className='block text-right'>{monitorNum}</span>
-                        <p className='block text-right'>Monitor</p>
+                        <p className='block text-right'>{t('Home.Monitor')}</p>
                       </div>
                     </div>
                   </Col>
@@ -273,7 +274,7 @@ const Home = () => {
                       <LuMouse size={26} />
                       <div style={assetsTotal}>
                         <span style={assetsText} className='block text-right'>{keyboardMouseNum}</span>
-                        <p className='block text-right'>Keyboard/Mouse</p>
+                        <p className='block text-right'>{t('Home.Keymouse')}</p>
                       </div>
                     </div>
                   </Col>
@@ -282,7 +283,7 @@ const Home = () => {
                       <MdOutlineOtherHouses size={26} />
                       <div style={assetsTotal}>
                         <span style={assetsText} className='block text-right'>{othersNum}</span>
-                        <p className='block text-right'>Others</p>
+                        <p className='block text-right'>{t('Home.Others')}</p>
                       </div>
                     </div>
                   </Col>
@@ -302,14 +303,14 @@ const Home = () => {
                         <Col span={12}>
                           <div className='w-full h-full border-r border-slate-200'>
                             <p className='text-2xl font-bold text-slate-500 mb-1'>USD {totalAssetsPrice}</p>
-                            <Tag color='green'>Total value of equipment</Tag>
+                            <Tag color='green'>{t('Home.TotalPrice')}</Tag>
                           </div>
                         </Col>
 
                         <Col span={12}>
                           <div className='w-full h-full pl-5'>
                             <p className='text-2xl font-bold text-slate-500 mb-1'>{totalAssetsNum}</p>
-                            <Tag color='blue'>Total number of devices</Tag>
+                            <Tag color='blue'>{t('Home.TotalNum')}</Tag>
                           </div>
                         </Col>
                       </Row>
