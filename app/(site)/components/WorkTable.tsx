@@ -1,7 +1,8 @@
 'use client'
-import { Button, Table, Tag, Skeleton } from "antd"
+import { Button, Table, Tag } from "antd"
 import type { TableColumnsType} from 'antd'
 import { tableItems } from "@/utils/dbType"
+import { useTranslation } from 'react-i18next'
 
 interface workTableProps {
   workInfo: tableItems[]
@@ -10,6 +11,7 @@ interface workTableProps {
 }
 
 const WorkTable: React.FC<workTableProps> = ({ workInfo, onChangeSelectData, onGetEditData }) => {
+  const { t } = useTranslation()
   const rowSelection = {
     onChange: (selectedRowKeys: React.Key[], selectedRows: tableItems[]) => {
       onChangeSelectData(selectedRows)
@@ -23,32 +25,32 @@ const WorkTable: React.FC<workTableProps> = ({ workInfo, onChangeSelectData, onG
   }
 
   const colums: TableColumnsType<tableItems> = [{
-    title: 'Product',
+    title: t('Public.Product'),
     dataIndex: 'created_product',
     key: 'created_product'
   }, {
-    title: 'Type',
+    title: t('Public.Type'),
     dataIndex: 'created_type',
     key: 'created_type',
   }, {
-    title: 'Brand',
+    title: t('Public.Brand'),
     dataIndex: 'created_brand',
     key: 'created_brand',
   }, {
-    title: 'Created name',
+    title: t('Public.CreatedName'),
     dataIndex: 'created_name',
     key: 'created_name'
   }, {
-    title: 'Updated Time',
+    title: t('Public.UpdatedTime'),
     dataIndex: 'created_update',
     key: 'created_update',
   }, {
-    title: 'Problem',
+    title: t('Public.Problem'),
     dataIndex: 'created_text',
     key: 'created_text',
     ellipsis: true
   }, {
-    title: 'Status',
+    title: t('Public.Status'),
     dataIndex: 'created_status',
     key: 'created_status',
     render: (text: string) => {
@@ -61,7 +63,7 @@ const WorkTable: React.FC<workTableProps> = ({ workInfo, onChangeSelectData, onG
       )
     }
   }, {
-    title: 'Other',
+    title: t('Public.Other'),
     render: (record: tableItems) => {
       return (
         <>

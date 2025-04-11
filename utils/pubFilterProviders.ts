@@ -1,7 +1,7 @@
 import { supabase } from "./clients"
 import useMessage from './message'
 
-export const getFilterWorkType = async () => {
+export const getFilterWorkType = async (locale?: string) => {
   const {data, error} = await supabase.from('product_type').select('*').order('product_id')
   try {
     if (data) return data

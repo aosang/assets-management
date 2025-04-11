@@ -39,7 +39,8 @@ export interface typeDataName {
   id: string
   value: string
   key: string
-  product_id: string
+  product_id: string,
+  name_ch: string
 }
 
 export interface typeDataBrand {
@@ -52,8 +53,10 @@ export interface typeDataBrand {
 }
 
 export interface statusItem {
-  id: string
-  status: string
+  id: string,
+  key: string,
+  value: string,
+  name_ch: string
 }
 
 export interface assetsItem {

@@ -30,5 +30,25 @@
 
     "TotalPrice": "Total value of equipment",
     "TotalNum": "Total number of devices"
+  },
+
+  "WorkOrder": {
+    "WorkOrder": "Work Order"
+  },
+
+  "Public": {
+    "Create": "Create",
+    "Delete": "Delete",
+    "Product": "Product",
+    "Type": "Type",
+    "Brand": "Brand",
+    "Status": "Status",
+    "UpdatedTime": "Updated Time",
+    "CreatedName": "Created Name",
+    "Problem": "Problem",
+    "Other": "Other",
+    "CreatedTime": "Create time",
+
+    "productNamePlaceholder": "Please select product name"
   }
 }

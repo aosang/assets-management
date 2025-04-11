@@ -11,6 +11,12 @@ import WorkTable from '../../components/WorkTable'
 import useMessage from '@/utils/message'
 import dayjs from 'dayjs'
 import { useTranslation } from 'react-i18next'
+import { useLanguage } from '@components/LanguageChange/LanguageContext'
+
+import zhCN from 'antd/es/date-picker/locale/zh_CN'
+import enUS from 'antd/es/date-picker/locale/en_US'
+import 'dayjs/locale/zh-cn'
+import 'dayjs/locale/en'
 
 type tableData = tableItems[]
 type typeDataProps = typeDataName[]
@@ -19,6 +25,7 @@ type statusItemProps = statusItem[]
 
 const WorkOrder: React.FC = ({ }) => {
   const { t } = useTranslation()
+  const { locale } = useLanguage()
   const [isLoading, setIsLoading] = useState<boolean>(true)
 
   const [layoutWidth, setLayoutWidth] = useState<number>(8)
@@ -102,7 +109,12 @@ const WorkOrder: React.FC = ({ }) => {
     // get Product type
     getWorkOrderType()
       .then(res => {
-        setTypeData(res as typeDataProps)
+        if (res) {
+          const formattedOptions = res.map((item: any) => ({
+            value: locale === 'zh'? item.name_ch : item.value,
+          }))
+          setTypeData(formattedOptions as typeDataProps)
+        }
       })
       .catch(error => {
         throw error
@@ -111,7 +123,12 @@ const WorkOrder: React.FC = ({ }) => {
     // get status
     getWorkOrderStatus()
       .then(res => {
-        setTypeStatus(res as statusItemProps)
+        if (res) {
+          const formattedOptions = res.map((item: any) => ({
+            value: locale === 'zh'? item.name_ch : item.value,
+          }))
+          setTypeStatus(formattedOptions as statusItemProps)
+        }
       })
 
     // get device
@@ -226,23 +243,24 @@ const WorkOrder: React.FC = ({ }) => {
       })
   }
 
-  const selectProductType = async (keys: string) => {
+  const selectProductType = async (keys: string, option: any) => {
+    console.log(keys, option)
     if (keys) {
-      getWorkBrand(keys)
-        .then(res => {
-          let brandData = res![0].product_brand.reverse() as typeDataBrandProps
-          brandData = brandData.sort((a, b) => {
-            return Number(a.brand_id) - Number(b.brand_id)
-          })
-          setLayoutWidth(6)
-          setProductBrandShow(true)
-          setTypeDataBrand(brandData)
-          setWorkOrderForm({
-            ...workOrderForm,
-            created_brand: res![0].product_brand[0].value,
-            created_type: keys
-          })
-        })
+      // getWorkBrand(keys)
+      //   .then(res => {
+      //     let brandData = res![0].product_brand.reverse() as typeDataBrandProps
+      //     brandData = brandData.sort((a, b) => {
+      //       return Number(a.brand_id) - Number(b.brand_id)
+      //     })
+      //     setLayoutWidth(6)
+      //     setProductBrandShow(true)
+      //     setTypeDataBrand(brandData)
+      //     setWorkOrderForm({
+      //       ...workOrderForm,
+      //       created_brand: res![0].product_brand[0].value,
+      //       created_type: keys
+      //     })
+      //   })
     } else {
       setWorkOrderForm({
         ...workOrderForm,
@@ -257,11 +275,26 @@ const WorkOrder: React.FC = ({ }) => {
 
   // filter data
   const getFilterType = async () => {
-    getFilterWorkType().then(res => setTypeFilter(res as []))
+    getFilterWorkType().then(res => {
+      if (res) {
+        // 根据当前语言格式化选项
+        const formattedOptions = res.map((item: any) => ({
+          value: locale === 'zh' ? item.name_ch : item.value,
+        }))
+        setTypeFilter(formattedOptions as [])
+      }
+    })
   }
 
   const getFilterStatus = async () => {
-    getFilterWorkStatus().then(res => setStatusFilter(res as []))
+    getFilterWorkStatus().then(res => {
+      if (res) {
+        const formattedOptions = res.map((item: any) => ({
+          value: locale === 'zh' ? item.name_ch : item.value,
+        }))
+        setStatusFilter(formattedOptions as [])
+      }
+    })
   }
 
   const searchFilterTypeData = async (e: string) => {
@@ -275,8 +308,13 @@ const WorkOrder: React.FC = ({ }) => {
   const getTimeFilterData = (dateString: any) => {
     let startTime = dateString ? dateString[0].$d : ''
     let endTime = dateString ? dateString[1].$d : ''
-    startTime = startTime ? dayjs(startTime).format('MMM D, YYYY h:mm a') : ''
-    endTime = endTime ? dayjs(endTime).format('MMM D, YYYY h:mm a') : ''
+    if (locale === 'zh') {
+      startTime = startTime ? dayjs(startTime).format('YYYY-MM-DD') : ''
+      endTime = endTime ? dayjs(endTime).format('YYYY-MM-DD') : ''
+    } else {
+      startTime = startTime ? dayjs(startTime).format('MMM D, YYYY h:mm a') : ''
+      endTime = endTime ? dayjs(endTime).format('MMM D, YYYY h:mm a') : ''
+    }
     setStartTime(startTime)
     setEndTime(endTime)
   }
@@ -300,19 +338,23 @@ const WorkOrder: React.FC = ({ }) => {
   return (
     <div style={{ width: '100%', padding: '12px', boxSizing: 'border-box' }}>
       <Space direction="vertical" size={16} style={{ width: '100%' }}>
-        <Card title="WorkOrder">
+        <Card title={t('WorkOrder.WorkOrder')}>
           <Skeleton loading={isLoading} active paragraph={{rows: 10}}>
             <Row gutter={10}>
               <Col>
-                <Button type='primary' onClick={modalAddHandler}>Create</Button>
+                <Button type='primary' onClick={modalAddHandler}>
+                  {t('Public.Create')}
+                </Button>
               </Col>
               <Col>
-                <Button type='primary' danger onClick={onDeleteModal}>Delete</Button>
+                <Button type='primary' danger onClick={onDeleteModal}>
+                  {t('Public.Delete')}
+                </Button>
               </Col>
               <Col className='flex my-0 mr-0 ml-auto'>
                 <Select
                   className='w-40 mr-3'
-                  placeholder="Type"
+                  placeholder={t('Public.Type')}
                   onFocus={getFilterType}
                   onChange={searchFilterTypeData}
                   options={typeFilter}
@@ -322,7 +364,7 @@ const WorkOrder: React.FC = ({ }) => {
                 </Select>
                 <Select
                   className='w-40 mr-3'
-                  placeholder="Status"
+                  placeholder={t('Public.Status')}
                   onFocus={getFilterStatus}
                   onChange={searchFilterStatusData}
                   options={statusFilter}
@@ -334,6 +376,7 @@ const WorkOrder: React.FC = ({ }) => {
                   className='mr-3'
                   onChange={getTimeFilterData}
                   format={'YYYY-MM-DD'}
+                  locale={locale === 'zh'? zhCN : enUS}
                 />
                 <Button type='primary' icon={<IoIosSearch />} onClick={searchFilterWorkOrderData}></Button>
               </Col>
@@ -370,12 +413,12 @@ const WorkOrder: React.FC = ({ }) => {
                       className='mb-1 flex items-center font-semibold'
                     >
                       <span className='mr-1 text-red-600 font-thin'>*</span>
-                      Product
+                      {t('Public.Product')}
                     </label>
                     <Select
                       className='w-full'
                       options={deviceData}
-                      placeholder="Select the product"
+                      placeholder={t('Public.productNamePlaceholder')}
                       showSearch
                       allowClear
                       onChange={e => setWorkOrderForm({ ...workOrderForm, created_product: e })}
@@ -388,7 +431,7 @@ const WorkOrder: React.FC = ({ }) => {
                       className='mb-1 flex items-center font-semibold'
                     >
                       <span className='mr-1 text-red-600  font-thin'>*</span>
-                      Create name
+                      {t('Public.CreatedName')}
                     </label>
                     <Input
                       style={{ width: '100%' }}
@@ -402,11 +445,11 @@ const WorkOrder: React.FC = ({ }) => {
                       className='mb-1 flex items-center font-semibold'
                     >
                       <span className='mr-1 text-red-600 font-thin'>*</span>
-                      Status
+                      {t('Public.Status')}
                     </label>
                     <Select
                       style={{ width: '100%' }}
-                      placeholder='Status'
+                      placeholder={t('Public.Status')}
                       options={typeStatus}
                       value={workOrderForm.created_status}
                       onChange={e => setWorkOrderForm({ ...workOrderForm, created_status: e })}
@@ -421,7 +464,7 @@ const WorkOrder: React.FC = ({ }) => {
                       className='mb-1 flex items-center font-semibold'
                     >
                       <span className='mr-1 text-red-600  font-thin'>*</span>
-                      Create time
+                      {t('Public.CreatedTime')}
                     </label>
                     <Input
                       style={{ width: '100%' }}
@@ -435,7 +478,7 @@ const WorkOrder: React.FC = ({ }) => {
                       className='mb-1 flex items-center font-semibold'
                     >
                       <span className='mr-1 text-red-600  font-thin'>*</span>
-                      Update time
+                      {t('Public.UpdatedTime')}
                     </label>
                     <Input
                       style={{ width: '100%' }}
@@ -450,12 +493,12 @@ const WorkOrder: React.FC = ({ }) => {
                       className='mb-1 flex items-center font-semibold'
                     >
                       <span className='mr-1 text-red-600 font-thin'>*</span>
-                      Type
+                      {t('Public.Type')}
                     </label>
                     <Select
                       style={{ width: '100%' }}
                       options={typeData}
-                      placeholder='Product type'
+                      placeholder={t('Public.Type')}
                       onChange={selectProductType}
                       value={workOrderForm.created_type}
                       allowClear
@@ -469,11 +512,11 @@ const WorkOrder: React.FC = ({ }) => {
                         className='mb-1 flex items-center font-semibold'
                       >
                         <span className='mr-1 text-red-600 font-thin'>*</span>
-                        Brand
+                        {t('Public.Brand')}
                       </label>
                       <Select
                         style={{ width: '100%' }}
-                        placeholder='Product brand'
+                        placeholder={t('Public.Brand')}
                         options={typeDataBrand.map(item => {
                           return {
                             label:

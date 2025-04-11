@@ -30,5 +30,25 @@
 
     "TotalPrice": "资产总价",
     "TotalNum": "资产总数"
+  },
+
+  "WorkOrder": {
+    "WorkOrder": "工单信息"
+  },
+
+  "Public": {
+    "Create": "新建",
+    "Delete": "删除",
+    "Product": "产品名称",
+    "Type": "类型",
+    "Brand": "品牌",
+    "Status": "状态",
+    "UpdatedTime": "更新时间",
+    "CreatedName": "创建人",
+    "Problem": "问题描述",
+    "Other": "其他",
+    "CreatedTime": "创建时间",
+
+    "productNamePlaceholder": "请选择产品名称"
   }
 }
